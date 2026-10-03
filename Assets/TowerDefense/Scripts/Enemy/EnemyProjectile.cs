@@ -7,11 +7,12 @@ using UnityEngine;
 /// </summary>
 public class EnemyProjectile : MonoBehaviour {
     // 1. 상수
+    private const float DEFAULT_SPEED = 7f;
     private const float HIT_DISTANCE = 0.08f;
     private const float MAX_LIFETIME = 3f;
 
     // 2. 필드
-    [SerializeField] private float speed = 7f;
+    [SerializeField] private float speed = DEFAULT_SPEED;
 
     private IDamageable target;
     private Vector2 lastTargetPosition;

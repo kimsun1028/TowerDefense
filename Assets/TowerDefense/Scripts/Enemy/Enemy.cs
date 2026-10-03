@@ -271,7 +271,7 @@ public partial class Enemy : MonoBehaviour {
         if (meleeCooldown > 0f) {
             return;
         }
-        MeleeAttack(target);
+        PerformMeleeAttack(target);
         meleeCooldown = MeleeInterval;
     }
 
@@ -279,7 +279,7 @@ public partial class Enemy : MonoBehaviour {
     /// 근접 공격. 붙잡은 대상은 항상 맞고, MeleeTargetCount가 2 이상이면
     /// 반경 안의 다른 대상(가까운 순)까지 최대 그 수만큼 맞는다. 피해는 대상마다 따로 뽑는다.
     /// </summary>
-    private void MeleeAttack(IDamageable blockerTarget) {
+    private void PerformMeleeAttack(IDamageable blockerTarget) {
         blockerTarget.TakeDamage(RollMeleeDamage(), DamageType.Physical);
         int maxTargets = data ? data.MeleeTargetCount : 1;
         if (maxTargets <= 1) {

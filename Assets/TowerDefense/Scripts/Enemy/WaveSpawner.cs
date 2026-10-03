@@ -19,6 +19,7 @@ public class WaveSpawner : MonoBehaviour {
     [Serializable]
     public class SpawnGroup {
         // 1. 상수
+        private const int DEFAULT_COUNT = 5;
         private const float DEFAULT_INTERVAL = 0.8f;
         private const float DEFAULT_LANE_SPREAD = 0.7f;
         private const float DEFAULT_PACK_DEPTH = 0.4f;
@@ -29,7 +30,7 @@ public class WaveSpawner : MonoBehaviour {
         [SerializeField] private string spawnId;
         [Tooltip("직접 지정할 경로 이름들 (비우면 입구의 경로 사용). 적마다 랜덤으로 하나")]
         [SerializeField] private List<string> routes = new();
-        [SerializeField] private int count = 5;
+        [SerializeField] private int count = DEFAULT_COUNT;
         [Tooltip("무리(pack) 사이 간격 (초)")]
         [SerializeField] private float interval = DEFAULT_INTERVAL;
         [SerializeField] private float startDelay = 0f;
@@ -118,7 +119,7 @@ public class WaveSpawner : MonoBehaviour {
     }
 
     // 1. 상수
-    private const float DEFAULT_TIME_BETWEEN_WAVES = 5f;
+    private const float DEFAULT_TIME_BETWEEN_WAVES = 15f; // 웨이브 사이 준비 시간 (입구 버튼으로 일찍 부를 수 있음)
     private const float DEFAULT_BOSS_DELAY = 3f;
     private const float LANE_JITTER = 0.1f;
     private const float PACK_SLOT_CENTER = 0.5f;
@@ -146,6 +147,7 @@ public class WaveSpawner : MonoBehaviour {
     [SerializeField] private float bossDelay = DEFAULT_BOSS_DELAY;
 
     private int aliveGroups;
+    private int waveRun;   // 웨이브마다 증가 → 일찍 부른 뒤 남은 옛 타이머가 다음 웨이브를 또 시작하지 않게
 
     public MapRouteData RouteData { get => routeData; set => routeData = value; }
     public IReadOnlyList<Wave> Waves => waves;
@@ -153,6 +155,9 @@ public class WaveSpawner : MonoBehaviour {
     public int CurrentWave { get; private set; }
     public int TotalWaves => waves.Count;
     public bool WaitingForNextWave { get; private set; } = true;
+    /// <summary>다음 웨이브가 저절로 시작되는 시각 (Time.time). 첫 웨이브 전처럼 자동 시작이 없으면 -1.</summary>
+    public float NextWaveTime { get; private set; } = -1f;
+    public float TimeBetweenWaves => timeBetweenWaves;
     public Enemy Boss { get; private set; }
 
     // 4. 메서드 (public)
@@ -186,6 +191,41 @@ public class WaveSpawner : MonoBehaviour {
         bossDelay = delay;
     }
 
+    /// <summary>waveIndex(0부터) 웨이브에 이 입구에서 나오는 무리가 있는가 (UI의 "다음 웨이브" 버튼 표시용).</summary>
+    public bool UsesSpawn(int waveIndex, string spawnId) {
+        if (waveIndex < 0 || waveIndex >= waves.Count) {
+            return false;
+        }
+        foreach (SpawnGroup group in waves[waveIndex].Groups) {
+            if (group.SpawnId == spawnId) {
+                return true;
+            }
+            if (string.IsNullOrEmpty(group.SpawnId) && SpawnHasRoute(spawnId, group.Routes)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// <summary>waveIndex(0부터) 웨이브의 적이 걸을 수 있는 경로를 모두 담는다 (예상 경로 표시용, 중복 없음).</summary>
+    public void GetRoutes(int waveIndex, List<MapRouteData.Route> result) {
+        result.Clear();
+        if (routeData == null || waveIndex < 0 || waveIndex >= waves.Count) {
+            return;
+        }
+        foreach (SpawnGroup group in waves[waveIndex].Groups) {
+            if (!string.IsNullOrEmpty(group.SpawnId)) {
+                foreach (SpawnPointEntry entry in spawnPoints) {
+                    if (entry.SpawnId == group.SpawnId) {
+                        AddRoutes(entry.RouteNames, result);
+                    }
+                }
+            } else {
+                AddRoutes(group.Routes, result);
+            }
+        }
+    }
+
     /// <summary>다음 웨이브를 바로 시작 (UI 버튼에서 호출).</summary>
     public void StartNextWave() {
         if (!WaitingForNextWave || CurrentWave >= waves.Count) {
@@ -208,19 +248,47 @@ public class WaveSpawner : MonoBehaviour {
         }
     }
 
+    private void AddRoutes(IReadOnlyList<string> routeNames, List<MapRouteData.Route> result) {
+        foreach (string routeName in routeNames) {
+            MapRouteData.Route route = routeData.GetRoute(routeName);
+            if (route != null && !result.Contains(route)) {
+                result.Add(route);
+            }
+        }
+    }
+
+    private bool SpawnHasRoute(string spawnId, IReadOnlyList<string> routeNames) {
+        foreach (SpawnPointEntry entry in spawnPoints) {
+            if (entry.SpawnId != spawnId) {
+                continue;
+            }
+            foreach (string routeName in routeNames) {
+                foreach (string entryRoute in entry.RouteNames) {
+                    if (entryRoute == routeName) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     private IEnumerator RunWave(Wave wave) {
+        int run = ++waveRun;
         WaitingForNextWave = false;
+        NextWaveTime = -1f;
         CurrentWave++;
         WaveStarted?.Invoke(CurrentWave);
         aliveGroups = wave.Groups.Count;
         foreach (SpawnGroup group in wave.Groups) {
             StartCoroutine(RunGroup(group));
         }
+        // 웨이브 끝 = 다 나온 뒤 필드의 마지막 적이 죽거나 지키는 곳에 들어갔을 때
         yield return new WaitUntil(() => aliveGroups == 0);
+        yield return new WaitUntil(() => Enemy.Active.Count == 0);
 
         if (CurrentWave >= waves.Count) {
-            // 마지막 웨이브: 남은 적이 다 사라지면 보스 등장 → 보스까지 사라지면 끝
-            yield return new WaitUntil(() => Enemy.Active.Count == 0);
+            // 마지막 웨이브: 보스 등장 → 보스까지 사라지면 끝
             if (bossPrefab != null) {
                 yield return new WaitForSeconds(bossDelay);
                 SpawnBoss();
@@ -231,8 +299,9 @@ public class WaveSpawner : MonoBehaviour {
         }
 
         WaitingForNextWave = true;
+        NextWaveTime = Time.time + timeBetweenWaves;
         yield return new WaitForSeconds(timeBetweenWaves);
-        if (WaitingForNextWave) {
+        if (WaitingForNextWave && run == waveRun) {
             StartNextWave();
         }
     }

@@ -1,0 +1,24 @@
+{
+    "name": "TD.UI.Editor",
+    "rootNamespace": "",
+    "references": [
+        "TD.UI",
+        "TD.Map",
+        "TD.Map.Editor",
+        "TD.Enemy",
+        "UnityEngine.UI",
+        "Unity.TextMeshPro",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
