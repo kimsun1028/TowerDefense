@@ -13,7 +13,7 @@
 | `Scripts/Enemy/EllipseRange.cs` | 2.5D 타원 사거리 판정 (타워 쪽 `Util.IsInEllipse`와 같은 공식, 카메라 45°) |
 | `Scripts/Enemy/DamageType.cs`, `AttackKind.cs`, `StatusEffect.cs`, `IDamageable.cs` | 전투 공용 타입 (타워 담당도 사용). DamageType = 물리/마법, AttackKind = 근접/원거리, StatusEffect = 독/둔화/기절/화상 |
 | `Scripts/Enemy/Editor/EnemyBuilder.cs` | Tools > TD > Enemy > Build Placeholder Enemies |
-| `Data/Enemy/*.asset` | 스탯 SO: Grunt, Runner, Armored, Goblin, Wolf, Spider, Gargoyle, ShadowArcher, Veznan, VeznanDemon |
+| `Data/Enemy/*.asset` | 스탯 SO: Grunt, Runner, Armored, Goblin, Wolf, Spider, Gargoyle, ShadowArcher, DarkKnight, Veznan, VeznanDemon |
 | `Prefabs/Enemy/Enemy_*.prefab` | 임시 그래픽 프리팹 (트리거 Collider2D + Kinematic Rigidbody2D 포함) |
 
 ## 게임 쪽 연동 (이벤트)
@@ -35,7 +35,7 @@ WaveSpawner.AllWavesCleared += () => Win();
 | `Enemy.FindMostAdvanced(후보들)` | 후보 중 **가장 앞선 적** (출구까지 남은 거리 최소). 타겟 목록에서 고를 때 사용 |
 | `enemy.RemainingDistance` | 출구까지 남은 거리 — **작을수록 앞선 적** (추월돼도, 경로가 달라도 정확) |
 | `enemy.Progress` | 지나온 거리 |
-| `enemy.TakeDamage(amount)` / `(amount, DamageType)` / `(amount, DamageType, AttackKind)` | 피해 (물리 → 방어력, 마법 → 마법 저항). 종류 생략 = 물리, 방식 생략 = 원거리. **마법은 `DamageType.Magic`, 근접은 `AttackKind.Melee`를 넘길 것**. 맞으면 true, 회피·사망 상태면 false |
+| `enemy.TakeDamage(amount)` / `(amount, DamageType)` / `(amount, DamageType, AttackKind)` | 피해 (물리 → 방어력, 마법 → 마법 저항, **폭발 → 방어력의 절반**). 종류 생략 = 물리, 방식 생략 = 원거리. **마법은 `DamageType.Magic`, 포탄은 `DamageType.Explosive`, 근접은 `AttackKind.Melee`를 넘길 것**. 맞으면 true, 회피·사망 상태면 false |
 | `Enemy.Evaded` | 근접 공격 회피 이벤트 ("Miss" 표시용) |
 | `enemy.IsFlying` | 공중 유닛 (병영이 붙잡을 수 없음) |
 | `enemy.IsImmuneTo(StatusEffect.Poison)` | 상태이상 면역 여부. 독화살 등 **효과를 걸기 전에 확인** (거미 = 독 면역) |

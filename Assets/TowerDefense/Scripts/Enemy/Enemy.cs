@@ -17,7 +17,7 @@ using UnityEngine;
 /// 보스: 범위 근접 공격(MeleeTargetCount), 변신(NextForm: 죽을 피해 → 다음 형태로 체력 가득),
 ///       최후의 저항(KillAllOnDeath: 죽으면 전장의 다른 적도 모두 죽음).
 /// </summary>
-public class Enemy : MonoBehaviour {
+public partial class Enemy : MonoBehaviour {
     // 1. 상수
     private const float REJOIN_THRESHOLD = 0.06f; // 차선 위치에서 이보다 벗어나 있으면 먼저 걸어서 합류
     private const float FLIP_THRESHOLD = 1e-4f;
@@ -31,6 +31,7 @@ public class Enemy : MonoBehaviour {
     private const int DEFAULT_MELEE_DAMAGE_MAX = 4;
     private const float DEFAULT_MELEE_INTERVAL = 1f;
     private const float FIRST_RANGED_DELAY_RATIO = 0.5f; // 대상을 처음 발견하고 첫 발까지 = 간격의 절반
+    private const float EXPLOSIVE_ARMOR_RATIO = 0.5f;    // 폭발 피해는 방어력의 절반만 적용
 
     // 2. 필드
     private static readonly List<Enemy> active = new();
@@ -154,8 +155,7 @@ public class Enemy : MonoBehaviour {
             Evaded?.Invoke(this);
             return false;
         }
-        float reduction = data == null ? 0f : type == DamageType.Physical ? data.Armor : data.MagicResist;
-        Hp -= amount * (1f - reduction);
+        Hp -= amount * (1f - GetDamageReduction(type));
         UpdateHealthBar();
         if (Hp <= 0f && !TryChangeForm()) {
             Die();
@@ -364,6 +364,21 @@ public class Enemy : MonoBehaviour {
         UpdateHealthBar();
         FormChanged?.Invoke(this);
         return true;
+    }
+
+    /// <summary>피해 종류별 감소율. 물리 = 방어력, 마법 = 마법 저항, 폭발 = 방어력의 절반.</summary>
+    private float GetDamageReduction(DamageType type) {
+        if (data == null) {
+            return 0f;
+        }
+        switch (type) {
+            case DamageType.Magic:
+                return data.MagicResist;
+            case DamageType.Explosive:
+                return data.Armor * EXPLOSIVE_ARMOR_RATIO;
+            default:
+                return data.Armor;
+        }
     }
 
     /// <summary>근접 공격 회피 판정. 회피율 0이면 항상 false.</summary>
