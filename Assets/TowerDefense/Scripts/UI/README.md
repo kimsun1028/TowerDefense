@@ -61,3 +61,21 @@ public class AttackTower : Tower, IInfoSource {
 
 - 글자는 Unity 기본 폰트(LegacyRuntime) + OS 한글 폰트 대체로 표시된다. 정식 폰트가 정해지면 `InfoPanelBuilder`의 폰트만 바꾸면 된다.
 - 초상화가 없으면 회색 상자로 나온다 (`EnemyData.Portrait`에 넣으면 표시).
+
+## 게임 UI (HUD · 웨이브 · 링 메뉴 · 메인 화면)
+
+- HUD (`GameHud`): 목숨·골드, `WAVE n/15`, 배속 한 버튼(1배속 → 2배속 → 정지), 톱니/Esc 일시 정지 메뉴(계속하기 · 설정 · 메인 메뉴), 승리/패배 창(다시 하기 · 메인 메뉴)
+- 웨이브: 쉬는 시간(15초)에만 입구 옆 다음 웨이브 버튼(누르면 바로 시작, 고리 = 남은 시간) + 길 위 예상 경로 화살표 (`WaveCallButtons`, `WavePathPreview`)
+- 웨이브 끝 = 필드의 마지막 적이 죽거나 지키는 곳에 들어갔을 때 (`WaveSpawner`)
+- 타워 링 메뉴 (`RingMenu`): `RingMenu.Instance.Open(위치, List<RingMenuOption>)` — 가격표, 골드 부족 시 흐리게, 잠금, 판매, 단축키 표시, 화면 끝에서 안쪽으로
+- 정보 바: 한 줄(초상화 · 이름 탭 · 아이콘 + 값)
+- 메인 화면 (`MainMenu`, `Scenes/MainMenu.unity`): 게임 시작 · 설정(준비 중) · 종료
+- 폰트: 나눔고딕(SIL OFL 1.1) + 어두운 외곽선, TMP 기본 리소스 포함
+
+### 게임 쪽 연결 (`Scripts/Integration`, asmdef 없음)
+- `GameHudBinding`: `GameManager`의 `GoldChanged` / `LivesChanged` → HUD, `GameWon` / `GameLost` → 결과 창
+- `TowerBuildMenuAdapter`: `TowerBuilder`가 고른 자리에 링 메뉴(숫자키 1~4 표시). 일시 정지·결과 창 중에는 `TowerBuilder`를 멈춘다. 타워 쪽 `SlotSelected` 등 이벤트가 생기면 구독으로 바꾼다
+
+### 씬에 붙이는 법
+- `Prefabs/UI/GameHud`, `Prefabs/UI/InfoPanel` + EventSystem(`InputSystemUIInputModule`)
+- 같은 씬에 `GameManager`, `TowerBuilder`가 있으면 `GameHudBinding`, `TowerBuildMenuAdapter`를 붙이면 된다
