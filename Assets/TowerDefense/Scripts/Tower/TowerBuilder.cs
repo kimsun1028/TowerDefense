@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 public class TowerBuilder : MonoBehaviour
 {
-    [SerializeField] private Tower[] towerPrefabs;   // 0 Archer, 1 Magic, 2 Artillery, 3 Barracks
+    [SerializeField] private Tower[] towerPrefabs;   // 0 Archer, 1 Magic, 2 Artillery, 3 Barracks, 4 Hero
 
     private TowerSlot selectedSlot;
 
@@ -35,6 +35,7 @@ public class TowerBuilder : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha2)) Build(1);
         if (Input.GetKeyDown(KeyCode.Alpha3)) Build(2);
         if (Input.GetKeyDown(KeyCode.Alpha4)) Build(3);
+        if (Input.GetKeyDown(KeyCode.Alpha5)) Build(4);
 
         // 링 메뉴가 버튼(강화/판매 등)으로 닫히면 사거리 표시도 끔
         if (shownTower != null && RingMenu.Instance != null && !RingMenu.Instance.IsOpen)
