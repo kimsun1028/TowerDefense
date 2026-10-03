@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent (typeof(CircleCollider2D))]
 public abstract class AttackTower : Tower
 {
     [SerializeField] protected AttackTowerData data;
@@ -9,14 +10,18 @@ public abstract class AttackTower : Tower
 
     protected Enemy target;
     protected AttackLevelStats CurrentStats => data.levels[level - 1];
+    
+    private CircleCollider2D rangeCollider;
     private float cooldown;
 
-
-    void Start()
+    protected virtual void Start()
     {
-        
+        rangeCollider = GetComponent<CircleCollider2D>();
+        rangeCollider.radius = CurrentStats.range;
+        rangeCollider.isTrigger = true;
     }
-    void Update()
+
+    protected virtual void Update()
     {   
         FindTarget();
         cooldown -= Time.deltaTime;
@@ -25,7 +30,6 @@ public abstract class AttackTower : Tower
             Attack();
             cooldown = 1f / CurrentStats.attackSpeed;
         }
-        // 타겟 찾기 -> 쿨감소 -> 0초 이하면 Attack()호출 후 cooldown = 1f / attackSpeed;
     }
 
     public void AddTargetList(Enemy enemy)
@@ -44,16 +48,15 @@ public abstract class AttackTower : Tower
     private void FindTarget()
     {   
         targetList.RemoveAll(e => e == null);
-        if(targetList.Count == 0)
+        target = null;
+        foreach(Enemy enemy in targetList)
         {
-            target = null;
+            if(Util.IsInEllipse(transform.position,enemy.transform.position,CurrentStats.range))
+            {
+                target = enemy;
+                break;
+            }
         }
-        else
-        {
-
-            target = targetList[0];
-        }
-        
     }
 
     void OnTriggerEnter2D(Collider2D other)
