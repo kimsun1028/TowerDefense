@@ -17,7 +17,6 @@ public static class MainMenuBuilder {
     private const string SCENE_PATH = "Assets/TowerDefense/Scenes/" + MainMenu.SCENE_NAME + ".unity";
     private const string MAP_PREFAB_PATH = "Assets/TowerDefense/Prefabs/Map/Map01.prefab";
     private const string TOWER_SLOTS_NAME = "TowerSlots";
-    private const string GOAL_MARKER_NAME = "Goal (지키는곳)";
     private const string TITLE_TEXT = "TOWER DEFENSE";
     private const string SUBTITLE_TEXT = "블랙홀에서 쏟아지는 적을 막아라";
     private const string VERSION_TEXT = "v0.1 prototype";
@@ -123,7 +122,7 @@ public static class MainMenuBuilder {
     }
 
     // 4. 메서드 (private)
-    /// <summary>실제 맵 프리팹을 풀어서 깔고, 게임용 표시(타워 자리, 지키는 곳)만 뺀다. 길 위에는 화살표가 계속 흐른다.</summary>
+    /// <summary>실제 맵 프리팹을 풀어서 깔고, 타워 자리만 뺀다 (입구·지키는 곳 포탈은 그대로). 길 위에는 화살표가 계속 흐른다.</summary>
     private static void CreateBackground() {
         var mapPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(MAP_PREFAB_PATH);
         if (mapPrefab == null) {
@@ -134,12 +133,6 @@ public static class MainMenuBuilder {
         PrefabUtility.UnpackPrefabInstance(map, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
         map.name = "Background (Map01)";
         DestroyChild(map.transform, TOWER_SLOTS_NAME);
-        foreach (Transform child in map.GetComponentsInChildren<Transform>(true)) {
-            if (child.name == GOAL_MARKER_NAME) {
-                Object.DestroyImmediate(child.gameObject);
-                break;
-            }
-        }
 
         var flow = new GameObject("PathFlow").AddComponent<WavePathPreview>();
         var serialized = new SerializedObject(flow);

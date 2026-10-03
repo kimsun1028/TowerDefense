@@ -9,7 +9,7 @@ Map01 생성기 (Pillow + numpy + scipy). 레이아웃과 그림을 한 번에 �
 - 그림: 타워 그림(48x64 픽셀아트, 외곽선 24,18,30)과 어울리게 1px = 1텍셀 픽셀아트로 그린다 (60px = 1칸).
 - 결과:
   Assets/TowerDefense/Art/Map/ Map01_Background.png, Map01_Road.png(= 길 판정 마스크), Pad.png,
-                               Portal_Top.png, Portal_Right.png
+                               Portal_Top.png, Portal_Right.png, Portal_Goal.png(지키는 곳, 파란 포탈)
   Assets/TowerDefense/Scripts/Map/Editor/Map01Builder.cs 의 "맵 데이터" 구역 (경로·자리·입구 좌표)를 다시 쓴다.
 """
 import math
@@ -43,6 +43,7 @@ RIGHT_PORTAL = (904 + MARGIN_X, 0)            # y는 경로에서 정한다
 GOAL_X = 92 + MARGIN_X
 PORTAL_TOP_RADIUS = 34
 PORTAL_RIGHT_RADIUS = (18, 36)
+PORTAL_GOAL_RADIUS = PORTAL_RIGHT_RADIUS     # 지키는 곳: 오른쪽 입구와 같은 모양, 파란색
 
 PAD_W, PAD_TOP_H, PAD_SIDE_H = 48, 30, 5       # 타워 자리 영역 (클릭 범위·간격용). 그림은 가운데 작은 원만
 SLOT_MARK = (28, 14)                           # 바닥에 그린 작은 원 (2.5D라 납작한 타원)
@@ -79,6 +80,8 @@ PAD_NEON = (90, 220, 240)
 HOLE = (10, 6, 20)
 SWIRL = [(40, 20, 64), (84, 36, 120), (150, 60, 180)]
 RING = [(150, 30, 120), (230, 70, 190), (255, 140, 220), (110, 230, 255)]
+GOAL_RING = [(30, 70, 160), (60, 130, 240), (130, 200, 255), (220, 250, 255)]   # 지키는 곳 (파랑)
+GOAL_SWIRL = [(16, 30, 70), (40, 80, 150), (90, 170, 240)]
 CUBE = [(96, 70, 150), (62, 44, 104), (44, 32, 78)]
 CUBE_EDGE = (200, 90, 200)
 BAYER = np.array([[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]) / 16.0
@@ -163,12 +166,6 @@ def draw_road_mask(paths):
 
     for points in paths.values():
         stroke(points)
-    # 지키는 곳 너머 화면 왼쪽 끝까지 이어지는 출구 (그림만)
-    end = paths["Path_TopMiddle"]
-    (x0, y0), (x1, y1) = end[-2], end[-1]
-    direction = ((x1 - x0), (y1 - y0))
-    length = math.hypot(*direction) or 1.0
-    stroke([end[-1], (-ROAD_WIDTH, y1 + direction[1] / length * (x1 + ROAD_WIDTH))])
     small = image.resize((W, H), Image.LANCZOS)
     road = np.asarray(small) > 127
     # 길은 블랙홀에서 시작한다: 구멍 중심 너머로 튀어나온 끝은 지운다
@@ -176,6 +173,9 @@ def draw_road_mask(paths):
     road[cy - PORTAL_RIGHT_RADIUS[1] - 4:cy + PORTAL_RIGHT_RADIUS[1] + 4, cx + 1:] = False
     tx, ty = (round(v) for v in paths["Path_TopMiddle"][0])
     road[:ty, tx - PORTAL_TOP_RADIUS - 4:tx + PORTAL_TOP_RADIUS + 4] = False
+    # 길은 지키는 곳(파란 포탈)으로 들어가 끝난다: 구멍 중심 너머는 지운다
+    gx, gy = (round(v) for v in paths["Path_TopMiddle"][-1])
+    road[gy - PORTAL_GOAL_RADIUS[1] - 4:gy + PORTAL_GOAL_RADIUS[1] + 4, :gx] = False
     return road
 
 
@@ -242,10 +242,12 @@ def build_background(road, slots, paths):
     image[dots & (yy < H * 0.45)] = GRID_DOT
 
     # 입구 바닥 빛 (디더 타원)
-    for (cx, cy), (rx, ry) in ((TOP_PORTAL, (70, 26)), (paths_start(paths, "Path_Right"), (40, 46))):
+    goal = tuple(int(v) for v in paths["Path_TopMiddle"][-1])
+    for (cx, cy), (rx, ry), color in ((TOP_PORTAL, (70, 26), RING[1]), (paths_start(paths, "Path_Right"), (40, 46), RING[1]),
+                                      (goal, (40, 46), GOAL_RING[1])):
         glow = 1 - ((xx - cx) / rx) ** 2 - ((yy - cy - (24 if ry < 30 else 0)) / ry) ** 2
         lit = glow > BAYER[yy % 4, xx % 4] * 1.4
-        image[lit] = (image[lit] * 0.5 + np.array(RING[1]) * 0.5).astype(np.int32)
+        image[lit] = (image[lit] * 0.5 + np.array(color) * 0.5).astype(np.int32)
 
     # 길: 그림자(진한 안쪽 + 디더 바깥) → 옆면(두께, 아래로 갈수록 어둡게) → 외곽선
     thickness = ROAD_THICKNESS
@@ -368,13 +370,13 @@ def build_pad():
     return image
 
 
-def build_portal(radius_x, radius_y):
-    """블랙홀: 바깥 고리(분홍→시안) + 검은 구멍 + 소용돌이 점."""
+def build_portal(radius_x, radius_y, ring=RING, swirl=SWIRL):
+    """블랙홀: 바깥 고리(입구 = 분홍→시안, 지키는 곳 = 파랑) + 검은 구멍 + 소용돌이 점."""
     size = (radius_x * 2 + 3, radius_y * 2 + 3)
     image = Image.new("RGBA", size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(image)
     cx, cy = radius_x + 1, radius_y + 1
-    rings = [(0, OUTLINE), (1, RING[0]), (3, RING[1]), (5, RING[2]), (6, RING[3]), (7, OUTLINE)]
+    rings = [(0, OUTLINE), (1, ring[0]), (3, ring[1]), (5, ring[2]), (6, ring[3]), (7, OUTLINE)]
     for inset, color in rings:
         draw.ellipse([cx - radius_x + inset, cy - radius_y + inset, cx + radius_x - inset, cy + radius_y - inset], fill=color)
     inner_x, inner_y = radius_x - 8, radius_y - 8
@@ -386,7 +388,7 @@ def build_portal(radius_x, radius_y):
             r = 0.15 + 0.8 * t
             x = cx + math.cos(angle) * inner_x * r
             y = cy + math.sin(angle) * inner_y * r
-            color = SWIRL[min(2, int((1 - t) * 3))]
+            color = swirl[min(2, int((1 - t) * 3))]
             draw.point((round(x), round(y)), fill=color)
     return image
 
@@ -432,6 +434,7 @@ def main():
     build_pad().save(ART_DIR / "Pad.png")
     build_portal(PORTAL_TOP_RADIUS, PORTAL_TOP_RADIUS).save(ART_DIR / "Portal_Top.png")
     build_portal(*PORTAL_RIGHT_RADIUS).save(ART_DIR / "Portal_Right.png")
+    build_portal(*PORTAL_GOAL_RADIUS, ring=GOAL_RING, swirl=GOAL_SWIRL).save(ART_DIR / "Portal_Goal.png")
     write_builder(paths, slots, top_spawn, right_spawn, goal)
     print("image", (W, H), "view", (VIEW_W, VIEW_H))
     print("top", top_spawn, "right", right_spawn, "goal", goal)

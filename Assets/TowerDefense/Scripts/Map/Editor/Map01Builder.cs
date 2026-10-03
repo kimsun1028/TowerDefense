@@ -22,6 +22,7 @@ public static class Map01Builder {
     private const string BACKGROUND_TEXTURE_PATH = ART_DIR + "/Map01_Background.png";
     private const string PORTAL_TOP_TEXTURE_PATH = ART_DIR + "/Portal_Top.png";
     private const string PORTAL_RIGHT_TEXTURE_PATH = ART_DIR + "/Portal_Right.png";
+    private const string PORTAL_GOAL_TEXTURE_PATH = ART_DIR + "/Portal_Goal.png";
     private const string MAP_NAME = "Map01";
 
     // 스케일: 60px = 1 unit. 화면(VIEW_PX) 960x540 = 16 x 9 unit, 그림은 여백까지 포함
@@ -31,13 +32,8 @@ public static class Map01Builder {
     private const int BACKGROUND_SORTING_ORDER = -20;
     private const int ROAD_SORTING_ORDER = -10;
     private const int PORTAL_SORTING_ORDER = -9;  // 길 위 → 길이 블랙홀에서 나오는 것처럼 보인다
-    private const int MARKER_SORTING_ORDER = -8;
-    private const int MARKER_LABEL_SORTING_ORDER = -7;
-    private const float MARKER_LABEL_SIZE = 0.07f;
-    private const float GOAL_MARKER_SIZE = 0.8f;
     private const float CAMERA_Z = -10f;
     private static readonly Color BACKGROUND_COLOR = new(0.1f, 0.075f, 0.18f); // 그림 바깥 (바닥 아래쪽 색)
-    private static readonly Color GOAL_COLOR = new(0.25f, 0.45f, 0.9f, 0.85f);
 
     private const string SPAWN_TOP_ID = "Top";
     private const string SPAWN_RIGHT_ID = "Right";
@@ -154,7 +150,8 @@ public static class Map01Builder {
 
     private static void CreateMarkers(TDMap map) {
         Transform markers = MapAuthoring.GetOrCreateChild(map.transform, "Markers");
-        Transform goalMarker = CreateMarker("Goal (지키는곳)", MapAuthoring.Circle, GOAL_COLOR, GOAL_PX, GOAL_MARKER_SIZE, "지키는곳", markers);
+        // 지키는 곳 = 파란 포탈 (길이 이 구멍으로 들어가 끝난다)
+        Transform goalMarker = CreatePortal("Goal (지키는곳)", PORTAL_GOAL_TEXTURE_PATH, GOAL_PX, markers);
         GoalPoint goal = goalMarker.gameObject.AddComponent<GoalPoint>();
         goal.Radius = GOAL_RADIUS;
         map.Goal = goal;
@@ -193,20 +190,6 @@ public static class Map01Builder {
         PrefabUtility.InstantiatePrefab(mapPrefab);
         EditorSceneManager.SaveScene(scene, VIEW_SCENE_PATH);
         AssetDatabase.SaveAssets();
-    }
-
-    private static Transform CreateMarker(string markerName, Sprite sprite, Color color, Vector2 pixel, float size,
-                                          string label, Transform parent) {
-        var markerObject = new GameObject(markerName);
-        markerObject.transform.SetParent(parent);
-        markerObject.transform.position = ConvertPxToWorld(pixel.x, pixel.y);
-        markerObject.transform.localScale = Vector3.one * size;
-        SpriteRenderer renderer = markerObject.AddComponent<SpriteRenderer>();
-        renderer.sprite = sprite;
-        renderer.color = color;
-        renderer.sortingOrder = MARKER_SORTING_ORDER;
-        MapAuthoring.AddLabel(markerObject.transform, label, MARKER_LABEL_SIZE / size, MARKER_LABEL_SORTING_ORDER);
-        return markerObject.transform;
     }
 }
 // AI-assisted code end
