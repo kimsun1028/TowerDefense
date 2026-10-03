@@ -12,6 +12,7 @@ public class BarracksTower : Tower, IRallyPointUser
 
     private BarracksLevelStats CurrentStats => data.levels[level - 1];
     public override TowerData Data => data;
+    protected override float RangeRadius => slot != null ? slot.RallyRange : 0f;
     public override bool HasRallyPoint => true;
 
     public override void BeginRallyPoint()

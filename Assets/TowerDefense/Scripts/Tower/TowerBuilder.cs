@@ -35,6 +35,21 @@ public class TowerBuilder : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha2)) Build(1);
         if (Input.GetKeyDown(KeyCode.Alpha3)) Build(2);
         if (Input.GetKeyDown(KeyCode.Alpha4)) Build(3);
+
+        // 링 메뉴가 버튼(강화/판매 등)으로 닫히면 사거리 표시도 끔
+        if (shownTower != null && RingMenu.Instance != null && !RingMenu.Instance.IsOpen)
+        {
+            ShowTowerRange(null);
+        }
+    }
+
+    // 선택한 타워의 사거리 타원만 보이게 (null이면 모두 끔)
+    private Tower shownTower;
+    private void ShowTowerRange(Tower tower)
+    {
+        if (shownTower != null && shownTower != tower) shownTower.ShowRange(false);
+        shownTower = tower;
+        if (tower != null) tower.ShowRange(true);
     }
 
     private void HandleClick()
@@ -77,18 +92,22 @@ public class TowerBuilder : MonoBehaviour
         else if (!clickedSlot.IsOccupied)
         {
             selectedSlot = clickedSlot;
+            ShowTowerRange(null);
             SlotSelected?.Invoke(clickedSlot);
         }
         else
         {
             selectedSlot = null;
-            TowerSelected?.Invoke(clickedSlot.Occupant as Tower);
+            Tower tower = clickedSlot.Occupant as Tower;
+            ShowTowerRange(tower);
+            TowerSelected?.Invoke(tower);
         }
     }
 
     private void ClearSelection()
     {
         selectedSlot = null;
+        ShowTowerRange(null);
         SelectionCleared?.Invoke();
     }
 
