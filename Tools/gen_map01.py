@@ -35,10 +35,10 @@ SEED = 11
 
 # 참고 맵(820x622 px) 좌표 → 새 화면 좌표: 가로로 넓히고 세로는 살짝 줄인다
 OLD_CENTER = (442, 116)
-NEW_CENTER = (480 + MARGIN_X, 128 + MARGIN_Y)
+NEW_CENTER = (480 + MARGIN_X, 114 + MARGIN_Y)   # map-theme(128)에서 위로 14px만 평행 이동 → 거리는 그대로, 아래 UI에 14번 자리가 덜 가림
 SCALE_X, SCALE_Y = 1.2, 0.9
 
-TOP_PORTAL = (586 + MARGIN_X, 58 + MARGIN_Y)   # 위 입구 블랙홀 중심 (길이 여기서 나온다)
+TOP_PORTAL = (586 + MARGIN_X, 44 + MARGIN_Y)   # 위 입구 블랙홀 중심 (길이 여기서 나온다). 고리 위 끝이 화면 위에서 10px
 RIGHT_PORTAL = (904 + MARGIN_X, 0)            # y는 경로에서 정한다
 GOAL_X = 92 + MARGIN_X
 PORTAL_TOP_RADIUS = 34
