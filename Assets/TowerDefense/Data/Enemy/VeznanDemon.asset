@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: VeznanDemon
   m_EditorClassIdentifier: TD.Enemy::EnemyData
   displayName: "\uBCA0\uC988\uB09C (\uC545\uB9C8)"
+  description: "\uBCA0\uC988\uB09C\uC758 \uC545\uB9C8 \uD615\uD0DC. \uC4F0\uB7EC\uB728\uB9AC\uBA74
+    \uC804\uC7A5\uC758 \uB2E4\uB978 \uC801\uC774 \uBAA8\uB450 \uD568\uAED8 \uC4F0\uB7EC\uC9C4\uB2E4."
+  portrait: {fileID: 0}
   maxHp: 6666
   speed: 0.64285713
   armor: 0

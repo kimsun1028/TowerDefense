@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf0fb8835eb6b4015a4d6de9f8349976, type: 3}
+  m_Name: DarkKnight
+  m_EditorClassIdentifier: TD.Enemy::EnemyData
+  displayName: "\uC554\uD751\uAE30\uC0AC"
+  description: "\uBB3C\uB9AC \uD53C\uD574\uB97C 80%, \uD3ED\uBC1C \uD53C\uD574\uB97C
+    40% \uB35C \uBC1B\uB294\uB2E4. \uB9C8\uBC95\uC0AC\uB85C \uC7A1\uC790."
+  portrait: {fileID: 0}
+  maxHp: 300
+  speed: 0.9607143
+  armor: 0.8
+  magicResist: 0
+  meleeEvasion: 0
+  goldReward: 25
+  lifeDamage: 1
+  meleeDamageMax: 25
+  meleeDamageMin: 15
+  meleeInterval: 1
+  meleeTargetCount: 1
+  meleeAreaRadius: 0.9
+  rangedRange: 0
+  rangedDamageMin: 0
+  rangedDamageMax: 0
+  rangedInterval: 1.4
+  isBoss: 0
+  nextForm: {fileID: 0}
+  killAllOnDeath: 0
+  formTint: {r: 0, g: 0, b: 0, a: 0}
+  isFlying: 0
+  immunities: 0
+  radius: 0.20249999

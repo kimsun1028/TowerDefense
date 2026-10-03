@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: ShadowArcher
   m_EditorClassIdentifier: TD.Enemy::EnemyData
   displayName: "\uADF8\uB9BC\uC790 \uAD81\uC218"
+  description: "\uC0AC\uAC70\uB9AC \uC548\uC758 \uBCD1\uC0AC\uB97C \uBA48\uCDB0 \uC11C\uC11C
+    \uD65C\uB85C \uC3DC\uB2E4. \uBD99\uC7A1\uD788\uBA74 \uADFC\uC811\uC804\uC73C\uB85C
+    \uC2F8\uC6B4\uB2E4."
+  portrait: {fileID: 0}
   maxHp: 180
   speed: 1.6464285
   armor: 0
@@ -23,10 +27,16 @@ MonoBehaviour:
   meleeDamageMax: 20
   meleeDamageMin: 10
   meleeInterval: 1
+  meleeTargetCount: 1
+  meleeAreaRadius: 0.9
   rangedRange: 2
   rangedDamageMin: 21
   rangedDamageMax: 30
   rangedInterval: 1.4
+  isBoss: 0
+  nextForm: {fileID: 0}
+  killAllOnDeath: 0
+  formTint: {r: 0, g: 0, b: 0, a: 0}
   isFlying: 0
   immunities: 0
   radius: 0.17999999
