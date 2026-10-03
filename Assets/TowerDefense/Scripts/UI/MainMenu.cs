@@ -7,7 +7,8 @@ using UnityEngine.UI;
 /// <summary>
 /// 메인 화면: 게임 시작 / 설정 / 종료. 제목은 위아래로 천천히 떠 있다.
 ///   게임 시작 → gameSceneName 씬을 연다
-///   설정 → SettingsRequested 이벤트 (설정 화면이 생기면 구독). 구독자가 없으면 "준비 중" 창
+///   설정 → 설정 창(SettingsPanel, 소리). 창이 없으면 SettingsRequested 이벤트만 보낸다
+///   ? (오른쪽 위) → 게임 설명 창(GuidePanel)
 ///   종료 → 에디터에서는 플레이 종료, 빌드에서는 게임 종료
 /// </summary>
 public class MainMenu : MonoBehaviour {
@@ -25,8 +26,9 @@ public class MainMenu : MonoBehaviour {
     [SerializeField] private Button startButton;
     [SerializeField] private Button settingsButton;
     [SerializeField] private Button quitButton;
-    [SerializeField] private GameObject notReadyPanel;
-    [SerializeField] private Button notReadyCloseButton;
+    [SerializeField] private SettingsPanel settingsPanel;
+    [SerializeField] private Button helpButton;
+    [SerializeField] private GuidePanel guidePanel;
 
     private Vector2 titleBasePosition;
 
@@ -38,8 +40,7 @@ public class MainMenu : MonoBehaviour {
         startButton.onClick.AddListener(StartGame);
         settingsButton.onClick.AddListener(OpenSettings);
         quitButton.onClick.AddListener(Quit);
-        notReadyCloseButton.onClick.AddListener(() => notReadyPanel.SetActive(false));
-        notReadyPanel.SetActive(false);
+        helpButton.onClick.AddListener(guidePanel.Open);
         titleBasePosition = title.anchoredPosition;
     }
 
@@ -53,10 +54,10 @@ public class MainMenu : MonoBehaviour {
     }
 
     private void OpenSettings() {
-        if (SettingsRequested != null) {
-            SettingsRequested.Invoke();
+        if (settingsPanel != null) {
+            settingsPanel.Open();
         } else {
-            notReadyPanel.SetActive(true);
+            SettingsRequested?.Invoke();
         }
     }
 
