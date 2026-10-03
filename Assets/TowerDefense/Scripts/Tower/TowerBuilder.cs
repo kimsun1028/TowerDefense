@@ -17,6 +17,7 @@ public class TowerBuilder : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1)) Build(0);
         if (Input.GetKeyDown(KeyCode.Alpha2)) Build(1);
         if (Input.GetKeyDown(KeyCode.Alpha3)) Build(2);
+        if (Input.GetKeyDown(KeyCode.Alpha4)) Build(3);
     }
 
     private void SelectSlot()

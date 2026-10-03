@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d186bf957e8a32b42a76b5d85ce8c642, type: 3}
+  m_Name: BarracksTowerData
+  m_EditorClassIdentifier: Assembly-CSharp::BarracksTowerData
+  towerName: Barracks
+  levels:
+  - soldier: {fileID: 11400000, guid: 7c05019d9ee2376418911873d474f145, type: 2}
+    soldierCount: 3
+    respawnTime: 10
+    engageRange: 1.2
+  - soldier: {fileID: 11400000, guid: 4acf819f351979745983faae1c847f65, type: 2}
+    soldierCount: 3
+    respawnTime: 9
+    engageRange: 1.3
+  - soldier: {fileID: 11400000, guid: 3745c5c78b0529e42b9af6239f8a6169, type: 2}
+    soldierCount: 3
+    respawnTime: 8
+    engageRange: 1.4
