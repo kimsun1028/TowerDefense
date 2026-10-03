@@ -9,6 +9,12 @@ public class BarracksTower : Tower, IRallyPointUser
 
     private Soldier[] soldiers;
     private float[] respawnTimers; // 남은 리스폰 시간 리스트
+    private bool[] spawning;       // 소환 연출 중(지연 소환 대기)인 칸
+
+    // 소환 연출 (영웅 타워가 덮어씀)
+    protected virtual string SpawnTrigger => "DoorOpen";        // 소환 시 타워 애니메이션 트리거
+    protected virtual float SpawnDelay => 0f;                   // 트리거 후 실제 생성까지 (초)
+    protected virtual Vector2 SpawnOffset => Vector2.zero;      // 타워 기준 생성 위치
 
     private BarracksLevelStats CurrentStats => data.levels[level - 1];
     public override TowerData Data => data;
@@ -33,6 +39,7 @@ public class BarracksTower : Tower, IRallyPointUser
             }
             System.Array.Resize(ref soldiers, count);
             System.Array.Resize(ref respawnTimers, count);
+            System.Array.Resize(ref spawning, count);
         }
 
         for (int i = 0; i < soldiers.Length; i++)
@@ -54,38 +61,59 @@ public class BarracksTower : Tower, IRallyPointUser
         // 2. CurrentStats.soldierCount만큼 SpawnSoldier()
         soldiers = new Soldier[CurrentStats.soldierCount];
         respawnTimers = new float[CurrentStats.soldierCount];
+        spawning = new bool[CurrentStats.soldierCount];
         for(int i = 0; i < CurrentStats.soldierCount; i++)
         {
-            SpawnSoldier(i);
+            BeginSpawn(i);
         }
     }
 
     private void Update()
-    {   
+    {
        for(int i = 0; i < soldiers.Length; i++)
         {
-            if (soldiers[i] != null) continue;
+            if (soldiers[i] != null || spawning[i]) continue;
 
             respawnTimers[i] -= Time.deltaTime;
             if(respawnTimers[i] <= 0f)
             {
-                SpawnSoldier(i);
+                BeginSpawn(i);
             }
         }
     }
 
+    // 소환 연출 시작: 타워 애니메이션 → SpawnDelay 뒤 실제 생성
+    private void BeginSpawn(int index)
+    {
+        spawning[index] = true;
+        PlaySpawnAnimation();
+        if (SpawnDelay <= 0f) SpawnSoldier(index);
+        else StartCoroutine(SpawnAfterDelay(index));
+    }
+
+    protected virtual void PlaySpawnAnimation()
+    {
+        PlayTrigger(SpawnTrigger);
+    }
+
+    private System.Collections.IEnumerator SpawnAfterDelay(int index)
+    {
+        yield return new WaitForSeconds(SpawnDelay);
+        if (index < soldiers.Length) SpawnSoldier(index);
+    }
+
     private void SpawnSoldier(int index)
-    {   
-        // 1. 병영 위치에서 soldierPrefab 생성
+    {
+        spawning[index] = false;
+        // 1. 병영 위치(+연출 오프셋)에서 soldierPrefab 생성
         Soldier soldier = Instantiate(
             soldierPrefeb,
-            transform.position,
+            (Vector2)transform.position + SpawnOffset,
             Quaternion.identity,
             transform
         );
         // 2. soldier.Init(this, GetHomePos(soldiers.Count), CurrentStats.soldier, CurrentStats.engageRange)
         soldier.Init(this, GetHomePos(index), CurrentStats.soldier, CurrentStats.engageRange);
-        PlayTrigger("DoorOpen");
         // 3. soldiers에 추가
         soldiers[index] = soldier;
 

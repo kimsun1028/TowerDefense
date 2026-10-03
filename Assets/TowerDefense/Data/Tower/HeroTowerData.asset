@@ -15,10 +15,10 @@ MonoBehaviour:
   towerName: Hero
   costs: 96000000c8000000fa00000040010000
   animators:
-  - {fileID: 9100000, guid: 3f643a35e74ea6e41a7b60adee5d1b4c, type: 2}
-  - {fileID: 9100000, guid: 3f643a35e74ea6e41a7b60adee5d1b4c, type: 2}
-  - {fileID: 9100000, guid: 3f643a35e74ea6e41a7b60adee5d1b4c, type: 2}
-  - {fileID: 9100000, guid: 3f643a35e74ea6e41a7b60adee5d1b4c, type: 2}
+  - {fileID: 9100000, guid: fd0c9cab3a1d5fd418eee6e8b707f6b1, type: 2}
+  - {fileID: 9100000, guid: 4dcc1abc90eba844a9062cdf51bcf715, type: 2}
+  - {fileID: 9100000, guid: 5f324ed1eb93270469226d9fee7512f5, type: 2}
+  - {fileID: 9100000, guid: e774fc666a1f19b4d93677047c1a2245, type: 2}
   levels:
   - soldier: {fileID: 11400000, guid: 2181a1b0bac2e024c82970dd977a43a6, type: 2}
     soldierCount: 1
