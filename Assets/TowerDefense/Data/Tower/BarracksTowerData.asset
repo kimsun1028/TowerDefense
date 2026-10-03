@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BarracksTowerData
   m_EditorClassIdentifier: Assembly-CSharp::BarracksTowerData
   towerName: Barracks
-  costs: 460000006e000000a0000000
+  costs: 460000006e000000a0000000e6000000
   animators:
   - {fileID: 9100000, guid: f8a7037154beea946b054884089d5d86, type: 2}
   - {fileID: 9100000, guid: 3843f11d0052cc745ad7b982b77a5170, type: 2}
@@ -32,3 +32,7 @@ MonoBehaviour:
     soldierCount: 3
     respawnTime: 8
     engageRange: 1.4
+  - soldier: {fileID: 11400000, guid: cb843fbf72e4fb6449faf70c4512f2b9, type: 2}
+    soldierCount: 3
+    respawnTime: 7
+    engageRange: 1.5

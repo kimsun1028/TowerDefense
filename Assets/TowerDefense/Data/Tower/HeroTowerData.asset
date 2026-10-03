@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: HeroTowerData
   m_EditorClassIdentifier: Assembly-CSharp::BarracksTowerData
   towerName: Hero
-  costs: 96000000c8000000fa000000
+  costs: 96000000c8000000fa00000040010000
   animators:
+  - {fileID: 9100000, guid: 3f643a35e74ea6e41a7b60adee5d1b4c, type: 2}
   - {fileID: 9100000, guid: 3f643a35e74ea6e41a7b60adee5d1b4c, type: 2}
   - {fileID: 9100000, guid: 3f643a35e74ea6e41a7b60adee5d1b4c, type: 2}
   - {fileID: 9100000, guid: 3f643a35e74ea6e41a7b60adee5d1b4c, type: 2}
@@ -31,3 +32,7 @@ MonoBehaviour:
     soldierCount: 1
     respawnTime: 15
     engageRange: 1.7
+  - soldier: {fileID: 11400000, guid: d771e41f8ba18e646b4c9dac24aa6e04, type: 2}
+    soldierCount: 1
+    respawnTime: 12
+    engageRange: 1.8

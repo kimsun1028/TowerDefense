@@ -12,7 +12,7 @@ public class BarracksTower : Tower, IRallyPointUser
 
     private BarracksLevelStats CurrentStats => data.levels[level - 1];
     public override TowerData Data => data;
-    protected override float RangeRadius => slot != null ? slot.RallyRange : 0f;
+    protected override float RangeRadius => 0f;   // 병영(영웅 포함)은 선택해도 회색 사거리를 표시하지 않음 (집결지 범위는 RallyPointTool이 표시)
     public override bool HasRallyPoint => true;
 
     public override void BeginRallyPoint()
@@ -23,6 +23,7 @@ public class BarracksTower : Tower, IRallyPointUser
     // 업그레이드: 살아있는 병사는 새 레벨 데이터로 교체(체력 가득), 병사 수가 늘면 빈 칸 추가
     protected override void OnLevelChanged()
     {
+        if (soldiers == null) return;   // Start 전(지은 직후 같은 프레임)이면 Start에서 현재 레벨로 소환됨
         int count = CurrentStats.soldierCount;
         if (count != soldiers.Length)
         {
