@@ -1,0 +1,20 @@
+{
+    "name": "TD.Enemy.Editor",
+    "rootNamespace": "",
+    "references": [
+        "TD.Map",
+        "TD.Map.Editor",
+        "TD.Enemy"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
