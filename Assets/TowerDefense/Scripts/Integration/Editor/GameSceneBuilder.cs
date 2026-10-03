@@ -31,7 +31,7 @@ public static class GameSceneBuilder {
     // TowerBuilder.towerPrefabs 순서 = 0 아처 / 1 마법사 / 2 포병 / 3 병영 / 4 영웅 (타워↔UI 약속)
     private static readonly (string prefab, string label, string icon)[] TOWERS = {
         ("ArcherTower", "궁수 타워", "Arrow"), ("MagicTower", "마법 타워", "Crystal"),
-        ("ArtilleryTower", "포병 타워", "Bolt"), ("BarracksTower", "병영", "Shield"), ("HeroTower", "영웅", "Shield"),
+        ("ArtilleryTower", "포병 타워", "Bolt"), ("BarracksTower", "병영", "Shield"), ("HeroTower", "영웅", "Hero"),
     };
 
     // 입구 ID → 경로 (위 입구는 갈림길이라 두 경로 중 랜덤)

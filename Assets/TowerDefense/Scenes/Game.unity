@@ -304,7 +304,7 @@ MonoBehaviour:
     icon: {fileID: 21300000, guid: a4dd6789ad5ca4665bbb271700c77c04, type: 3}
     shortcut: 4
   - label: "\uC601\uC6C5"
-    icon: {fileID: 21300000, guid: a4dd6789ad5ca4665bbb271700c77c04, type: 3}
+    icon: {fileID: 21300000, guid: 1943d6d584d8b461e84f57875af30e76, type: 3}
     shortcut: 5
   upgradeIcon: {fileID: 21300000, guid: b2c8790cca90b442ab77069579f17f38, type: 3}
   sellIcon: {fileID: 21300000, guid: 2c83e5340132147efbf0f870b1d3f44e, type: 3}

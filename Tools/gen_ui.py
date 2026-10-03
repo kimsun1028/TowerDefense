@@ -9,7 +9,7 @@
   Button.png       버튼 (9-slice, 테두리 5px)
   PortraitFrame.png 초상화 둥근 틀 (가운데 투명)
   WaveBadge.png    입구 옆 "다음 웨이브" 버튼 (블랙홀) / WaveRing.png 남은 시간 고리
-  Icon_*.png       12x12 아이콘 (목숨·골드·웨이브·능력치·버튼)
+  Icon_*.png       12x12 아이콘 (목숨·골드·웨이브·능력치·버튼, 타워 종류: Hero = 고무 오리 용사)
   PathArrow.png    다음 웨이브 예상 경로 화살표 (길 위에 그려짐, 60px = 1칸)
   RingFrame.png    타워 링 메뉴 고리 / RingButton.png 링 버튼 틀 / CostTag.png 가격표 (9-slice, 테두리 3px)
   SliderTrack.png / SliderFill.png (9-slice, 테두리 3px) / SliderHandle.png  설정 화면 음량 막대
@@ -45,6 +45,7 @@ COLORS = {
     "B": (110, 120, 150), "b": (70, 74, 100), "C": (90, 220, 240),           # 방패
     "V": (170, 110, 255), "v": (110, 60, 190),                               # 마법 결정
     "F": (255, 120, 200), "R": (255, 80, 110), "g": (220, 220, 250), "h": (150, 150, 190),
+    "O": (255, 130, 40),                                                     # 오리 부리
 }
 
 ICONS = {
@@ -159,6 +160,20 @@ ICONS = {
         "..oBBBBBbo..",
         "...oBBBbo...",
         "....oooo....",
+    ],
+    "Hero": [   # 고무 오리 용사 (빨간 머리띠)
+        "....oooo....",
+        "...oYYYYo...",
+        "..oRRRRRRo..",
+        "..oYYYoYYo..",
+        "..oYlYYYYOOo",
+        "..oYlYYYOOo.",
+        "...oYYYYoo..",
+        "o..oYYYYYo..",
+        "oYooYYYYYYo.",
+        "oYYYYlYYYYyo",
+        ".oyYYYYYYyyo",
+        "..oooooooo..",
     ],
     "Crystal": [
         ".....oo.....",
