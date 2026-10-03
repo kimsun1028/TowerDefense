@@ -12,7 +12,7 @@ using UnityEngine.UI;
 ///   메뉴 버튼(톱니, Esc): 가운데 메뉴 (계속하기 / 설정 / 메인 메뉴). 열려 있는 동안 멈추고, 닫으면 원래 배속으로.
 /// 목숨·골드는 게임 쪽(게임 매니저)이 SetLives / SetGold로 넣어준다. 웨이브는 씬의 WaveSpawner를 직접 읽는다.
 /// 배속은 SpeedRequested 이벤트로 알린다 (구독자가 없으면 Time.timeScale을 직접 바꾼다).
-/// 설정은 화면이 아직 없어서 이벤트(SettingsRequested)만 보낸다.
+/// 설정: 메뉴의 설정 → 설정 창(SettingsPanel, 소리). 창이 없으면 SettingsRequested 이벤트만 보낸다. Esc는 설정 창부터 닫는다.
 /// 메인 메뉴: MainMenuRequested 구독자가 없으면 메인 화면 씬(MainMenu)으로 직접 간다 (빌드 설정에 있을 때).
 /// 승리/패배: ShowResult(won)로 결과 창 (다시 하기 = 이 씬 다시, 메인 메뉴). 게임 쪽(GameManager.GameWon/GameLost)이 부른다.
 /// </summary>
@@ -46,6 +46,7 @@ public class GameHud : MonoBehaviour {
     [SerializeField] private Button resumeButton;
     [SerializeField] private Button settingsButton;
     [SerializeField] private Button mainMenuButton;
+    [SerializeField] private SettingsPanel settingsPanel;
     [SerializeField] private GameObject resultPanel;
     [SerializeField] private TMP_Text resultTitle;
     [SerializeField] private Button retryButton;
@@ -101,7 +102,7 @@ public class GameHud : MonoBehaviour {
         speedButton.onClick.AddListener(CycleSpeed);
         menuButton.onClick.AddListener(OpenMenu);
         resumeButton.onClick.AddListener(CloseMenu);
-        settingsButton.onClick.AddListener(() => SettingsRequested?.Invoke());
+        settingsButton.onClick.AddListener(OpenSettings);
         mainMenuButton.onClick.AddListener(GoToMainMenu);
         retryButton.onClick.AddListener(Retry);
         resultMainMenuButton.onClick.AddListener(GoToMainMenu);
@@ -113,13 +114,23 @@ public class GameHud : MonoBehaviour {
     private void Update() {
         Keyboard keyboard = Keyboard.current;
         if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame && !IsResultShown) {
-            if (IsMenuOpen) {
+            if (settingsPanel != null && settingsPanel.IsOpen) {
+                settingsPanel.Close();
+            } else if (IsMenuOpen) {
                 CloseMenu();
             } else {
                 OpenMenu();
             }
         }
         UpdateWaveText();
+    }
+
+    private void OpenSettings() {
+        if (settingsPanel != null) {
+            settingsPanel.Open();
+        } else {
+            SettingsRequested?.Invoke();
+        }
     }
 
     private void GoToMainMenu() {

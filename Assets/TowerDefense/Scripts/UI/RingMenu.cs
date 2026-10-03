@@ -16,6 +16,7 @@ public class RingMenu : MonoBehaviour {
     private const float RADIUS = 104f;
     private const float OPEN_TIME = 0.12f;
     private const float OPEN_START_SCALE = 0.6f;
+    private const int NO_HOVER = -1;
     // 화면 끝에서 메뉴가 잘리지 않게 중심을 안쪽으로 미는 여유 (버튼 반 + 가격표 + 툴팁)
     private const float EDGE_SIDE = RADIUS + 44f;
     private const float EDGE_TOP = RADIUS + 44f;
@@ -45,6 +46,7 @@ public class RingMenu : MonoBehaviour {
     private Vector2 worldPosition;
     private float openedAt;
     private int openedFrame;
+    private int hoveredIndex = NO_HOVER;
 
     private static RingMenu instance;
 
@@ -56,6 +58,7 @@ public class RingMenu : MonoBehaviour {
     // 4. 메서드 (public)
     /// <summary>worldPosition(타워 자리) 둘레에 버튼들을 띄운다. 버튼 수보다 많은 항목은 무시.</summary>
     public void Open(Vector2 position, IReadOnlyList<RingMenuOption> menuOptions) {
+        EndHover();
         worldPosition = position;
         options.Clear();
         usedPositions.Clear();
@@ -81,6 +84,7 @@ public class RingMenu : MonoBehaviour {
     }
 
     public void Close() {
+        EndHover();
         menuRoot.gameObject.SetActive(false);
     }
 
@@ -100,13 +104,31 @@ public class RingMenu : MonoBehaviour {
         }
         tooltipText.text = options[index].Label;
         tooltipRoot.SetActive(true);
+        if (hoveredIndex != index) {
+            EndHover();
+            hoveredIndex = index;
+            options[index].HoverChanged?.Invoke(true);
+        }
     }
 
     public void HideTooltip() {
         tooltipRoot.SetActive(false);
+        EndHover();
     }
 
     // 4. 메서드 (private)
+    /// <summary>올려 둔 버튼이 있으면 "벗어남"을 알린다.</summary>
+    private void EndHover() {
+        if (hoveredIndex == NO_HOVER) {
+            return;
+        }
+        int index = hoveredIndex;
+        hoveredIndex = NO_HOVER;
+        if (index < options.Count) {
+            options[index].HoverChanged?.Invoke(false);
+        }
+    }
+
     private void Awake() {
         instance = this;
         area = (RectTransform)menuRoot.parent;

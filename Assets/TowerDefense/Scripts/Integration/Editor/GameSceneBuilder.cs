@@ -9,7 +9,7 @@ using UnityEngine;
 /// Tools > TD > Build Game Scene
 /// 실제로 플레이하는 게임 씬(Scenes/Game.unity)을 만든다. 빌드 설정은 메인 화면(0번) → 게임 씬(1번).
 ///   맵: Map01 프리팹 + 카메라(CameraFit)
-///   게임: 타워 팀 GameManager · TowerBuilder(타워 4종), 집결지 도구, WaveSpawner(15웨이브 + 보스)
+///   게임: 타워 팀 GameManager · TowerBuilder(타워 5종), 집결지 도구, WaveSpawner(10웨이브 + 보스)
 ///   UI: GameHud, InfoPanel, EventSystem + 연결(GameHudBinding, TowerBuildMenuAdapter)
 /// 메인 화면 씬도 함께 다시 만든다 ("게임 시작" → 이 씬).
 /// 팀 코드(Assembly-CSharp)와 우리 모듈(TD.*)을 둘 다 써야 해서 asmdef 없는 Editor 폴더에 둔다.
@@ -28,10 +28,10 @@ public static class GameSceneBuilder {
     private const string RIGHT = "Right";
     private const string BOSS_ID = "Veznan";
 
-    // TowerBuilder.towerPrefabs 순서 = 0 아처 / 1 마법사 / 2 포병 / 3 병영 (타워↔UI 약속)
+    // TowerBuilder.towerPrefabs 순서 = 0 아처 / 1 마법사 / 2 포병 / 3 병영 / 4 영웅 (타워↔UI 약속)
     private static readonly (string prefab, string label, string icon)[] TOWERS = {
         ("ArcherTower", "궁수 타워", "Arrow"), ("MagicTower", "마법 타워", "Crystal"),
-        ("ArtilleryTower", "포병 타워", "Bolt"), ("BarracksTower", "병영", "Shield"),
+        ("ArtilleryTower", "포병 타워", "Bolt"), ("BarracksTower", "병영", "Shield"), ("HeroTower", "영웅", "Shield"),
     };
 
     // 입구 ID → 경로 (위 입구는 갈림길이라 두 경로 중 랜덤)
@@ -60,25 +60,23 @@ public static class GameSceneBuilder {
         }
     }
 
-    // 15웨이브: 약한 적 → 특수 적(회피·마저·비행·원거리·중갑) 순으로 섞어서 늘린다. 15웨이브 뒤 베즈난(위 입구)
+    // 10웨이브 (타워 팀이 짠 develop Game 씬과 같은 값). 10웨이브 뒤 베즈난(위 입구)
     private static readonly Group[][] WAVES = {
-        new Group[] { new("Goblin", TOP, 6, 1.2f, pack: 3) },
-        new Group[] { new("Goblin", RIGHT, 6, 1.2f, pack: 3), new("Goblin", TOP, 4, 1.2f, 3f, 2) },
-        new Group[] { new("Wolf", RIGHT, 4, 1.4f, pack: 2), new("Goblin", TOP, 6, 1.0f, pack: 3) },
-        new Group[] { new("Grunt", TOP, 6, 1.4f, pack: 2), new("Wolf", RIGHT, 4, 1.4f, 2f, 2) },
-        new Group[] { new("Spider", TOP, 3, 1.8f), new("Goblin", RIGHT, 8, 1.0f, pack: 4) },
-        new Group[] { new("Gargoyle", RIGHT, 3, 1.6f), new("Grunt", TOP, 8, 1.2f, pack: 4) },
-        new Group[] { new("ShadowArcher", RIGHT, 2, 2.0f), new("Wolf", TOP, 6, 1.2f, 2f, 3) },
-        new Group[] { new("Armored", TOP, 3, 2.0f), new("Spider", RIGHT, 4, 1.6f), new("Goblin", TOP, 10, 0.8f, 4f, 5) },
-        new Group[] { new("Gargoyle", TOP, 4, 1.4f), new("Runner", RIGHT, 10, 0.8f, pack: 5) },
-        new Group[] { new("ShadowArcher", TOP, 3, 1.8f), new("DarkKnight", RIGHT, 2, 2.5f), new("Wolf", RIGHT, 6, 1.0f, 3f, 3) },
-        new Group[] { new("Spider", TOP, 6, 1.4f, pack: 2), new("Gargoyle", RIGHT, 5, 1.4f) },
-        new Group[] { new("ShadowArcher", RIGHT, 4, 1.6f), new("Grunt", TOP, 12, 1.0f, pack: 4), new("Runner", TOP, 8, 0.8f, 5f, 4) },
-        new Group[] { new("DarkKnight", TOP, 4, 2.0f), new("Spider", RIGHT, 6, 1.4f, pack: 2), new("Gargoyle", TOP, 5, 1.4f, 4f) },
-        new Group[] { new("ShadowArcher", TOP, 4, 1.6f), new("ShadowArcher", RIGHT, 4, 1.6f), new("Wolf", TOP, 10, 0.8f, pack: 5) },
+        new Group[] { new("Goblin", TOP, 8, 1.2f) },
+        new Group[] { new("Goblin", TOP, 10, 1.0f), new("Goblin", RIGHT, 6, 1.2f, 3f) },
+        new Group[] { new("Wolf", RIGHT, 8, 0.8f), new("Goblin", TOP, 10, 0.9f, 2f, 2) },
+        new Group[] { new("Spider", TOP, 6, 1.2f), new("Goblin", RIGHT, 12, 0.8f, 2f, 2) },
+        new Group[] { new("Gargoyle", TOP, 5, 1.5f), new("Wolf", RIGHT, 8, 0.7f, 2f), new("Goblin", TOP, 10, 0.8f, 5f, 2) },
+        new Group[] { new("ShadowArcher", TOP, 4, 2.0f), new("Goblin", TOP, 14, 0.6f, 3f, 2), new("Spider", RIGHT, 6, 1.0f, 4f) },
+        new Group[] { new("DarkKnight", RIGHT, 3, 3.0f), new("Wolf", TOP, 10, 0.6f, 2f, 2), new("Gargoyle", RIGHT, 5, 1.4f, 6f) },
+        new Group[] { new("DarkKnight", TOP, 4, 2.5f), new("ShadowArcher", RIGHT, 5, 1.8f, 2f), new("Spider", TOP, 10, 0.8f, 4f, 2) },
         new Group[] {
-            new("DarkKnight", RIGHT, 4, 1.8f, pack: 2), new("Spider", TOP, 8, 1.2f, pack: 2), new("Gargoyle", RIGHT, 6, 1.2f, 3f),
-            new("ShadowArcher", TOP, 5, 1.4f, 5f), new("Goblin", RIGHT, 16, 0.6f, 2f, 4),
+            new("Goblin", TOP, 20, 0.4f, pack: 3), new("Wolf", RIGHT, 12, 0.5f, 2f, 3), new("Gargoyle", TOP, 8, 1.0f, 6f),
+            new("DarkKnight", RIGHT, 3, 3.0f, 9f),
+        },
+        new Group[] {
+            new("DarkKnight", TOP, 6, 2.0f), new("ShadowArcher", RIGHT, 6, 1.5f, 2f), new("Spider", TOP, 12, 0.6f, 5f, 2),
+            new("Gargoyle", RIGHT, 10, 0.9f, 8f), new("Wolf", TOP, 15, 0.4f, 12f, 3),
         },
     };
 
@@ -144,13 +142,20 @@ public static class GameSceneBuilder {
         TowerBuildMenuAdapter adapter = root.AddComponent<TowerBuildMenuAdapter>();
         var serialized = new SerializedObject(adapter);
         serialized.FindProperty("builder").objectReferenceValue = builder;
+        // 사거리 미리보기용: TowerBuilder와 같은 프리팹을 같은 순서로
+        SerializedProperty builderPrefabs = new SerializedObject(builder).FindProperty("towerPrefabs");
+        SerializedProperty prefabs = serialized.FindProperty("towerPrefabs");
+        prefabs.arraySize = builderPrefabs.arraySize;
+        for (int i = 0; i < builderPrefabs.arraySize; i++) {
+            prefabs.GetArrayElementAtIndex(i).objectReferenceValue = builderPrefabs.GetArrayElementAtIndex(i).objectReferenceValue;
+        }
         SerializedProperty buttons = serialized.FindProperty("towerButtons");
         buttons.arraySize = TOWERS.Length;
         for (int i = 0; i < TOWERS.Length; i++) {
             SerializedProperty button = buttons.GetArrayElementAtIndex(i);
             button.FindPropertyRelative("label").stringValue = TOWERS[i].label;
             button.FindPropertyRelative("icon").objectReferenceValue = UiArt.LoadIcon(TOWERS[i].icon);
-            button.FindPropertyRelative("shortcut").stringValue = (i + 1).ToString(); // 숫자키 1~4
+            button.FindPropertyRelative("shortcut").stringValue = (i + 1).ToString(); // 숫자키 1~5
         }
         serialized.FindProperty("upgradeIcon").objectReferenceValue = UiArt.LoadIcon("Up");
         serialized.FindProperty("sellIcon").objectReferenceValue = UiArt.LoadIcon("Sell");
