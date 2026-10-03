@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: MageTowerData
   m_EditorClassIdentifier: Assembly-CSharp::AttackTowerData
   towerName: Mage
-  costs: 64000000a0000000f0000000
+  costs: 64000000a0000000f000000040010000
   animators:
   - {fileID: 9100000, guid: 43f63c6d406efeb4d9d6884ce107f806, type: 2}
   - {fileID: 9100000, guid: 8473aee6bc928864ebb5dad998bc24eb, type: 2}
@@ -29,6 +29,9 @@ MonoBehaviour:
   - damage: 16
     range: 4.5
     attackSpeed: 0.84000003
+  - damage: 24
+    range: 5
+    attackSpeed: 1
   projectileAnimators:
   - {fileID: 9100000, guid: 6bbb052c1450dd74393ea5a73b5955f7, type: 2}
   - {fileID: 9100000, guid: 33fb084d70063c04b8cafe623a1ea3fa, type: 2}

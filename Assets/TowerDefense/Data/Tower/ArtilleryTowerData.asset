@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ArtilleryTowerData
   m_EditorClassIdentifier: Assembly-CSharp::AttackTowerData
   towerName: Artillery
-  costs: 7d000000dc00000040010000
+  costs: 7d000000dc00000040010000a4010000
   animators:
   - {fileID: 9100000, guid: 8dac2a2fc7da36640af71e037abb8968, type: 2}
   - {fileID: 9100000, guid: 2be0104e5a84c684bbaa817d6c7b4447, type: 2}
@@ -29,6 +29,9 @@ MonoBehaviour:
   - damage: 24
     range: 5
     attackSpeed: 0.42000002
+  - damage: 36
+    range: 5.5
+    attackSpeed: 0.5
   projectileAnimators:
   - {fileID: 9100000, guid: 2da04d95fb811b146b58f4f4accbe31b, type: 2}
   - {fileID: 9100000, guid: ec8d39582b9265446a66e30a28722db0, type: 2}
