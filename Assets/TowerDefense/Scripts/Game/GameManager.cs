@@ -5,7 +5,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance {get; private set; }
 
-    [SerializeField] private int startGold = 350;
+    [SerializeField] private int startGold = 1300;
     [SerializeField] private int startLives = 20;
 
     public int Gold {get; private set;}
