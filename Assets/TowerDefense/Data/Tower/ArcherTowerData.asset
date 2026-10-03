@@ -16,7 +16,7 @@ MonoBehaviour:
   levels:
   - damage: 3
     range: 4
-    attackSpeed: 2
+    attackSpeed: 1.5
   - damage: 4
     range: 5
-    attackSpeed: 2
+    attackSpeed: 1.5

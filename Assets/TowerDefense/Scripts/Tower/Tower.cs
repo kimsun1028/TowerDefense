@@ -6,6 +6,10 @@ public abstract class Tower : MonoBehaviour
 
     protected int totalSpent;
 
-    
-    // 업그레이드, 판매 등 공통 기능
+    protected TowerSlot slot;
+
+    public void Init(TowerSlot slot)
+    {
+        this.slot = slot;
+    }
 }
