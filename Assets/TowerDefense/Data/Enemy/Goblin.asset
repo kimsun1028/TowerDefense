@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf0fb8835eb6b4015a4d6de9f8349976, type: 3}
   m_Name: Goblin
   m_EditorClassIdentifier: TD.Enemy::EnemyData
-  displayName: "\uACE0\uBE14\uB9B0"
+  displayName: "\uB178\uB780 \uACBD\uACE0 \uB9C8\uD06C"
   description: "\uC791\uACE0 \uBE60\uB978 \uAE30\uBCF8 \uC801. \uD63C\uC790\uC11C\uB294
     \uC57D\uD558\uC9C0\uB9CC \uBB34\uB9AC\uB85C \uBAB0\uB824\uC628\uB2E4."
-  portrait: {fileID: 0}
+  portrait: {fileID: 1414653910278412, guid: 86e3b6a41b7c55ca95fde74731d1af3c, type: 3}
   maxHp: 20
   speed: 1.65
   armor: 0

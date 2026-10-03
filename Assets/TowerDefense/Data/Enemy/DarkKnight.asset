@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf0fb8835eb6b4015a4d6de9f8349976, type: 3}
   m_Name: DarkKnight
   m_EditorClassIdentifier: TD.Enemy::EnemyData
-  displayName: "\uC554\uD751\uAE30\uC0AC"
+  displayName: "\uBC29\uCE58\uB41C \uC11C\uBC84"
   description: "\uBB3C\uB9AC \uD53C\uD574\uB97C 80%, \uD3ED\uBC1C \uD53C\uD574\uB97C
     40% \uB35C \uBC1B\uB294\uB2E4. \uB9C8\uBC95\uC0AC\uB85C \uC7A1\uC790."
-  portrait: {fileID: 0}
+  portrait: {fileID: 4972693362446171, guid: 86b14ad0e81f5adda3ff0580f84c83f0, type: 3}
   maxHp: 300
   speed: 0.9607143
   armor: 0.8

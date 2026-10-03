@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf0fb8835eb6b4015a4d6de9f8349976, type: 3}
   m_Name: Wolf
   m_EditorClassIdentifier: TD.Enemy::EnemyData
-  displayName: "\uB291\uB300"
+  displayName: "\uAC00\uCD9C\uD55C \uB9C8\uC6B0\uC2A4"
   description: "\uAC00\uC7A5 \uBE60\uB978 \uC801. \uBCD1\uC0AC\uC758 \uADFC\uC811
     \uACF5\uACA9\uC744 30% \uD655\uB960\uB85C \uD53C\uD55C\uB2E4."
-  portrait: {fileID: 0}
+  portrait: {fileID: 7899215235745625, guid: c4cab97839ab59b8b91ebdb6c4f611ce, type: 3}
   maxHp: 35
   speed: 3.43
   armor: 0

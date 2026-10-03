@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf0fb8835eb6b4015a4d6de9f8349976, type: 3}
   m_Name: ShadowArcher
   m_EditorClassIdentifier: TD.Enemy::EnemyData
-  displayName: "\uADF8\uB9BC\uC790 \uAD81\uC218"
+  displayName: "\uD53C\uC2F1 \uBA54\uC77C"
   description: "\uC0AC\uAC70\uB9AC \uC548\uC758 \uBCD1\uC0AC\uB97C \uBA48\uCDB0 \uC11C\uC11C
     \uD65C\uB85C \uC3DC\uB2E4. \uBD99\uC7A1\uD788\uBA74 \uADFC\uC811\uC804\uC73C\uB85C
     \uC2F8\uC6B4\uB2E4."
-  portrait: {fileID: 0}
+  portrait: {fileID: 3222101769311019, guid: ee01d8478cf6547d9de94430907bbdfa, type: 3}
   maxHp: 180
   speed: 1.6464285
   armor: 0

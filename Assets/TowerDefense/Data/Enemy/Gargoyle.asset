@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf0fb8835eb6b4015a4d6de9f8349976, type: 3}
   m_Name: Gargoyle
   m_EditorClassIdentifier: TD.Enemy::EnemyData
-  displayName: "\uAC00\uACE0\uC77C"
+  displayName: "\uB5A0\uB3CC\uC774 \uD074\uB77C\uC6B0\uB4DC"
   description: "\uD558\uB298\uC744 \uB0A0\uC544 \uBCD1\uC0AC\uAC00 \uB9C9\uC744 \uC218
     \uC5C6\uACE0, \uD3EC\uBCD1 \uD3ED\uD0C4\uB3C4 \uB2FF\uC9C0 \uC54A\uB294\uB2E4."
-  portrait: {fileID: 0}
+  portrait: {fileID: 5003384554486858, guid: 2eba9d245da75683a19aedd08a67ecb5, type: 3}
   maxHp: 90
   speed: 1.6464285
   armor: 0
