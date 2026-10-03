@@ -44,8 +44,6 @@ public abstract class Projectile : MonoBehaviour
 
     protected virtual void OnHit()
     {
-        // TODO: Enemy 피격 함수 확정 후 교체 (예: target.TakeDamage(damage))
-        if (target == null) return;
-        Debug.Log($"[Projectile] 명중 -> {target.name}, damage {damage}");
+        target.TakeDamage(damage);
     }
 }
