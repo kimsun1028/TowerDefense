@@ -17,7 +17,22 @@ public class AudioVolume : MonoBehaviour {
 
     private AudioSource source;
 
-    public AudioCategory Category { get => category; set => category = value; }
+    public AudioCategory Category {
+        get => category;
+        set {
+            category = value;
+            ApplyVolume();
+        }
+    }
+
+    /// <summary>이 소리 자체의 음량 (0~1). 바꾸면 바로 다시 계산한다.</summary>
+    public float BaseVolume {
+        get => baseVolume;
+        set {
+            baseVolume = Mathf.Clamp01(value);
+            ApplyVolume();
+        }
+    }
 
     // 4. 메서드 (private)
     private void Awake() {
@@ -34,6 +49,9 @@ public class AudioVolume : MonoBehaviour {
     }
 
     private void ApplyVolume() {
+        if (source == null) {
+            return; // Awake 전 (코드에서 붙이는 중)
+        }
         source.volume = baseVolume * GameAudioSettings.GetVolume(category);
     }
 }

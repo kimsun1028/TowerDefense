@@ -140,9 +140,13 @@ public class TowerBuildMenuAdapter : MonoBehaviour {
         Open(GetTowerBounds(tower).center);
     }
 
-    /// <summary>강화하면 바뀐 가격·레벨로 메뉴를 다시 띄운다.</summary>
+    /// <summary>강화하면 소리를 내고, 바뀐 가격·레벨로 메뉴를 다시 띄운다.</summary>
     private void Upgrade(Tower tower) {
+        int before = tower.Level;
         tower.Upgrade();
+        if (tower.Level > before) {
+            GameSounds.Instance?.PlayTowerBuild(); // 건설 소리는 GameSounds가 자리를 보고 직접 낸다
+        }
         OnTowerSelected(tower);
     }
 
@@ -202,7 +206,8 @@ public class TowerBuildMenuAdapter : MonoBehaviour {
 
     /// <summary>건설 버튼에 마우스: 그 타워 Lv1 사거리 (병영은 집결지 거리).</summary>
     private void PreviewBuildRange(TowerSlot slot, int index, bool isHovered) {
-        if (!isHovered || towerPrefabs == null || index >= towerPrefabs.Length || towerPrefabs[index] == null) {
+        if (!isHovered || towerPrefabs == null || index >= towerPrefabs.Length || towerPrefabs[index] == null
+            || towerPrefabs[index] is HeroTower) { // 영웅은 집결지 범위가 무제한이라 표시하지 않는다
             HideRange();
             return;
         }
@@ -211,14 +216,14 @@ public class TowerBuildMenuAdapter : MonoBehaviour {
 
     /// <summary>강화 버튼에 마우스: 다음 레벨 사거리.</summary>
     private void PreviewUpgradeRange(Tower tower, bool isHovered) {
-        if (!isHovered || tower == null) {
+        if (!isHovered || tower == null || tower is HeroTower) {
             HideRange();
             return;
         }
         ShowRange(tower.Data, tower.Level, tower.GetComponentInParent<TowerSlot>());
     }
 
-    /// <summary>levelIndex 0 = Lv1. 공격 타워는 사거리, 병영·영웅은 자리 기준 집결지 거리 (둘 다 2.5D 타원).</summary>
+    /// <summary>levelIndex 0 = Lv1. 공격 타워는 사거리, 병영은 자리 기준 집결지 거리 (둘 다 2.5D 타원). 영웅은 무제한이라 부르지 않는다.</summary>
     private void ShowRange(TowerData data, int levelIndex, TowerSlot slot) {
         if (rangePreview == null || slot == null) {
             return;

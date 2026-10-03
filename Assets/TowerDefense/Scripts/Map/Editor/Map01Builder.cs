@@ -93,7 +93,7 @@ public static class Map01Builder {
         Debug.Log($"[Map01Builder] {PREFAB_PATH} 생성 완료");
     }
 
-    /// <summary>어두운 배경색 + 맵 영역에 맞추는 카메라.</summary>
+    /// <summary>어두운 배경색 + 맵 영역에 맞추는 카메라 + AudioListener.</summary>
     public static Camera CreateCamera() {
         var cameraObject = new GameObject("Main Camera") { tag = "MainCamera" };
         cameraObject.transform.position = new Vector3(0f, 0f, CAMERA_Z);
@@ -102,6 +102,7 @@ public static class Map01Builder {
         camera.clearFlags = CameraClearFlags.SolidColor;
         camera.backgroundColor = BACKGROUND_COLOR;
         cameraObject.AddComponent<CameraFit>().FitToMap = true;
+        cameraObject.AddComponent<AudioListener>(); // 소리를 듣는 귀 (씬에 하나 있어야 소리가 난다)
         return camera;
     }
 

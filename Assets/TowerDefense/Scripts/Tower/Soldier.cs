@@ -122,6 +122,7 @@ public class Soldier : MonoBehaviour , IDamageable
                     Face(target.transform.position - transform.position);
                     PlayTrigger("Attack");
                     target.TakeDamage(data.damage, DamageType.Physical, AttackKind.Melee);
+                    GameSounds.Instance?.PlayAllyHit(owner is HeroTower, owner.Level);
                     attackCoolDown = data.attackInterval;
                 }
             }
@@ -197,6 +198,7 @@ public class Soldier : MonoBehaviour , IDamageable
         owner.OnSoldierDied(this);
         if (HasParam("Moving")) animator.SetBool("Moving", false);
         PlayTrigger("Death");
+        GameSounds.Instance?.PlayAllyDeath();
         Destroy(gameObject, data.deathDuration);
     }
 }

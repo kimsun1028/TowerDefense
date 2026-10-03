@@ -70,6 +70,8 @@ public class EnemyData : ScriptableObject {
     [Header("Type")]
     [Tooltip("공중 유닛: 병영 병사가 붙잡을 수 없다 (공중 공격 가능한 타워만 공격)")]
     [SerializeField] private bool isFlying = false;
+    [Tooltip("근접 타격음: 켜면 묵직한 소리 (SFX_Hit_Heavy), 끄면 가벼운 소리. 사운드_사용표.md 기준")]
+    [SerializeField] private bool heavyHit = false;
     [Tooltip("면역인 상태이상 (여러 개 선택 가능). 예: 거미 = Poison")]
     [SerializeField] private StatusEffect immunities = StatusEffect.None;
 
@@ -103,6 +105,7 @@ public class EnemyData : ScriptableObject {
     public float RangedInterval => rangedInterval;
     public bool HasRangedAttack => rangedRange > 0f && rangedDamageMax > 0;
     public bool IsFlying => isFlying;
+    public bool HeavyHit => heavyHit;
     public StatusEffect Immunities => immunities;
 
     // 4. 메서드 (private)
