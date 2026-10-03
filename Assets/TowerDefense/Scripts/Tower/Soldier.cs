@@ -31,6 +31,15 @@ public class Soldier : MonoBehaviour , IDamageable
         homePos = pos;
     }
 
+    // 병영 업그레이드 시 호출: 새 스탯 적용, 체력 가득
+    public void ApplyData(SoldierData newData, float newEngageRange)
+    {
+        if (!IsAlive) return;
+        data = newData;
+        engageRange = newEngageRange;
+        hp = data.maxHp;
+    }
+
     private void OnEnable()
     {
         EnemyTargets.Register(this);

@@ -16,7 +16,29 @@ public class BarracksTower : Tower, IRallyPointUser
 
     public override void BeginRallyPoint()
     {
-        // TODO: RallyPointTool.Instance.Begin(this, transform.position)
+        RallyPointTool.Instance.Begin(this, transform.position);
+    }
+
+    // 업그레이드: 살아있는 병사는 새 레벨 데이터로 교체(체력 가득), 병사 수가 늘면 빈 칸 추가
+    protected override void OnLevelChanged()
+    {
+        int count = CurrentStats.soldierCount;
+        if (count != soldiers.Length)
+        {
+            for (int i = count; i < soldiers.Length; i++)   // 줄어드는 경우 남는 병사 정리
+            {
+                if (soldiers[i] != null) Destroy(soldiers[i].gameObject);
+            }
+            System.Array.Resize(ref soldiers, count);
+            System.Array.Resize(ref respawnTimers, count);
+        }
+
+        for (int i = 0; i < soldiers.Length; i++)
+        {
+            if (soldiers[i] == null) continue;
+            soldiers[i].ApplyData(CurrentStats.soldier, CurrentStats.engageRange);
+            soldiers[i].SetHome(GetHomePos(i));
+        }
     }
 
     // IRallyPointUser

@@ -25,6 +25,15 @@ public abstract class AttackTower : Tower
         rangeCollider.isTrigger = true;
     }
 
+    protected override void OnLevelChanged()
+    {
+        // 업그레이드로 사거리가 바뀌면 감지 트리거도 같이 갱신
+        if (rangeCollider != null)
+        {
+            rangeCollider.radius = CurrentStats.range;
+        }
+    }
+
     protected virtual void Update()
     {   
         FindTarget();
