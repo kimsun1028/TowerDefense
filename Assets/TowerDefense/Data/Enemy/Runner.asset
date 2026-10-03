@@ -13,14 +13,28 @@ MonoBehaviour:
   m_Name: Runner
   m_EditorClassIdentifier: TD.Enemy::EnemyData
   displayName: "\uB0A0\uC318\uB3CC\uC774"
+  description: "\uD14C\uC2A4\uD2B8\uC6A9 \uBE60\uB978 \uC801."
+  portrait: {fileID: 0}
   maxHp: 25
   speed: 2.6
   armor: 0
   magicResist: 0
+  meleeEvasion: 0
   goldReward: 6
   lifeDamage: 1
   meleeDamageMax: 4
   meleeDamageMin: 4
   meleeInterval: 1
+  meleeTargetCount: 1
+  meleeAreaRadius: 0.9
+  rangedRange: 0
+  rangedDamageMin: 0
+  rangedDamageMax: 0
+  rangedInterval: 1.4
+  isBoss: 0
+  nextForm: {fileID: 0}
+  killAllOnDeath: 0
+  formTint: {r: 0, g: 0, b: 0, a: 0}
   isFlying: 0
+  immunities: 0
   radius: 0.144

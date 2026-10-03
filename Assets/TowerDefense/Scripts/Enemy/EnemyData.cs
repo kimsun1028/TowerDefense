@@ -10,12 +10,16 @@ using UnityEngine.Serialization;
 public class EnemyData : ScriptableObject {
     // 2. 필드
     [SerializeField] private string displayName = "Enemy";
+    [Tooltip("정보 바에 나오는 한 줄 설명")]
+    [TextArea(2, 4)] [SerializeField] private string description = "";
+    [Tooltip("정보 바 초상화 (없으면 비워 둠)")]
+    [SerializeField] private Sprite portrait;
 
     [Header("Stats")]
     [Min(1)] [SerializeField] private float maxHp = 50f;
     [Tooltip("이동 속도 (칸/초). 원작 속도에서 변환: speed = 원작 속도 / 28 (예: 고블린 46.1 → 1.65)")]
     [Min(0)] [SerializeField] private float speed = 1.5f;
-    [Tooltip("물리 피해 감소율")]
+    [Tooltip("물리 피해 감소율. 폭발 피해는 이 값의 절반만큼 감소 (예: 0.8 → 폭발 40% 감소)")]
     [Range(0, 1)] [SerializeField] private float armor = 0f;
     [Tooltip("마법 피해 감소율")]
     [Range(0, 1)] [SerializeField] private float magicResist = 0f;
@@ -68,6 +72,8 @@ public class EnemyData : ScriptableObject {
     [SerializeField] private float radius = 0.18f;
 
     public string DisplayName => displayName;
+    public string Description => description;
+    public Sprite Portrait => portrait;
     public float MaxHp => maxHp;
     public float Speed => speed;
     public float Armor => armor;
