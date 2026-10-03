@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: ArtilleryTowerData
   m_EditorClassIdentifier: Assembly-CSharp::AttackTowerData
   towerName: Artillery
+  costs: 7d000000dc00000040010000
   levels:
   - damage: 12
     range: 4
