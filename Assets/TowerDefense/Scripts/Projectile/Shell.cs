@@ -15,7 +15,10 @@ public class Shell: Projectile
             {
                 if(Util.IsInEllipse(transform.position,enemy.transform.position,splashRadius))
                 {
-                    Debug.Log($"[Shell] 범위 피해 -> {enemy.name}, damage {damage}");
+                    if(!enemy.IsFlying)
+                    {
+                        enemy.TakeDamage(damage, DamageType.Explosive);
+                    }
                 }
             }
         }

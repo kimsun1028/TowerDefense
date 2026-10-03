@@ -54,7 +54,7 @@ public abstract class AttackTower : Tower
         target = null;
         foreach(Enemy enemy in targetList)
         {
-            if(Util.IsInEllipse(transform.position,enemy.transform.position,CurrentStats.range))
+            if(CanTarget(enemy) && Util.IsInEllipse(transform.position,enemy.transform.position,CurrentStats.range))
             {
                 target = enemy;
                 break;
@@ -82,6 +82,11 @@ public abstract class AttackTower : Tower
     {
         Projectile projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
         projectile.Init(target, CurrentStats.damage);
+    }
+
+    protected virtual bool CanTarget(Enemy enemy)
+    {
+        return true;
     }
 
 }

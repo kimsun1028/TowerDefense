@@ -4,6 +4,6 @@ public class MagicBolt : Projectile
 {
     protected override void OnHit()
     {
-        Debug.Log($"[MagicBolt] 명중 -> {target.name}, damage {damage}");
+        target.TakeDamage(damage, DamageType.Magic);
     }
 }
