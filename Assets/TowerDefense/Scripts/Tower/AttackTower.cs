@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [RequireComponent (typeof(CircleCollider2D))]
 public abstract class AttackTower : Tower
 {
     [SerializeField] protected AttackTowerData data;
+    [SerializeField, FormerlySerializedAs("arrowPrefab")] protected Projectile projectilePrefab;
+    [SerializeField] protected Transform firePoint;
 
     protected List<Enemy> targetList = new List<Enemy>();
 
@@ -75,6 +78,10 @@ public abstract class AttackTower : Tower
         }   
     }
 
-    protected abstract void Attack();
+    protected virtual void Attack()
+    {
+        Projectile projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+        projectile.Init(target, CurrentStats.damage);
+    }
 
 }
