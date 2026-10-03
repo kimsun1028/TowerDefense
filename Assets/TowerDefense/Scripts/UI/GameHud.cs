@@ -2,48 +2,54 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 /// <summary>
-/// 화면 위 HUD: 왼쪽 위 목숨·골드, 웨이브(WAVE 3/15), 오른쪽 위 일시정지·배속 버튼.
-/// 목숨·골드는 게임 쪽(게임 매니저)이 SetLives / SetGold로 넣어준다.
-/// 웨이브는 씬의 WaveSpawner를 직접 읽는다.
-/// 일시정지·배속은 SpeedRequested 이벤트로 알린다 (구독자가 없으면 Time.timeScale을 직접 바꾼다).
+/// 화면 위 HUD: 왼쪽 위 목숨·골드, 웨이브(WAVE 3/15), 오른쪽 위 배속 버튼 하나 + 메뉴 버튼.
+///   배속 버튼: 누를 때마다 1배속 → 2배속 → 정지 → 1배속 (아이콘이 지금 상태)
+///   메뉴 버튼(톱니, Esc): 가운데 메뉴 (계속하기 / 설정 / 메인 메뉴). 열려 있는 동안 멈추고, 닫으면 원래 배속으로.
+/// 목숨·골드는 게임 쪽(게임 매니저)이 SetLives / SetGold로 넣어준다. 웨이브는 씬의 WaveSpawner를 직접 읽는다.
+/// 배속은 SpeedRequested 이벤트로 알린다 (구독자가 없으면 Time.timeScale을 직접 바꾼다).
+/// 설정·메인 메뉴는 화면이 아직 없어서 이벤트(SettingsRequested / MainMenuRequested)만 보낸다.
 /// </summary>
 public class GameHud : MonoBehaviour {
     // 1. 상수
+    private const float SPEED_PAUSED = 0f;
     private const float SPEED_NORMAL = 1f;
     private const float SPEED_FAST = 2f;
     private const string WAVE_FORMAT = "WAVE {0}/{1}";
 
     // 2. 필드
-    /// <summary>원하는 시간 배율 (0 = 일시정지, 1, 2).</summary>
+    /// <summary>원하는 시간 배율 (0 = 정지, 1, 2).</summary>
     public event Action<float> SpeedRequested;
+    public event Action SettingsRequested;
+    public event Action MainMenuRequested;
 
     [SerializeField] private TMP_Text livesText;
     [SerializeField] private TMP_Text goldText;
     [SerializeField] private TMP_Text waveText;
-    [SerializeField] private Button pauseButton;
-    [SerializeField] private Image pauseIcon;
-    [SerializeField] private Sprite pauseSprite;
-    [SerializeField] private Sprite playSprite;
     [SerializeField] private Button speedButton;
     [SerializeField] private Image speedIcon;
+    [SerializeField] private Sprite pausedSprite;
     [SerializeField] private Sprite normalSpeedSprite;
     [SerializeField] private Sprite fastSpeedSprite;
+    [SerializeField] private Button menuButton;
+    [SerializeField] private GameObject menuPanel;
+    [SerializeField] private Button resumeButton;
+    [SerializeField] private Button settingsButton;
+    [SerializeField] private Button mainMenuButton;
     [SerializeField] private WaveSpawner spawner;
 
-    private bool paused;
+    private static GameHud instance;
     private float speed = SPEED_NORMAL;
     private int shownWave = -1;
     private int shownTotal = -1;
 
-    private static GameHud instance;
-
     /// <summary>씬의 GameHud. 플레이 중 스크립트를 다시 컴파일해 static이 비면 다시 찾는다.</summary>
     public static GameHud Instance => instance ? instance : instance = FindAnyObjectByType<GameHud>();
-    public bool IsPaused => paused;
     public float Speed => speed;
+    public bool IsMenuOpen => menuPanel.activeSelf;
 
     // 4. 메서드 (public)
     public void SetLives(int lives) {
@@ -54,15 +60,41 @@ public class GameHud : MonoBehaviour {
         goldText.text = gold.ToString();
     }
 
+    public void OpenMenu() {
+        menuPanel.SetActive(true);
+        Request(SPEED_PAUSED);
+    }
+
+    public void CloseMenu() {
+        menuPanel.SetActive(false);
+        Request(speed);
+    }
+
     // 4. 메서드 (private)
     private void Awake() {
         instance = this;
-        pauseButton.onClick.AddListener(TogglePause);
-        speedButton.onClick.AddListener(ToggleSpeed);
-        UpdateIcons();
+        speedButton.onClick.AddListener(CycleSpeed);
+        menuButton.onClick.AddListener(OpenMenu);
+        resumeButton.onClick.AddListener(CloseMenu);
+        settingsButton.onClick.AddListener(() => SettingsRequested?.Invoke());
+        mainMenuButton.onClick.AddListener(() => MainMenuRequested?.Invoke());
+        menuPanel.SetActive(false);
+        UpdateSpeedIcon();
     }
 
     private void Update() {
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame) {
+            if (IsMenuOpen) {
+                CloseMenu();
+            } else {
+                OpenMenu();
+            }
+        }
+        UpdateWaveText();
+    }
+
+    private void UpdateWaveText() {
         if (spawner == null) {
             spawner = FindAnyObjectByType<WaveSpawner>();
             if (spawner == null) {
@@ -76,30 +108,31 @@ public class GameHud : MonoBehaviour {
         }
     }
 
-    private void TogglePause() {
-        paused = !paused;
-        Apply();
+    /// <summary>1배속 → 2배속 → 정지 → 1배속.</summary>
+    private void CycleSpeed() {
+        speed = speed switch {
+            SPEED_NORMAL => SPEED_FAST,
+            SPEED_FAST => SPEED_PAUSED,
+            _ => SPEED_NORMAL,
+        };
+        Request(speed);
+        UpdateSpeedIcon();
     }
 
-    private void ToggleSpeed() {
-        speed = Mathf.Approximately(speed, SPEED_NORMAL) ? SPEED_FAST : SPEED_NORMAL;
-        paused = false;
-        Apply();
-    }
-
-    private void Apply() {
-        float scale = paused ? 0f : speed;
+    private void Request(float scale) {
         if (SpeedRequested != null) {
             SpeedRequested.Invoke(scale);
         } else {
             Time.timeScale = scale;
         }
-        UpdateIcons();
     }
 
-    private void UpdateIcons() {
-        pauseIcon.sprite = paused ? playSprite : pauseSprite;
-        speedIcon.sprite = Mathf.Approximately(speed, SPEED_FAST) ? fastSpeedSprite : normalSpeedSprite;
+    private void UpdateSpeedIcon() {
+        speedIcon.sprite = speed switch {
+            SPEED_PAUSED => pausedSprite,
+            SPEED_FAST => fastSpeedSprite,
+            _ => normalSpeedSprite,
+        };
     }
 }
 // AI-assisted code end

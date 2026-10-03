@@ -19,7 +19,7 @@ public static class InfoPanelBuilder {
     private const int CELL_COUNT = 8;
 
     private const float BAR_HEIGHT = 64f;
-    private const float BAR_BOTTOM = 14f;
+    private const float BAR_BOTTOM = 8f;   // 맨 아래 14번 타워 자리와 겹치지 않게 낮게
     private const int BAR_PADDING_LEFT = 116;
     private const int BAR_PADDING_RIGHT = 56;
     private const float CELL_SPACING = 26f;

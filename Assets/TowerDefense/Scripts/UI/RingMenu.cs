@@ -9,13 +9,17 @@ using UnityEngine.InputSystem;
 /// 타워 자리 링 메뉴 (킹덤러시처럼 타워 둘레에 버튼). 타워를 만드는 쪽이 RingMenuOption 목록을 만들어 Open을 부른다.
 ///   빈 자리: 타워 종류 버튼들 / 지은 타워: 강화(위), 판매(아래), 집결지 등
 /// 버튼을 누르면 메뉴를 닫고 그 버튼의 동작을 실행한다. 메뉴 밖(UI가 아닌 곳)을 누르면 닫힌다.
-/// 맵 위 위치를 따라다니는 화면 UI (Screen Space Overlay 캔버스 안).
+/// 맵 위 위치를 따라다니는 화면 UI (Screen Space Overlay 캔버스 안). 화면 끝 자리에서는 잘리지 않게 안쪽으로 밀린다.
 /// </summary>
 public class RingMenu : MonoBehaviour {
     // 1. 상수
     private const float RADIUS = 104f;
     private const float OPEN_TIME = 0.12f;
     private const float OPEN_START_SCALE = 0.6f;
+    // 화면 끝에서 메뉴가 잘리지 않게 중심을 안쪽으로 미는 여유 (버튼 반 + 가격표 + 툴팁)
+    private const float EDGE_SIDE = RADIUS + 44f;
+    private const float EDGE_TOP = RADIUS + 44f;
+    private const float EDGE_BOTTOM = RADIUS + 72f;
     private static readonly RingPosition[] AUTO_ORDER = {
         RingPosition.TopLeft, RingPosition.TopRight, RingPosition.BottomLeft, RingPosition.BottomRight,
         RingPosition.Top, RingPosition.Bottom, RingPosition.Left, RingPosition.Right,
@@ -131,6 +135,9 @@ public class RingMenu : MonoBehaviour {
         }
         Vector2 screen = cam.WorldToScreenPoint(worldPosition);
         RectTransformUtility.ScreenPointToLocalPointInRectangle(area, screen, null, out Vector2 local);
+        Rect bounds = area.rect;
+        local.x = Mathf.Clamp(local.x, bounds.xMin + EDGE_SIDE, bounds.xMax - EDGE_SIDE);
+        local.y = Mathf.Clamp(local.y, bounds.yMin + EDGE_BOTTOM, bounds.yMax - EDGE_TOP);
         menuRoot.anchoredPosition = local;
     }
 

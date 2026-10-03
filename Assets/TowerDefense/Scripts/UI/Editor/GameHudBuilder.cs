@@ -8,7 +8,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Tools > TD > UI > Build Game HUD
 /// 게임 화면 UI 프리팹(Prefabs/UI/GameHud.prefab):
-///   왼쪽 위 목숨·골드 / WAVE 3/15, 오른쪽 위 일시정지·배속,
+///   왼쪽 위 목숨·골드 / WAVE 3/15, 오른쪽 위 배속(정지·1·2배속 한 버튼)·메뉴(계속/설정/메인 메뉴),
 ///   입구 옆 "다음 웨이브" 블랙홀 버튼, 타워 링 메뉴, 다음 웨이브 예상 경로 화살표.
 /// 목숨·골드·배속은 게임 매니저가 GameHud에 연결한다 (SetLives / SetGold / SpeedRequested).
 /// </summary>
@@ -34,6 +34,15 @@ public static class GameHudBuilder {
     private const float COST_TAG_HEIGHT = 26f;
     private const float TOOLTIP_HEIGHT = 34f;
     private const float TOOLTIP_OFFSET = 150f;
+    private const float MENU_WIDTH = 380f;
+    private const float MENU_HEIGHT = 330f;
+    private const float MENU_BUTTON_WIDTH = 300f;
+    private const float MENU_BUTTON_HEIGHT = 64f;
+    private const float MENU_BUTTON_GAP = 14f;
+    private const float MENU_TITLE_TOP = 26f;
+    private const float MENU_FONT_SIZE = 24f;
+    private const float MENU_TITLE_FONT_SIZE = 28f;
+    private static readonly Color DIM_COLOR = new(0.04f, 0.02f, 0.08f, 0.6f);
 
     private const float STAT_FONT_SIZE = 28f;
     private const float WAVE_FONT_SIZE = 26f;
@@ -72,27 +81,30 @@ public static class GameHudBuilder {
         TMP_Text waveText = CreateValue("WaveText", wave.transform, boldFont, WAVE_FONT_SIZE, WAVE_COLOR, 68f, 170f);
         waveText.text = "WAVE 0/0";
 
-        // 오른쪽 위: 배속 · 일시정지
-        (Button pauseButton, Image pauseIcon) = CreateIconButton("Pause", root.transform, buttonSprite, "Pause",
+        // 오른쪽 위: 배속(한 버튼) · 메뉴
+        (Button menuButton, _) = CreateIconButton("Menu", root.transform, buttonSprite, "Gear",
             new Vector2(-MARGIN, -MARGIN));
         (Button speedButton, Image speedIcon) = CreateIconButton("Speed", root.transform, buttonSprite, "Speed1",
             new Vector2(-MARGIN - BUTTON_SIZE - PANEL_GAP, -MARGIN));
 
         CreateWaveCalls(root.transform);
         CreateRingMenu(root.transform, boldFont);
+        (GameObject menuPanel, Button resume, Button settings, Button mainMenu) = CreateMenu(root.transform, boldFont, frame, buttonSprite);
 
         GameHud hud = root.AddComponent<GameHud>();
         UiArt.SetField(hud, "livesText", livesText);
         UiArt.SetField(hud, "goldText", goldText);
         UiArt.SetField(hud, "waveText", waveText);
-        UiArt.SetField(hud, "pauseButton", pauseButton);
-        UiArt.SetField(hud, "pauseIcon", pauseIcon);
-        UiArt.SetField(hud, "pauseSprite", UiArt.Icon("Pause"));
-        UiArt.SetField(hud, "playSprite", UiArt.Icon("Play"));
         UiArt.SetField(hud, "speedButton", speedButton);
         UiArt.SetField(hud, "speedIcon", speedIcon);
         UiArt.SetField(hud, "normalSpeedSprite", UiArt.Icon("Speed1"));
         UiArt.SetField(hud, "fastSpeedSprite", UiArt.Icon("Speed"));
+        UiArt.SetField(hud, "pausedSprite", UiArt.Icon("Pause"));
+        UiArt.SetField(hud, "menuButton", menuButton);
+        UiArt.SetField(hud, "menuPanel", menuPanel);
+        UiArt.SetField(hud, "resumeButton", resume);
+        UiArt.SetField(hud, "settingsButton", settings);
+        UiArt.SetField(hud, "mainMenuButton", mainMenu);
 
         WavePathPreview preview = root.AddComponent<WavePathPreview>();
         UiArt.SetField(preview, "arrowSprite", UiArt.Load("PathArrow", 0, PATH_ARROW_PIXELS_PER_UNIT));
@@ -125,6 +137,40 @@ public static class GameHudBuilder {
         Image iconImage = UiArt.CreateImage("Icon", background.transform, UiArt.Icon(icon));
         UiArt.Place(iconImage.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.one * ICON_SIZE);
         return (button, iconImage);
+    }
+
+    /// <summary>가운데 메뉴: 화면을 어둡게 덮는 판(클릭 막음) + 틀 + 제목 + 버튼 3개.</summary>
+    private static (GameObject, Button, Button, Button) CreateMenu(Transform parent, TMP_FontAsset font, Sprite frame, Sprite buttonSprite) {
+        Image dim = UiArt.CreateImage("PauseMenu", parent, null, raycast: true);
+        UiArt.Stretch(dim.rectTransform);
+        dim.color = DIM_COLOR;
+        Image panel = UiArt.CreateImage("Panel", dim.transform, frame, sliced: true, raycast: true);
+        UiArt.Place(panel.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(MENU_WIDTH, MENU_HEIGHT));
+        TMP_Text title = UiArt.CreateText("Title", panel.transform, font, MENU_TITLE_FONT_SIZE, WAVE_COLOR, TextAlignmentOptions.Center);
+        UiArt.Place(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -MENU_TITLE_TOP), new Vector2(MENU_BUTTON_WIDTH, 40f));
+        title.text = "일시 정지";
+
+        float top = MENU_TITLE_TOP + 52f;
+        Button resume = CreateMenuButton("Resume", panel.transform, font, buttonSprite, "Play", "계속하기", top);
+        Button settings = CreateMenuButton("Settings", panel.transform, font, buttonSprite, "Gear", "설정",
+            top + MENU_BUTTON_HEIGHT + MENU_BUTTON_GAP);
+        Button mainMenu = CreateMenuButton("MainMenu", panel.transform, font, buttonSprite, "Home", "메인 메뉴",
+            top + (MENU_BUTTON_HEIGHT + MENU_BUTTON_GAP) * 2f);
+        return (dim.gameObject, resume, settings, mainMenu);
+    }
+
+    private static Button CreateMenuButton(string objectName, Transform parent, TMP_FontAsset font, Sprite sprite,
+                                           string icon, string label, float top) {
+        Image background = UiArt.CreateImage(objectName, parent, sprite, sliced: true, raycast: true);
+        UiArt.Place(background.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -top),
+            new Vector2(MENU_BUTTON_WIDTH, MENU_BUTTON_HEIGHT));
+        Button button = background.gameObject.AddComponent<Button>();
+        Image iconImage = UiArt.CreateImage("Icon", background.transform, UiArt.Icon(icon));
+        UiArt.Place(iconImage.rectTransform, new Vector2(0f, 0.5f), new Vector2(24f, 0f), Vector2.one * ICON_SIZE);
+        TMP_Text text = UiArt.CreateText("Text", background.transform, font, MENU_FONT_SIZE, TEXT_COLOR, TextAlignmentOptions.MidlineLeft);
+        UiArt.Place(text.rectTransform, new Vector2(0f, 0.5f), new Vector2(80f, 0f), new Vector2(MENU_BUTTON_WIDTH - 96f, MENU_BUTTON_HEIGHT));
+        text.text = label;
+        return button;
     }
 
     /// <summary>입구 옆 버튼: 화면 전체 영역 + 버튼 원본 1개 (실행할 때 입구 수만큼 복제).</summary>
