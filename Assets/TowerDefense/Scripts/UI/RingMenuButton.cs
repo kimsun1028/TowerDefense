@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-/// <summary>링 메뉴 버튼 하나의 그림: 아이콘, 자물쇠, 가격표. 마우스를 올리면 이름(툴팁).</summary>
+/// <summary>링 메뉴 버튼 하나의 그림: 아이콘, 자물쇠, 가격표, 단축키 표시. 마우스를 올리면 이름(툴팁).</summary>
 public class RingMenuButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
     // 1. 상수
     private static readonly Color DISABLED_COLOR = new(0.45f, 0.45f, 0.55f, 1f);
@@ -18,6 +18,8 @@ public class RingMenuButton : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     [SerializeField] private GameObject lockMark;
     [SerializeField] private GameObject costTag;
     [SerializeField] private TMP_Text costText;
+    [SerializeField] private GameObject shortcutTag;
+    [SerializeField] private TMP_Text shortcutText;
 
     private RingMenu owner;
     private int index;
@@ -34,6 +36,11 @@ public class RingMenuButton : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         lockMark.SetActive(option.IsLocked);
         costTag.SetActive(option.Cost >= 0 && !option.IsLocked);
         costText.text = option.IsSell ? $"+{option.Cost}" : option.Cost.ToString();
+        bool hasShortcut = !string.IsNullOrEmpty(option.Shortcut);
+        shortcutTag.SetActive(hasShortcut);
+        if (hasShortcut) {
+            shortcutText.text = option.Shortcut;
+        }
         Refresh(option);
     }
 

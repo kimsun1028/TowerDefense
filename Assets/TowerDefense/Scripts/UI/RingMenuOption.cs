@@ -20,6 +20,7 @@ public enum RingPosition {
 ///   cost  : 0 이상이면 아래에 가격표. sell = true면 "+가격" (판매)
 ///   isAvailable : 매 프레임 확인 (골드가 모자라면 false → 흐리게, 가격 빨강)
 ///   locked : 자물쇠 표시, 누를 수 없음 (최대 강화 등)
+///   shortcut : 버튼 왼쪽 위에 표시할 단축키 글자 (예: "1"). 비우면 표시 안 함
 /// </summary>
 public class RingMenuOption {
     // 1. 상수
@@ -34,6 +35,7 @@ public class RingMenuOption {
     private readonly RingPosition position;
     private readonly Func<bool> isAvailable;
     private readonly Action onClick;
+    private readonly string shortcutText;
 
     public Sprite Icon => icon;
     public string Label => label;
@@ -42,12 +44,13 @@ public class RingMenuOption {
     public bool IsLocked => locked;
     public RingPosition Position => position;
     public Action OnClick => onClick;
+    public string Shortcut => shortcutText;
     public bool IsAvailable => !locked && (isAvailable == null || isAvailable());
 
     // 3. 생성자
     public RingMenuOption(Sprite optionIcon, string optionLabel, Action click, int optionCost = NO_COST,
                           Func<bool> available = null, RingPosition optionPosition = RingPosition.Auto,
-                          bool isLocked = false, bool isSell = false) {
+                          bool isLocked = false, bool isSell = false, string shortcut = null) {
         icon = optionIcon;
         label = optionLabel;
         onClick = click;
@@ -56,6 +59,7 @@ public class RingMenuOption {
         position = optionPosition;
         locked = isLocked;
         sell = isSell;
+        shortcutText = shortcut;
     }
 }
 // AI-assisted code end

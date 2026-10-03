@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 /// <summary>
 /// 타워 자리 링 메뉴 (킹덤러시처럼 타워 둘레에 버튼). 타워를 만드는 쪽이 RingMenuOption 목록을 만들어 Open을 부른다.
 ///   빈 자리: 타워 종류 버튼들 / 지은 타워: 강화(위), 판매(아래), 집결지 등
-/// 버튼을 누르면 메뉴를 닫고 그 버튼의 동작을 실행한다. 메뉴 밖(UI가 아닌 곳)을 누르면 닫힌다.
+/// 버튼을 누르면 메뉴를 닫고 그 버튼의 동작을 실행한다. 메뉴 밖(UI가 아닌 곳)을 누르면 닫힌다 (closeOnOutsideClick, 끌 수 있음).
 /// 맵 위 위치를 따라다니는 화면 UI (Screen Space Overlay 캔버스 안). 화면 끝 자리에서는 잘리지 않게 안쪽으로 밀린다.
 /// </summary>
 public class RingMenu : MonoBehaviour {
@@ -20,6 +20,11 @@ public class RingMenu : MonoBehaviour {
     private const float EDGE_SIDE = RADIUS + 44f;
     private const float EDGE_TOP = RADIUS + 44f;
     private const float EDGE_BOTTOM = RADIUS + 72f;
+    // 버튼 자리 → 각도 (도, 오른쪽 = 0, 반시계)
+    private static readonly System.Collections.Generic.Dictionary<RingPosition, float> ANGLES = new() {
+        [RingPosition.Right] = 0f, [RingPosition.TopRight] = 45f, [RingPosition.Top] = 90f, [RingPosition.TopLeft] = 135f,
+        [RingPosition.Left] = 180f, [RingPosition.BottomLeft] = 225f, [RingPosition.Bottom] = 270f, [RingPosition.BottomRight] = 315f,
+    };
     private static readonly RingPosition[] AUTO_ORDER = {
         RingPosition.TopLeft, RingPosition.TopRight, RingPosition.BottomLeft, RingPosition.BottomRight,
         RingPosition.Top, RingPosition.Bottom, RingPosition.Left, RingPosition.Right,
@@ -30,6 +35,8 @@ public class RingMenu : MonoBehaviour {
     [SerializeField] private RingMenuButton[] buttons;
     [SerializeField] private GameObject tooltipRoot;
     [SerializeField] private TMP_Text tooltipText;
+    [Tooltip("메뉴 밖(UI가 아닌 곳)을 누르면 스스로 닫기. 선택을 타워 쪽이 관리하면(SelectionCleared) 끈다")]
+    [SerializeField] private bool closeOnOutsideClick = true;
 
     private readonly List<RingMenuOption> options = new();
     private readonly List<RingPosition> usedPositions = new();
@@ -44,6 +51,7 @@ public class RingMenu : MonoBehaviour {
     /// <summary>씬의 RingMenu. 플레이 중 스크립트를 다시 컴파일해 static이 비면 다시 찾는다.</summary>
     public static RingMenu Instance => instance ? instance : instance = FindAnyObjectByType<RingMenu>();
     public bool IsOpen => menuRoot.gameObject.activeSelf;
+    public bool CloseOnOutsideClick { get => closeOnOutsideClick; set => closeOnOutsideClick = value; }
 
     // 4. 메서드 (public)
     /// <summary>worldPosition(타워 자리) 둘레에 버튼들을 띄운다. 버튼 수보다 많은 항목은 무시.</summary>
@@ -123,7 +131,7 @@ public class RingMenu : MonoBehaviour {
 
     private bool IsClickOutside() {
         Mouse mouse = Mouse.current;
-        if (mouse == null || !mouse.leftButton.wasPressedThisFrame || Time.frameCount == openedFrame) {
+        if (!closeOnOutsideClick || mouse == null || !mouse.leftButton.wasPressedThisFrame || Time.frameCount == openedFrame) {
             return false;
         }
         return EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject();
@@ -155,16 +163,7 @@ public class RingMenu : MonoBehaviour {
     }
 
     private static Vector2 GetOffset(RingPosition position) {
-        float angle = position switch {
-            RingPosition.Right => 0f,
-            RingPosition.TopRight => 45f,
-            RingPosition.Top => 90f,
-            RingPosition.TopLeft => 135f,
-            RingPosition.Left => 180f,
-            RingPosition.BottomLeft => 225f,
-            RingPosition.Bottom => 270f,
-            _ => 315f,
-        };
+        float angle = ANGLES.TryGetValue(position, out float degrees) ? degrees : ANGLES[RingPosition.BottomRight];
         float radians = angle * Mathf.Deg2Rad;
         return new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)) * RADIUS;
     }

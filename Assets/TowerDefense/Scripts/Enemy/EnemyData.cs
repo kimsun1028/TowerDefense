@@ -8,6 +8,12 @@ using UnityEngine.Serialization;
 /// </summary>
 [CreateAssetMenu(fileName = "EnemyData", menuName = "TD/Enemy Data")]
 public class EnemyData : ScriptableObject {
+    // 1. 상수
+    private const int DEFAULT_GOLD_REWARD = 10;
+    private const int DEFAULT_MELEE_DAMAGE_MAX = 4;
+    private const float DEFAULT_RANGED_INTERVAL = 1.4f;
+    private const float DEFAULT_RADIUS = 0.18f;
+
     // 2. 필드
     [SerializeField] private string displayName = "Enemy";
     [Tooltip("정보 바에 나오는 한 줄 설명")]
@@ -27,13 +33,13 @@ public class EnemyData : ScriptableObject {
     [Range(0, 1)] [SerializeField] private float meleeEvasion = 0f;
 
     [Header("Reward / Penalty")]
-    [SerializeField] private int goldReward = 10;
+    [SerializeField] private int goldReward = DEFAULT_GOLD_REWARD;
     [SerializeField] private int lifeDamage = 1;
 
     [Header("Melee (붙잡혔을 때 반격)")]
     [Tooltip("반격 피해 최댓값 (포함)")]
     [FormerlySerializedAs("meleeDamage")]
-    [SerializeField] private int meleeDamageMax = 4;
+    [SerializeField] private int meleeDamageMax = DEFAULT_MELEE_DAMAGE_MAX;
     [Tooltip("반격 피해 최솟값 (포함)")]
     [SerializeField] private int meleeDamageMin = 1;
     [SerializeField] private float meleeInterval = 1f;
@@ -49,7 +55,7 @@ public class EnemyData : ScriptableObject {
     [SerializeField] private int rangedDamageMin = 0;
     [Tooltip("원거리 피해 최댓값 (포함)")]
     [SerializeField] private int rangedDamageMax = 0;
-    [SerializeField] private float rangedInterval = 1.4f;
+    [SerializeField] private float rangedInterval = DEFAULT_RANGED_INTERVAL;
 
     [Header("Boss")]
     [Tooltip("보스 등급 (UI 표시 등)")]
@@ -69,7 +75,7 @@ public class EnemyData : ScriptableObject {
 
     [Header("Body")]
     [Tooltip("유닛 반지름: 차선 이동 시 길 가장자리에서 이만큼 안쪽까지만 간다")]
-    [SerializeField] private float radius = 0.18f;
+    [SerializeField] private float radius = DEFAULT_RADIUS;
 
     public string DisplayName => displayName;
     public string Description => description;

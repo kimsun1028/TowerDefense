@@ -12,6 +12,7 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class InfoSelector : MonoBehaviour {
     // 1. 상수
+    private static readonly Color DEFAULT_RING_COLOR = new(1f, 0.9f, 0.3f, 0.9f);
     private const int RING_SEGMENTS = 40;
     private const float RING_WIDTH = 0.035f;
     private const float RING_RADIUS = 0.32f;
@@ -20,7 +21,7 @@ public class InfoSelector : MonoBehaviour {
 
     // 2. 필드
     [SerializeField] private Material ringMaterial;
-    [SerializeField] private Color ringColor = new(1f, 0.9f, 0.3f, 0.9f);
+    [SerializeField] private Color ringColor = DEFAULT_RING_COLOR;
 
     private Camera cam;
     private LineRenderer ring;

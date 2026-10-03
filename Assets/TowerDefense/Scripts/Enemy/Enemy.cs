@@ -21,7 +21,6 @@ public partial class Enemy : MonoBehaviour {
     // 1. 상수
     private const float REJOIN_THRESHOLD = 0.06f; // 차선 위치에서 이보다 벗어나 있으면 먼저 걸어서 합류
     private const float FLIP_THRESHOLD = 1e-4f;
-    private const float SAME_POSITION_EPSILON = 1e-4f;
     private const float FIRST_MELEE_DELAY_RATIO = 0.5f;
     private const float HALF = 0.5f;
     private const float DEFAULT_MAX_HP = 50f;
@@ -46,11 +45,6 @@ public partial class Enemy : MonoBehaviour {
     public static event Action<Enemy> FormChanged;
 
     [SerializeField] private EnemyData data;
-
-    [Header("Separation (교전 중 겹침 방지)")]
-    [Tooltip("붙잡힌 적끼리 이 타원(가로 x, 세로 y) 안에 들어오면 서로 밀어낸다. 전투 장면 하나의 크기.")]
-    [SerializeField] private Vector2 fightSpacing = new(0.8f, 0.5f);
-    [SerializeField] private float separationSpeed = 2f;
 
     [Header("Ranged")]
     [Tooltip("원거리 공격 투사체. 비어 있으면 즉시 피해")]
@@ -201,7 +195,6 @@ public partial class Enemy : MonoBehaviour {
         float deltaTime = Time.deltaTime;
         if (IsBlocked) {
             rangedTarget = null;
-            SeparateFromOtherFights(deltaTime);
             FightBlocker(deltaTime);
             return;
         }
@@ -269,51 +262,6 @@ public partial class Enemy : MonoBehaviour {
         transform.position = next;
     }
 
-    /// <summary>
-    /// 다른 붙잡힌 적과 타원 범위 안에서 겹치면 밀어낸다 → 전투 장면마다 따로 보인다.
-    /// 길 밖으로 밀리면 길 방향 성분만 남겨 길을 따라 미끄러지게 한다.
-    /// </summary>
-    private void SeparateFromOtherFights(float deltaTime) {
-        Vector2 self = transform.position;
-        Vector2 push = Vector2.zero;
-        foreach (Enemy other in active) {
-            if (other == this || other.IsDead || !other.IsBlocked) {
-                continue;
-            }
-            Vector2 delta = self - (Vector2)other.transform.position;
-            Vector2 normalized = new(delta.x / fightSpacing.x, delta.y / fightSpacing.y); // 타원 → 원으로 정규화
-            float distance = normalized.magnitude;
-            if (distance >= 1f) {
-                continue;
-            }
-            Vector2 direction = distance > SAME_POSITION_EPSILON
-                ? new Vector2(normalized.x * fightSpacing.x, normalized.y * fightSpacing.y).normalized
-                : GetTieBreakDirection(other);
-            push += direction * (1f - distance);
-        }
-        if (push == Vector2.zero) {
-            return;
-        }
-
-        Vector2 step = Vector2.ClampMagnitude(push, 1f) * separationSpeed * deltaTime;
-        Vector2 next = self + step;
-        TDMap map = TDMap.Instance;
-        if (map != null && !map.IsOnRoad(next)) {
-            Vector2 roadDirection = Route.GetDirection(Progress);
-            next = self + roadDirection * Vector2.Dot(step, roadDirection);
-            if (!map.IsOnRoad(next)) {
-                return;
-            }
-        }
-        transform.position = next;
-    }
-
-    /// <summary>완전히 같은 위치일 때 밀어낼 방향 (두 적이 서로 반대 방향이 되도록 ID로 결정).</summary>
-    private Vector2 GetTieBreakDirection(Enemy other) {
-        Vector2 direction = Route != null ? Route.GetDirection(Progress) : Vector2.right;
-        return GetInstanceID() > other.GetInstanceID() ? direction : -direction;
-    }
-
     /// <summary>붙잡은 상대가 IDamageable이면 반격한다.</summary>
     private void FightBlocker(float deltaTime) {
         if (blocker is not IDamageable target || !target.IsAlive) {
@@ -323,7 +271,7 @@ public partial class Enemy : MonoBehaviour {
         if (meleeCooldown > 0f) {
             return;
         }
-        MeleeAttack(target);
+        PerformMeleeAttack(target);
         meleeCooldown = MeleeInterval;
     }
 
@@ -331,7 +279,7 @@ public partial class Enemy : MonoBehaviour {
     /// 근접 공격. 붙잡은 대상은 항상 맞고, MeleeTargetCount가 2 이상이면
     /// 반경 안의 다른 대상(가까운 순)까지 최대 그 수만큼 맞는다. 피해는 대상마다 따로 뽑는다.
     /// </summary>
-    private void MeleeAttack(IDamageable blockerTarget) {
+    private void PerformMeleeAttack(IDamageable blockerTarget) {
         blockerTarget.TakeDamage(RollMeleeDamage(), DamageType.Physical);
         int maxTargets = data ? data.MeleeTargetCount : 1;
         if (maxTargets <= 1) {

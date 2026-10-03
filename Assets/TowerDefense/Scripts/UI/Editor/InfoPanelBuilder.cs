@@ -30,6 +30,7 @@ public static class InfoPanelBuilder {
     private const float PORTRAIT_LEFT = 6f;
     private const float NAME_TAB_LEFT = 104f;
     private const float NAME_TAB_HEIGHT = 34f;
+    private const float NAME_TAB_OVERLAP = 4f;        // 이름 탭이 바 위쪽 테두리에 겹치는 정도
     private const int NAME_TAB_PADDING = 12;
     private const float CLOSE_SIZE = 36f;
     private const float CLOSE_ICON_SIZE = 24f;
@@ -62,7 +63,7 @@ public static class InfoPanelBuilder {
         GameObject root = UiArt.CreateCanvas("InfoPanel", CANVAS_SORTING_ORDER);
 
         // 아래 가운데 바: 칸 수에 맞춰 너비가 바뀐다
-        Image panel = UiArt.CreateImage("Panel", root.transform, UiArt.Load("Frame", 7), sliced: true, raycast: true);
+        Image panel = UiArt.CreateImage("Panel", root.transform, UiArt.Load(UiArt.FRAME_SPRITE, UiArt.FRAME_BORDER), sliced: true, raycast: true);
         UiArt.Place(panel.rectTransform, new Vector2(0.5f, 0f), new Vector2(0f, BAR_BOTTOM), new Vector2(0f, BAR_HEIGHT));
         HorizontalLayoutGroup layout = panel.gameObject.AddComponent<HorizontalLayoutGroup>();
         layout.padding = new RectOffset(BAR_PADDING_LEFT, BAR_PADDING_RIGHT, 0, 0);
@@ -108,12 +109,12 @@ public static class InfoPanelBuilder {
         UiArt.Stretch(portraitFrame.rectTransform);
 
         // 이름 탭 (바 위)
-        Image nameTab = UiArt.CreateImage("NameTab", panel.transform, UiArt.Load("CostTag", 3), sliced: true); // 얇은 틀
+        Image nameTab = UiArt.CreateImage("NameTab", panel.transform, UiArt.Load(UiArt.TAG_SPRITE, UiArt.TAG_BORDER), sliced: true); // 얇은 틀
         nameTab.gameObject.AddComponent<LayoutElement>().ignoreLayout = true;
         UiArt.Place(nameTab.rectTransform, Vector2.zero, Vector2.zero, new Vector2(0f, NAME_TAB_HEIGHT));
         nameTab.rectTransform.anchorMin = nameTab.rectTransform.anchorMax = new Vector2(0f, 1f);
         nameTab.rectTransform.pivot = new Vector2(0f, 0f);
-        nameTab.rectTransform.anchoredPosition = new Vector2(NAME_TAB_LEFT, -4f);
+        nameTab.rectTransform.anchoredPosition = new Vector2(NAME_TAB_LEFT, -NAME_TAB_OVERLAP);
         HorizontalLayoutGroup tabLayout = nameTab.gameObject.AddComponent<HorizontalLayoutGroup>();
         tabLayout.padding = new RectOffset(NAME_TAB_PADDING, NAME_TAB_PADDING, 0, 0);
         tabLayout.childAlignment = TextAnchor.MiddleLeft;
@@ -123,11 +124,11 @@ public static class InfoPanelBuilder {
         TMP_Text nameText = UiArt.CreateText("Name", nameTab.transform, boldFont, NAME_FONT_SIZE, NAME_COLOR, TextAlignmentOptions.MidlineLeft);
 
         // 닫기 버튼
-        Image closeImage = UiArt.CreateImage("Close", panel.transform, UiArt.Load("Button", 5), sliced: true, raycast: true);
+        Image closeImage = UiArt.CreateImage("Close", panel.transform, UiArt.Load(UiArt.BUTTON_SPRITE, UiArt.BUTTON_BORDER), sliced: true, raycast: true);
         closeImage.gameObject.AddComponent<LayoutElement>().ignoreLayout = true;
         UiArt.Place(closeImage.rectTransform, new Vector2(1f, 0.5f), new Vector2(-CLOSE_RIGHT, 0f), Vector2.one * CLOSE_SIZE);
         Button closeButton = closeImage.gameObject.AddComponent<Button>();
-        Image closeIcon = UiArt.CreateImage("Icon", closeImage.transform, UiArt.Icon("Close"));
+        Image closeIcon = UiArt.CreateImage("Icon", closeImage.transform, UiArt.LoadIcon("Close"));
         UiArt.Place(closeIcon.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.one * CLOSE_ICON_SIZE);
 
         // 동작 컴포넌트
@@ -138,15 +139,15 @@ public static class InfoPanelBuilder {
         UiArt.SetArray(infoPanel, "cellIcons", icons);
         UiArt.SetArray(infoPanel, "cellValues", values);
         UiArt.SetField(infoPanel, "closeButton", closeButton);
-        UiArt.SetField(infoPanel, "healthIcon", UiArt.Icon("Heart"));
-        UiArt.SetField(infoPanel, "fallbackIcon", UiArt.Icon("Star"));
+        UiArt.SetField(infoPanel, "healthIcon", UiArt.LoadIcon("Heart"));
+        UiArt.SetField(infoPanel, "fallbackIcon", UiArt.LoadIcon("Star"));
         var serialized = new SerializedObject(infoPanel);
         SerializedProperty statIcons = serialized.FindProperty("statIcons");
         statIcons.arraySize = STAT_ICONS.Length;
         for (int i = 0; i < STAT_ICONS.Length; i++) {
             SerializedProperty entry = statIcons.GetArrayElementAtIndex(i);
             entry.FindPropertyRelative("label").stringValue = STAT_ICONS[i].label;
-            entry.FindPropertyRelative("icon").objectReferenceValue = UiArt.Icon(STAT_ICONS[i].icon);
+            entry.FindPropertyRelative("icon").objectReferenceValue = UiArt.LoadIcon(STAT_ICONS[i].icon);
         }
         serialized.ApplyModifiedPropertiesWithoutUndo();
 

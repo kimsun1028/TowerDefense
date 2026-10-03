@@ -19,6 +19,7 @@ public class WaveSpawner : MonoBehaviour {
     [Serializable]
     public class SpawnGroup {
         // 1. 상수
+        private const int DEFAULT_COUNT = 5;
         private const float DEFAULT_INTERVAL = 0.8f;
         private const float DEFAULT_LANE_SPREAD = 0.7f;
         private const float DEFAULT_PACK_DEPTH = 0.4f;
@@ -29,7 +30,7 @@ public class WaveSpawner : MonoBehaviour {
         [SerializeField] private string spawnId;
         [Tooltip("직접 지정할 경로 이름들 (비우면 입구의 경로 사용). 적마다 랜덤으로 하나")]
         [SerializeField] private List<string> routes = new();
-        [SerializeField] private int count = 5;
+        [SerializeField] private int count = DEFAULT_COUNT;
         [Tooltip("무리(pack) 사이 간격 (초)")]
         [SerializeField] private float interval = DEFAULT_INTERVAL;
         [SerializeField] private float startDelay = 0f;

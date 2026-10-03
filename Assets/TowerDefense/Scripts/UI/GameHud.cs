@@ -3,6 +3,7 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -11,7 +12,9 @@ using UnityEngine.UI;
 ///   메뉴 버튼(톱니, Esc): 가운데 메뉴 (계속하기 / 설정 / 메인 메뉴). 열려 있는 동안 멈추고, 닫으면 원래 배속으로.
 /// 목숨·골드는 게임 쪽(게임 매니저)이 SetLives / SetGold로 넣어준다. 웨이브는 씬의 WaveSpawner를 직접 읽는다.
 /// 배속은 SpeedRequested 이벤트로 알린다 (구독자가 없으면 Time.timeScale을 직접 바꾼다).
-/// 설정·메인 메뉴는 화면이 아직 없어서 이벤트(SettingsRequested / MainMenuRequested)만 보낸다.
+/// 설정은 화면이 아직 없어서 이벤트(SettingsRequested)만 보낸다.
+/// 메인 메뉴: MainMenuRequested 구독자가 없으면 메인 화면 씬(MainMenu)으로 직접 간다 (빌드 설정에 있을 때).
+/// 승리/패배: ShowResult(won)로 결과 창 (다시 하기 = 이 씬 다시, 메인 메뉴). 게임 쪽(GameManager.GameWon/GameLost)이 부른다.
 /// </summary>
 public class GameHud : MonoBehaviour {
     // 1. 상수
@@ -19,6 +22,10 @@ public class GameHud : MonoBehaviour {
     private const float SPEED_NORMAL = 1f;
     private const float SPEED_FAST = 2f;
     private const string WAVE_FORMAT = "WAVE {0}/{1}";
+    private const string WIN_TEXT = "승리!";
+    private const string LOSE_TEXT = "패배...";
+    private static readonly Color WIN_COLOR = new(0.55f, 1f, 0.65f, 1f);
+    private static readonly Color LOSE_COLOR = new(1f, 0.4f, 0.5f, 1f);
 
     // 2. 필드
     /// <summary>원하는 시간 배율 (0 = 정지, 1, 2).</summary>
@@ -39,6 +46,10 @@ public class GameHud : MonoBehaviour {
     [SerializeField] private Button resumeButton;
     [SerializeField] private Button settingsButton;
     [SerializeField] private Button mainMenuButton;
+    [SerializeField] private GameObject resultPanel;
+    [SerializeField] private TMP_Text resultTitle;
+    [SerializeField] private Button retryButton;
+    [SerializeField] private Button resultMainMenuButton;
     [SerializeField] private WaveSpawner spawner;
 
     private static GameHud instance;
@@ -50,6 +61,9 @@ public class GameHud : MonoBehaviour {
     public static GameHud Instance => instance ? instance : instance = FindAnyObjectByType<GameHud>();
     public float Speed => speed;
     public bool IsMenuOpen => menuPanel.activeSelf;
+    public bool IsResultShown => resultPanel.activeSelf;
+    /// <summary>일시 정지 메뉴나 결과 창이 열려 있음 → 그 창 말고는 게임과 상호작용하면 안 됨 (건설·선택 등).</summary>
+    public bool IsBlockingGame => IsMenuOpen || IsResultShown;
 
     // 4. 메서드 (public)
     public void SetLives(int lives) {
@@ -61,6 +75,7 @@ public class GameHud : MonoBehaviour {
     }
 
     public void OpenMenu() {
+        RingMenu.Instance?.Close(); // 열려 있던 타워 메뉴는 닫는다
         menuPanel.SetActive(true);
         Request(SPEED_PAUSED);
     }
@@ -70,6 +85,16 @@ public class GameHud : MonoBehaviour {
         Request(speed);
     }
 
+    /// <summary>승리/패배 창을 띄우고 게임을 멈춘다.</summary>
+    public void ShowResult(bool won) {
+        menuPanel.SetActive(false);
+        RingMenu.Instance?.Close();
+        resultTitle.text = won ? WIN_TEXT : LOSE_TEXT;
+        resultTitle.color = won ? WIN_COLOR : LOSE_COLOR;
+        resultPanel.SetActive(true);
+        Request(SPEED_PAUSED);
+    }
+
     // 4. 메서드 (private)
     private void Awake() {
         instance = this;
@@ -77,14 +102,17 @@ public class GameHud : MonoBehaviour {
         menuButton.onClick.AddListener(OpenMenu);
         resumeButton.onClick.AddListener(CloseMenu);
         settingsButton.onClick.AddListener(() => SettingsRequested?.Invoke());
-        mainMenuButton.onClick.AddListener(() => MainMenuRequested?.Invoke());
+        mainMenuButton.onClick.AddListener(GoToMainMenu);
+        retryButton.onClick.AddListener(Retry);
+        resultMainMenuButton.onClick.AddListener(GoToMainMenu);
         menuPanel.SetActive(false);
+        resultPanel.SetActive(false);
         UpdateSpeedIcon();
     }
 
     private void Update() {
         Keyboard keyboard = Keyboard.current;
-        if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame) {
+        if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame && !IsResultShown) {
             if (IsMenuOpen) {
                 CloseMenu();
             } else {
@@ -92,6 +120,24 @@ public class GameHud : MonoBehaviour {
             }
         }
         UpdateWaveText();
+    }
+
+    private void GoToMainMenu() {
+        if (MainMenuRequested != null) {
+            MainMenuRequested.Invoke();
+            return;
+        }
+        Time.timeScale = SPEED_NORMAL;
+        if (Application.CanStreamedLevelBeLoaded(MainMenu.SCENE_NAME)) {
+            SceneManager.LoadScene(MainMenu.SCENE_NAME);
+        } else {
+            Retry(); // 메인 화면 씬이 빌드 설정에 없으면 이 씬을 다시 시작
+        }
+    }
+
+    private void Retry() {
+        Time.timeScale = SPEED_NORMAL;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     private void UpdateWaveText() {

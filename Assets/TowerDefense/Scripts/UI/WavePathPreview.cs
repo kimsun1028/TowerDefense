@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// 다음 웨이브 예상 경로: 다음 웨이브를 기다리는 동안, 그 웨이브의 적이 걸을 경로 위로 꺾쇠 화살표가 흘러간다.
 /// 갈림길처럼 경로가 겹치는 구간은 화살표를 한 번만 그린다. 길 그림 위, 블랙홀·타워 자리 아래에 그려진다.
-/// 일시정지 중에도 움직인다 (unscaledTime).
+/// 일시정지 중에도 움직인다 (unscaledTime). showAllRoutes를 켜면 웨이브와 상관없이 맵의 모든 경로에 계속 흐른다 (메인 화면 배경용).
 /// </summary>
 public class WavePathPreview : MonoBehaviour {
     // 1. 상수
@@ -22,6 +22,8 @@ public class WavePathPreview : MonoBehaviour {
     // 2. 필드
     [SerializeField] private Sprite arrowSprite;
     [SerializeField] private WaveSpawner spawner;
+    [Tooltip("웨이브와 상관없이 맵(TDMap)의 모든 경로에 항상 표시 (메인 화면 배경)")]
+    [SerializeField] private bool showAllRoutes;
 
     private readonly List<SpriteRenderer> pool = new();
     private readonly List<MapRouteData.Route> routes = new();
@@ -41,12 +43,17 @@ public class WavePathPreview : MonoBehaviour {
     }
 
     private void Update() {
-        if (spawner == null) {
+        if (spawner == null && !showAllRoutes) {
             spawner = FindAnyObjectByType<WaveSpawner>();
         }
         bool waiting = spawner != null && spawner.WaitingForNextWave && spawner.CurrentWave < spawner.TotalWaves;
         int used = 0;
-        if (waiting) {
+        if (showAllRoutes && TDMap.Instance != null && TDMap.Instance.RouteData != null) {
+            visibleTime += Time.unscaledDeltaTime;
+            routes.Clear();
+            routes.AddRange(TDMap.Instance.RouteData.Routes);
+            used = PlaceArrows();
+        } else if (waiting) {
             visibleTime += Time.unscaledDeltaTime;
             spawner.GetRoutes(spawner.CurrentWave, routes);
             used = PlaceArrows();

@@ -11,6 +11,13 @@ using UnityEngine.UI;
 public static class UiArt {
     // 1. 상수
     public const float PIXEL_SCALE = 3f;
+    // 9-slice 틀 그림 이름과 테두리(텍셀) — Tools/gen_ui.py와 같아야 한다
+    public const string FRAME_SPRITE = "Frame";
+    public const int FRAME_BORDER = 7;
+    public const string BUTTON_SPRITE = "Button";
+    public const int BUTTON_BORDER = 5;
+    public const string TAG_SPRITE = "CostTag";
+    public const int TAG_BORDER = 3;
     private const string ART_DIR = "Assets/TowerDefense/Art/UI";
     private const float UI_PIXELS_PER_UNIT = 100f;
     private const float REFERENCE_WIDTH = 1920f;
@@ -50,7 +57,7 @@ public static class UiArt {
         return AssetDatabase.LoadAssetAtPath<Sprite>(path);
     }
 
-    public static Sprite Icon(string iconName) {
+    public static Sprite LoadIcon(string iconName) {
         return Load("Icon_" + iconName);
     }
 
