@@ -15,57 +15,70 @@ Tower (공통: 건설 자리, 레벨, 업그레이드/판매, 비용)
 └── BarracksTower (병사 3명 소환 / 리스폰 / 집결 지점)  → Soldier (적 저지, 근접전)
     └── HeroTower (병영 확장: 강력한 영웅 1명 소환)    → Hero : Soldier (높은 체력/공격력, 스킬)
 
-TowerData (ScriptableObject): 레벨별 데미지, 사거리, 공격 속도, 비용
+TowerData (abstract ScriptableObject): 이름, MaxLevel
+├── AttackTowerData   : 레벨별 데미지, 사거리, 공격 속도   (아쳐 / 마법사 / 포병 공용)
+└── BarracksTowerData : 레벨별 병사 스탯, 리스폰 시간 등   (병영 / 영웅, 6단계에서 확정)
 ```
+
+### 파일 위치
+- 스크립트 : `Assets/TowerDefense/Scripts/Tower/`
+- 데이터 에셋 (.asset) : `Assets/TowerDefense/Data/Tower/`
 
 ## Todo
 
+> 우선순위 : "타워 하나가 적을 쏘는 장면"을 먼저 만들고, 건설 / 업그레이드 / 판매(골드·UI 필요)는 뒤로 미룬다.
+
 ### 0. 사전 협의
-- [ ] Enemy / Path 담당 팀원과 연동 항목 맞추기 (체력, 방어력, 마법저항, 공중 여부, 경로 진행도)
-- [ ] 골드(재화) 시스템 담당 확인
+- [ ] Enemy / Path 담당 팀원과 연동 항목 맞추기 (체력, 방어력, 마법저항, 공중 여부, 경로 진행도) — **2단계 전까지**
+- [ ] 골드(재화) 시스템 담당 확인 — **5단계 전까지**
 
 ### 1. 공통 구조
-- [ ] `TowerData` ScriptableObject (레벨별 데미지, 사거리, 공격 속도, 건설/업그레이드 비용)
-- [ ] `Tower` 기본 클래스 (레벨, 업그레이드, 판매)
-- [ ] 건설 자리 (`BuildSpot`) 클릭 → 타워 선택 → 건설
-- [ ] `AttackTower` : 사거리 내 적 탐지, 타겟 선택 (경로상 가장 앞선 적 우선)
+- [x] `TowerData` abstract ScriptableObject (이름, `MaxLevel`)
+- [x] `AttackTowerData` (`AttackLevelStats[]` : 데미지, 사거리, 공격 속도)
+- [ ] `attackSpeed` 의미 확정 (초당 공격 횟수 vs 공격 간격)
+- [ ] `Tower` 기본 클래스 (abstract MonoBehaviour, 레벨) — 뼈대만 작성됨
+- [ ] `AttackTower` : 사거리 내 적 탐지, 타겟 선택 (경로상 가장 앞선 적 우선), `AttackTowerData` 연결
+- [ ] 테스트용 더미 적
 - [ ] 발사체 기본 클래스 (`Projectile`)
+
+### 2. 아쳐 타워 (첫 동작 결과물)
+- [ ] `ArcherTower` + `Arrow` (단일 대상, 물리 피해, 공중 공격 가능)
+- [ ] `ArcherTowerData` 에셋 생성, 레벨 1~3 데이터
+
+### 3. 마법사 / 포병 타워
+- [ ] `MageTower` + `MagicBolt` (단일 대상, 마법 피해 → 방어력 무시)
+- [ ] `ArtilleryTower` + `Shell` (포물선 궤적, 범위 피해, 지상만 공격)
+- [ ] 각 레벨 1~3 데이터
+
+### 4. 건설
+- [ ] 건설 자리 (`BuildSpot`) 클릭 → 타워 선택 → 건설
 - [ ] 사거리 표시 (선택 시)
 
-### 2. 아쳐 타워
-- [ ] `ArcherTower` + `Arrow` (단일 대상, 물리 피해, 공중 공격 가능)
-- [ ] 레벨 1~3 데이터
-
-### 3. 마법사 타워
-- [ ] `MageTower` + `MagicBolt` (단일 대상, 마법 피해 → 방어력 무시)
-- [ ] 레벨 1~3 데이터
-
-### 4. 포병 타워
-- [ ] `ArtilleryTower` + `Shell` (포물선 궤적, 범위 피해, 지상만 공격)
-- [ ] 레벨 1~3 데이터
-
-### 5. 병영 타워
-- [ ] `BarracksTower` : 병사 3명 소환
-- [ ] `Soldier` : 적 저지, 근접 전투, 사망
-- [ ] 병사 리스폰 (일정 시간 후)
-- [ ] 집결 지점(rally point) 이동
-- [ ] 레벨 1~3 데이터
-
-### 6. 영웅 타워
-- [ ] `HeroTower` : `BarracksTower` 상속, 소환 수 1명
-- [ ] `Hero` : `Soldier` 상속, 높은 체력 / 공격력 / 방어력
-- [ ] 영웅 리스폰 (일반 병사보다 긴 쿨타임)
-- [ ] 집결 지점(rally point) 이동 (병영과 공유)
-- [ ] 영웅 스킬 (선택 사항, 예: 범위 공격, 스턴)
-- [ ] 레벨 1~3 데이터
-
-### 7. 업그레이드 / UI
+### 5. 업그레이드 / 판매 / UI
+- [ ] `TowerData`에 건설 / 업그레이드 비용 추가
+- [ ] `Tower` 업그레이드, 판매 (환불 비율 확정)
 - [ ] 타워 선택 UI (업그레이드 / 판매 버튼, 비용 표시)
 - [ ] 레벨 4 분기 업그레이드 (선택 사항)
   - 아쳐 → 레인저 / 머스킷총병
   - 병영 → 성기사 / 바바리안
   - 마법사 → 아케인 / 소서러
   - 포병 → 빅 버사 / 테슬라
+
+### 6. 병영 타워
+- [ ] `BarracksTowerData` (병사 수, 체력, 공격력, 방어력, 리스폰 시간, 집결 범위 등)
+- [ ] `BarracksTower` : 병사 3명 소환
+- [ ] `Soldier` : 적 저지, 근접 전투, 사망
+- [ ] 병사 리스폰 (일정 시간 후)
+- [ ] 집결 지점(rally point) 이동
+- [ ] 레벨 1~3 데이터
+
+### 7. 영웅 타워
+- [ ] `HeroTower` : `BarracksTower` 상속, 소환 수 1명
+- [ ] `Hero` : `Soldier` 상속, 높은 체력 / 공격력 / 방어력
+- [ ] 영웅 리스폰 (일반 병사보다 긴 쿨타임)
+- [ ] 집결 지점(rally point) 이동 (병영과 공유)
+- [ ] 영웅 스킬 (선택 사항, 예: 범위 공격, 스턴)
+- [ ] 레벨 1~3 데이터
 
 ### 8. 마무리
 - [ ] 밸런스 조정
