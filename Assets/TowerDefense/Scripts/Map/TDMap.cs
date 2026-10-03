@@ -25,6 +25,8 @@ public class TDMap : MonoBehaviour {
     private const float EPSILON = 1e-8f;
     private const int ROAD_LINE_CORNER_VERTICES = 6;
     private const int ROAD_LINE_SORTING_ORDER = -10;
+    /// <summary>2.5D 타원 세로 비율 (카메라 45° → sin 45°). 타워 Util / 적 EllipseRange와 같은 값.</summary>
+    public static readonly float RALLY_VERTICAL_RATIO = Mathf.Sin(45f * Mathf.Deg2Rad);
     private static readonly Color VIEW_RECT_GIZMO_COLOR = Color.white;
     private static readonly Color RALLY_GIZMO_COLOR = new(1f, 0.6f, 0f, 0.6f);
 
@@ -189,7 +191,12 @@ public class TDMap : MonoBehaviour {
     /// desired가 이미 조건을 만족하면 그대로 돌려준다. 범위 안에 길이 전혀 없으면 false.
     /// </summary>
     public bool TryGetRallyPoint(Vector2 origin, Vector2 desired, float range, out Vector2 result) {
-        if (IsOnRoad(desired) && Vector2.Distance(origin, desired) <= range) {
+        // 범위는 2.5D 타원 (가로 range, 세로 range * RALLY_VERTICAL_RATIO).
+        // 세로를 비율만큼 늘린 "원 공간"에서 계산하고 결과만 다시 줄인다.
+        Vector2 ToCircle(Vector2 p) => new(p.x, origin.y + (p.y - origin.y) / RALLY_VERTICAL_RATIO);
+        Vector2 FromCircle(Vector2 p) => new(p.x, origin.y + (p.y - origin.y) * RALLY_VERTICAL_RATIO);
+
+        if (IsOnRoad(desired) && Vector2.Distance(origin, ToCircle(desired)) <= range) {
             result = desired;
             return true;
         }
@@ -203,10 +210,10 @@ public class TDMap : MonoBehaviour {
             }
             for (int i = 1; i < enemyPath.Count; i++) {
                 // 선분 중 원 안에 들어오는 구간만 남긴 뒤, 그 구간에서 desired에 가장 가까운 점
-                if (!ClipSegmentToCircle(enemyPath[i - 1], enemyPath[i], origin, range, out Vector2 clipStart, out Vector2 clipEnd)) {
+                if (!ClipSegmentToCircle(ToCircle(enemyPath[i - 1]), ToCircle(enemyPath[i]), origin, range, out Vector2 clipStart, out Vector2 clipEnd)) {
                     continue;
                 }
-                Vector2 closest = FindClosestOnSegment(clipStart, clipEnd, desired, out _);
+                Vector2 closest = FindClosestOnSegment(FromCircle(clipStart), FromCircle(clipEnd), desired, out _);
                 float sqrDistance = (closest - desired).sqrMagnitude;
                 if (sqrDistance < bestSqrDistance) {
                     bestSqrDistance = sqrDistance;

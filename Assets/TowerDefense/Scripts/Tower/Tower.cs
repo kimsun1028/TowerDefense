@@ -34,6 +34,7 @@ public abstract class Tower : MonoBehaviour
 
     public void ShowRange(bool visible)
     {
+        if (visible && RangeRadius <= 0f) return;   // 사거리 없는 타워(병영)는 표시 안 함
         if (visible && rangeIndicator == null) CreateRangeIndicator();
         if (rangeIndicator == null) return;
         rangeIndicator.gameObject.SetActive(visible);

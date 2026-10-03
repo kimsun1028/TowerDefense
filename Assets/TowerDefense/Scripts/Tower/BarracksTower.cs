@@ -12,7 +12,7 @@ public class BarracksTower : Tower, IRallyPointUser
 
     private BarracksLevelStats CurrentStats => data.levels[level - 1];
     public override TowerData Data => data;
-    protected override float RangeRadius => slot != null ? slot.RallyRange : 0f;
+    protected override float RangeRadius => 0f;   // 병영(영웅 포함)은 선택해도 회색 사거리를 표시하지 않음 (집결지 범위는 RallyPointTool이 표시)
     public override bool HasRallyPoint => true;
 
     public override void BeginRallyPoint()

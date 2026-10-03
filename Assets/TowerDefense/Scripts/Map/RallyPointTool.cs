@@ -43,7 +43,7 @@ public class RallyPointTool : MonoBehaviour {
     public void Begin(IRallyPointUser rallyUser, Vector2 towerPosition) {
         user = rallyUser;
         origin = towerPosition;
-        DrawCircle(rangeCircle, origin, rallyUser.RallyRange);
+        DrawCircle(rangeCircle, origin, rallyUser.RallyRange, TDMap.RALLY_VERTICAL_RATIO); // 2.5D 타원
         SetVisible(true);
     }
 
@@ -118,11 +118,12 @@ public class RallyPointTool : MonoBehaviour {
         return line;
     }
 
-    private static void DrawCircle(LineRenderer line, Vector2 center, float radius) {
+    /// <summary>verticalRatio &lt; 1이면 세로가 눌린 타원.</summary>
+    private static void DrawCircle(LineRenderer line, Vector2 center, float radius, float verticalRatio = 1f) {
         int count = line.positionCount;
         for (int i = 0; i < count; i++) {
             float angle = i * Mathf.PI * 2f / count;
-            line.SetPosition(i, new Vector3(center.x + Mathf.Cos(angle) * radius, center.y + Mathf.Sin(angle) * radius, 0f));
+            line.SetPosition(i, new Vector3(center.x + Mathf.Cos(angle) * radius, center.y + Mathf.Sin(angle) * radius * verticalRatio, 0f));
         }
     }
 
