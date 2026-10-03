@@ -6,64 +6,62 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 
 /// <summary>
-/// Tools > TD > Map > Build Map01 : 참고 이미지(820x622 px) 레이아웃으로 맵 프리팹을 만든다.
+/// Tools > TD > Map > Build Map01 : 16:9 화면(960x540 px) 레이아웃으로 맵 프리팹을 만든다.
 ///   Prefabs/Map/Map01.prefab        ← 팀원은 이 프리팹을 자기 씬에 넣기만 하면 된다
 ///   Data/Map/Map01_Routes.asset      ← 경로 SO (함께 구워진다)
 ///   Scenes/Map01_View.unity          ← 맵만 띄워보는 확인용 씬 (카메라 + 맵)
-/// 길 모양은 Map01_Road.png(참고 이미지의 흙길 마스크), 경로/타워 자리는 같은 이미지의 px 좌표.
+/// 그림(Art/Map)과 좌표(아래 맵 데이터 구역)는 Tools/gen_map01.py가 함께 만든다. 길 그림 = 경로 중심선을 일정 폭으로 그린 것.
 /// 주의: 다시 실행하면 프리팹을 새로 만들어 Map Editor로 고친 내용이 사라진다.
 /// </summary>
 public static class Map01Builder {
     // 1. 상수
     private const string PREFAB_PATH = "Assets/TowerDefense/Prefabs/Map/Map01.prefab";
     private const string VIEW_SCENE_PATH = "Assets/TowerDefense/Scenes/Map01_View.unity";
-    private const string ROAD_TEXTURE_PATH = "Assets/TowerDefense/Art/Map/Map01_Road.png";
+    private const string ART_DIR = "Assets/TowerDefense/Art/Map";
+    private const string ROAD_TEXTURE_PATH = ART_DIR + "/Map01_Road.png";
+    private const string BACKGROUND_TEXTURE_PATH = ART_DIR + "/Map01_Background.png";
+    private const string PORTAL_TOP_TEXTURE_PATH = ART_DIR + "/Portal_Top.png";
+    private const string PORTAL_RIGHT_TEXTURE_PATH = ART_DIR + "/Portal_Right.png";
     private const string MAP_NAME = "Map01";
 
-    // 이미지 크기와 스케일: 60px = 1 unit → 맵 13.7 x 10.4 unit
-    private const float IMAGE_WIDTH = 820f;
-    private const float IMAGE_HEIGHT = 622f;
+    // 스케일: 60px = 1 unit. 화면(VIEW_PX) 960x540 = 16 x 9 unit, 그림은 여백까지 포함
     private const float PIXELS_PER_UNIT = 60f;
-    // 길 그림은 좌우로 160px씩 연장돼 있다 (넓은 화면에서도 길이 화면 밖까지 이어지도록)
-    private const float ROAD_PAD_PX = 160f;
     private const float HALF = 0.5f;
 
-    // 경로 끝 연장 (화면 밖에서 걸어 들어와 화면 밖으로 나가도록)
-    private const float EDGE_TOLERANCE_PX = 10f;
-    private const float TOP_ENTRY_MAX_Y_PX = 15f;
-    private const float TOP_OFFSCREEN_Y_PX = -40f;
-    private const float SIDE_OFFSCREEN_INSET_PX = 20f;
-
+    private const int BACKGROUND_SORTING_ORDER = -20;
     private const int ROAD_SORTING_ORDER = -10;
+    private const int PORTAL_SORTING_ORDER = -9;  // 길 위 → 길이 블랙홀에서 나오는 것처럼 보인다
     private const int MARKER_SORTING_ORDER = -8;
     private const int MARKER_LABEL_SORTING_ORDER = -7;
     private const float MARKER_LABEL_SIZE = 0.07f;
     private const float GOAL_MARKER_SIZE = 0.8f;
-    private const float SPAWN_MARKER_SIZE = 0.6f;
     private const float CAMERA_Z = -10f;
-    private static readonly Color GRASS_COLOR = new(0.42f, 0.62f, 0.27f);
+    private static readonly Color BACKGROUND_COLOR = new(0.1f, 0.075f, 0.18f); // 그림 바깥 (바닥 아래쪽 색)
     private static readonly Color GOAL_COLOR = new(0.25f, 0.45f, 0.9f, 0.85f);
-    private static readonly Color SPAWN_COLOR = new(0.7f, 0.15f, 0.15f, 0.85f);
 
-    // 카메라가 꽉 채워 보여줄 영역 (이미지 px). 위 입구 ~ 아래 패드까지
-    private static readonly Rect VIEW_PX = Rect.MinMaxRect(0, 15, 820, 560);
+    private const string SPAWN_TOP_ID = "Top";
+    private const string SPAWN_RIGHT_ID = "Right";
+    private const float GOAL_RADIUS = 0.6f;
 
-    // ── 맵 데이터 (이미지 픽셀 좌표) ─────────────────────────────
-    private static readonly Vector2 GOAL_PX = new(10, 378);
-    private static readonly Vector2 SPAWN_TOP_PX = new(530, 48);
-    private static readonly Vector2 SPAWN_RIGHT_PX = new(792, 255);
-
-    // Path_TopMiddle : 위 입구 → 가운데 길 → 출구
-    // Path_TopLoop   : 위 입구 → 큰 섬 위/왼쪽으로 크게 돌아 → 출구
-    // Path_Right     : 오른쪽 진영 → S자로 아래 섬을 돌아 → 출구
+    // Path_TopMiddle : 위 블랙홀 → 가운데 길 → 지키는 곳
+    // Path_TopLoop   : 위 블랙홀 → 큰 섬 위/왼쪽으로 크게 돌아 → 지키는 곳
+    // Path_Right     : 오른쪽 블랙홀 → S자로 아래 섬을 돌아 → 지키는 곳
+    // ── 맵 데이터 (Tools/gen_map01.py가 만든다. 직접 고치지 말고 생성기를 고칠 것) ──
+    private const float IMAGE_WIDTH = 1120f;
+    private const float IMAGE_HEIGHT = 620f;
+    private static readonly Rect VIEW_PX = Rect.MinMaxRect(80, 40, 1040, 580);
+    private static readonly Vector2 GOAL_PX = new(172.0f, 367.8f);
+    private static readonly Vector2 SPAWN_TOP_PX = new(666.0f, 84.0f);
+    private static readonly Vector2 SPAWN_RIGHT_PX = new(984.0f, 279.0f);
+    private static readonly Vector2 WAVE_ICON_TOP_PX = new(722.0f, 84.0f);
+    private static readonly Vector2 WAVE_ICON_RIGHT_PX = new(984.0f, 223.0f);
     private static readonly Dictionary<string, Vector2[]> PATHS_PX = new() {
-        ["Path_TopMiddle"] = new Vector2[] { new(530.0f, 10.0f), new(530.0f, 36.2f), new(528.2f, 69.8f), new(519.1f, 97.6f), new(504.2f, 120.0f), new(487.9f, 137.9f), new(471.7f, 153.4f), new(460.8f, 172.9f), new(453.7f, 197.6f), new(446.4f, 231.4f), new(442.6f, 251.6f), new(435.9f, 282.0f), new(426.2f, 305.8f), new(414.8f, 320.2f), new(397.6f, 333.5f), new(372.0f, 339.8f), new(339.1f, 342.1f), new(321.2f, 345.2f), new(302.4f, 349.6f), new(282.6f, 355.4f), new(262.2f, 358.9f), new(241.2f, 360.3f), new(219.6f, 359.5f), new(197.4f, 356.5f), new(173.3f, 354.5f), new(147.4f, 353.5f), new(119.8f, 353.5f), new(90.2f, 354.5f), new(65.6f, 356.8f), new(45.7f, 360.2f), new(20.4f, 371.0f), new(5.0f, 380.0f) },
-        ["Path_TopLoop"] = new Vector2[] { new(530.0f, 10.0f), new(530.0f, 36.2f), new(527.2f, 69.5f), new(513.5f, 95.8f), new(490.3f, 114.4f), new(462.4f, 123.5f), new(428.1f, 124.6f), new(406.9f, 123.9f), new(382.9f, 122.2f), new(356.1f, 119.8f), new(331.5f, 117.9f), new(309.0f, 116.8f), new(288.6f, 116.4f), new(270.4f, 116.6f), new(240.1f, 121.6f), new(218.0f, 132.6f), new(203.8f, 148.9f), new(197.4f, 170.1f), new(195.9f, 188.3f), new(201.8f, 206.2f), new(221.6f, 222.8f), new(239.8f, 232.8f), new(260.2f, 241.6f), new(278.4f, 259.3f), new(292.9f, 289.2f), new(301.5f, 313.2f), new(294.4f, 336.9f), new(272.1f, 352.0f), new(239.5f, 359.8f), new(219.6f, 359.5f), new(197.4f, 356.5f), new(173.3f, 354.5f), new(147.4f, 353.5f), new(119.8f, 353.5f), new(90.2f, 354.5f), new(65.6f, 356.8f), new(45.7f, 360.2f), new(20.4f, 371.0f), new(5.0f, 380.0f) },
-        ["Path_Right"] = new Vector2[] { new(815.0f, 255.0f), new(790.8f, 254.8f), new(766.6f, 254.6f), new(734.4f, 254.4f), new(705.6f, 254.2f), new(680.4f, 254.1f), new(658.6f, 254.0f), new(640.4f, 254.0f), new(607.2f, 254.0f), new(578.6f, 254.0f), new(556.8f, 258.1f), new(537.6f, 276.6f), new(532.6f, 304.5f), new(532.4f, 323.5f), new(536.2f, 350.8f), new(553.6f, 368.4f), new(576.5f, 376.6f), new(604.2f, 386.8f), new(623.0f, 407.4f), new(632.8f, 434.2f), new(633.5f, 454.2f), new(622.2f, 474.9f), new(599.2f, 489.4f), new(558.5f, 494.1f), new(529.5f, 494.9f), new(503.2f, 494.9f), new(479.6f, 494.3f), new(458.6f, 493.0f), new(440.4f, 491.0f), new(419.1f, 488.1f), new(394.7f, 484.4f), new(367.2f, 479.8f), new(336.8f, 474.2f), new(313.1f, 469.4f), new(286.1f, 461.5f), new(274.5f, 441.1f), new(263.6f, 408.4f), new(248.8f, 380.9f), new(229.4f, 365.4f), new(207.2f, 356.8f), new(182.8f, 353.5f), new(145.0f, 353.0f), new(119.8f, 353.5f), new(90.2f, 354.5f), new(65.6f, 356.8f), new(45.7f, 360.2f), new(20.4f, 371.0f), new(5.0f, 380.0f) },
+        ["Path_TopMiddle"] = new Vector2[] { new(666.0f, 84.0f), new(663.7f, 105.8f), new(657.2f, 126.7f), new(645.5f, 145.3f), new(630.2f, 161.0f), new(613.2f, 174.9f), new(596.0f, 188.5f), new(583.0f, 206.1f), new(574.7f, 226.4f), new(568.3f, 247.4f), new(562.6f, 268.6f), new(556.7f, 289.8f), new(548.8f, 310.3f), new(536.9f, 328.6f), new(519.7f, 342.2f), new(499.6f, 350.8f), new(477.9f, 354.6f), new(456.1f, 356.5f), new(434.2f, 358.0f), new(412.4f, 360.8f), new(390.8f, 364.7f), new(369.2f, 369.1f), new(347.5f, 372.1f), new(325.6f, 373.5f), new(303.6f, 373.4f), new(281.7f, 372.0f), new(259.8f, 370.1f), new(237.9f, 368.8f), new(215.9f, 368.0f), new(194.0f, 367.8f), new(172.0f, 367.8f) },
+        ["Path_TopLoop"] = new Vector2[] { new(666.0f, 84.0f), new(662.5f, 105.9f), new(652.8f, 125.7f), new(636.8f, 141.0f), new(617.3f, 151.5f), new(596.0f, 157.8f), new(574.0f, 160.8f), new(551.8f, 161.5f), new(529.6f, 161.4f), new(507.4f, 160.5f), new(485.2f, 159.3f), new(463.1f, 157.8f), new(440.9f, 156.5f), new(418.7f, 155.4f), new(396.5f, 154.7f), new(374.3f, 154.4f), new(352.1f, 155.1f), new(330.0f, 157.6f), new(308.4f, 162.6f), new(288.3f, 172.0f), new(273.0f, 187.7f), new(265.9f, 208.7f), new(269.8f, 230.1f), new(286.5f, 244.4f), new(306.2f, 254.5f), new(327.0f, 262.2f), new(347.3f, 271.3f), new(364.2f, 285.5f), new(376.9f, 303.7f), new(387.3f, 323.3f), new(385.9f, 344.7f), new(369.8f, 359.5f), new(349.0f, 367.2f), new(327.2f, 371.4f), new(305.1f, 373.3f), new(282.9f, 372.1f), new(260.8f, 370.1f), new(238.6f, 368.8f), new(216.4f, 368.1f), new(194.2f, 367.8f), new(172.0f, 367.8f) },
+        ["Path_Right"] = new Vector2[] { new(984.0f, 279.0f), new(961.9f, 278.8f), new(939.8f, 278.7f), new(917.6f, 278.6f), new(895.5f, 278.5f), new(873.4f, 278.4f), new(851.3f, 278.3f), new(829.2f, 278.2f), new(807.1f, 278.2f), new(784.9f, 278.2f), new(762.8f, 278.2f), new(740.7f, 278.2f), new(718.6f, 279.1f), new(697.1f, 283.9f), new(679.2f, 296.6f), new(670.5f, 316.6f), new(668.8f, 338.6f), new(672.9f, 360.2f), new(687.7f, 376.2f), new(707.9f, 384.9f), new(729.3f, 390.7f), new(750.3f, 397.5f), new(768.8f, 409.4f), new(782.3f, 426.8f), new(789.3f, 447.6f), new(782.7f, 468.2f), new(765.6f, 482.0f), new(744.8f, 489.2f), new(722.9f, 492.3f), new(700.8f, 493.9f), new(678.7f, 494.7f), new(656.6f, 495.0f), new(634.5f, 494.9f), new(612.4f, 494.6f), new(590.3f, 493.8f), new(568.2f, 492.3f), new(546.2f, 490.3f), new(524.2f, 487.9f), new(502.2f, 485.4f), new(480.3f, 482.7f), new(458.4f, 479.8f), new(436.5f, 476.7f), new(414.6f, 473.4f), new(392.9f, 469.3f), new(372.3f, 461.7f), new(358.7f, 444.5f), new(349.0f, 424.6f), new(337.7f, 405.7f), new(322.6f, 389.6f), new(303.4f, 378.8f), new(282.3f, 372.2f), new(260.4f, 368.9f), new(238.3f, 367.7f), new(216.2f, 367.4f), new(194.1f, 367.5f), new(172.0f, 367.8f) },
     };
-
-    // 타워 자리 (흙 패드 중심)
-    private static readonly Vector2[] SLOTS_PX = { new(258f, 175f), new(325f, 173f), new(387f, 177f), new(335f, 228f), new(366f, 279f), new(234f, 289f), new(469f, 364f), new(320f, 406f), new(384f, 406f), new(443f, 430f), new(510f, 431f), new(577f, 432f), new(585f, 310f), new(358f, 524f), new(595f, 184f), new(527f, 182f) };
+    private static readonly Vector2[] SLOTS_PX = { new(349.0f, 209.0f), new(420.0f, 207.0f), new(494.0f, 211.0f), new(432.0f, 255.0f), new(469.0f, 301.0f), new(306.0f, 316.0f), new(592.0f, 377.0f), new(414.0f, 415.0f), new(490.0f, 415.0f), new(561.0f, 437.0f), new(642.0f, 438.0f), new(702.0f, 442.0f), new(734.0f, 331.0f), new(459.0f, 533.0f), new(744.0f, 215.0f), new(662.0f, 213.0f) };
+    // ── 맵 데이터 끝 ──
 
     // 4. 메서드 (public)
     [MenuItem("Tools/TD/Map/Build Map01")]
@@ -77,9 +75,10 @@ public static class Map01Builder {
         Vector3 viewMax = ConvertPxToWorld(VIEW_PX.xMax, VIEW_PX.yMin);
         map.ViewRect = Rect.MinMaxRect(viewMin.x, viewMin.y, viewMax.x, viewMax.y);
 
+        CreateBackground(map);
         CreateRoad(map);
         foreach (KeyValuePair<string, Vector2[]> entry in PATHS_PX) {
-            MapAuthoring.CreatePath(map, entry.Key, ConvertToWorld(ExtendEnds(entry.Value)));
+            MapAuthoring.CreatePath(map, entry.Key, ConvertToWorld(entry.Value));
         }
         map.RebuildRoadVisuals();
         CreateMarkers(map);
@@ -98,14 +97,14 @@ public static class Map01Builder {
         Debug.Log($"[Map01Builder] {PREFAB_PATH} 생성 완료");
     }
 
-    /// <summary>잔디 배경 + 맵 영역에 맞추는 카메라.</summary>
+    /// <summary>어두운 배경색 + 맵 영역에 맞추는 카메라.</summary>
     public static Camera CreateCamera() {
         var cameraObject = new GameObject("Main Camera") { tag = "MainCamera" };
         cameraObject.transform.position = new Vector3(0f, 0f, CAMERA_Z);
         Camera camera = cameraObject.AddComponent<Camera>();
         camera.orthographic = true;
         camera.clearFlags = CameraClearFlags.SolidColor;
-        camera.backgroundColor = GRASS_COLOR;
+        camera.backgroundColor = BACKGROUND_COLOR;
         cameraObject.AddComponent<CameraFit>().FitToMap = true;
         return camera;
     }
@@ -124,9 +123,22 @@ public static class Map01Builder {
         return world;
     }
 
+    /// <summary>배경 그림 (기판, 장식). 길 그림과 같은 크기·위치. 없으면 건너뛴다.</summary>
+    private static void CreateBackground(TDMap map) {
+        Sprite backgroundSprite = MapAuthoring.LoadSprite(BACKGROUND_TEXTURE_PATH, PIXELS_PER_UNIT, filter: FilterMode.Point);
+        if (backgroundSprite == null) {
+            return;
+        }
+        var backgroundObject = new GameObject("Background");
+        backgroundObject.transform.SetParent(map.transform, false);
+        SpriteRenderer renderer = backgroundObject.AddComponent<SpriteRenderer>();
+        renderer.sprite = backgroundSprite;
+        renderer.sortingOrder = BACKGROUND_SORTING_ORDER;
+    }
+
     /// <summary>길 그림 = 길 판정 마스크.</summary>
     private static void CreateRoad(TDMap map) {
-        Sprite roadSprite = MapAuthoring.LoadSprite(ROAD_TEXTURE_PATH, PIXELS_PER_UNIT, readable: true);
+        Sprite roadSprite = MapAuthoring.LoadSprite(ROAD_TEXTURE_PATH, PIXELS_PER_UNIT, readable: true, filter: FilterMode.Point);
         var roadObject = new GameObject("Road");
         roadObject.transform.SetParent(map.transform, false);
         SpriteRenderer renderer = roadObject.AddComponent<SpriteRenderer>();
@@ -134,18 +146,45 @@ public static class Map01Builder {
         renderer.sortingOrder = ROAD_SORTING_ORDER;
 
         map.RoadMask = roadSprite.texture;
-        Vector3 maskMin = ConvertPxToWorld(-ROAD_PAD_PX, IMAGE_HEIGHT);
-        Vector3 maskMax = ConvertPxToWorld(IMAGE_WIDTH + ROAD_PAD_PX, 0f);
+        Vector3 maskMin = ConvertPxToWorld(0f, IMAGE_HEIGHT);
+        Vector3 maskMax = ConvertPxToWorld(IMAGE_WIDTH, 0f);
         map.RoadMaskRect = Rect.MinMaxRect(maskMin.x, maskMin.y, maskMax.x, maskMax.y);
         map.DrawRoadLines = false;
     }
 
     private static void CreateMarkers(TDMap map) {
         Transform markers = MapAuthoring.GetOrCreateChild(map.transform, "Markers");
-        Sprite circle = MapAuthoring.Circle;
-        map.Goal = CreateMarker("Goal (지키는곳)", circle, GOAL_COLOR, GOAL_PX, GOAL_MARKER_SIZE, "지키는곳", markers);
-        CreateMarker("Spawn_Top", circle, SPAWN_COLOR, SPAWN_TOP_PX, SPAWN_MARKER_SIZE, "적", markers);
-        CreateMarker("Spawn_Right", circle, SPAWN_COLOR, SPAWN_RIGHT_PX, SPAWN_MARKER_SIZE, "적", markers);
+        Transform goalMarker = CreateMarker("Goal (지키는곳)", MapAuthoring.Circle, GOAL_COLOR, GOAL_PX, GOAL_MARKER_SIZE, "지키는곳", markers);
+        GoalPoint goal = goalMarker.gameObject.AddComponent<GoalPoint>();
+        goal.Radius = GOAL_RADIUS;
+        map.Goal = goal;
+
+        // 입구 = 블랙홀 (길이 구멍에서 나온다). 위 입구는 갈림길 → 경로 2개, 오른쪽 입구 → 경로 1개
+        CreateSpawn(CreatePortal("Spawn_Top", PORTAL_TOP_TEXTURE_PATH, SPAWN_TOP_PX, markers),
+            SPAWN_TOP_ID, new List<string> { "Path_TopMiddle", "Path_TopLoop" }, WAVE_ICON_TOP_PX);
+        CreateSpawn(CreatePortal("Spawn_Right", PORTAL_RIGHT_TEXTURE_PATH, SPAWN_RIGHT_PX, markers),
+            SPAWN_RIGHT_ID, new List<string> { "Path_Right" }, WAVE_ICON_RIGHT_PX);
+        map.Refresh();
+    }
+
+    private static Transform CreatePortal(string portalName, string texturePath, Vector2 pixel, Transform parent) {
+        var portalObject = new GameObject(portalName);
+        portalObject.transform.SetParent(parent);
+        portalObject.transform.position = ConvertPxToWorld(pixel.x, pixel.y);
+        SpriteRenderer renderer = portalObject.AddComponent<SpriteRenderer>();
+        renderer.sprite = MapAuthoring.LoadSprite(texturePath, PIXELS_PER_UNIT, filter: FilterMode.Point) ?? MapAuthoring.Circle;
+        renderer.sortingOrder = PORTAL_SORTING_ORDER;
+        return portalObject.transform;
+    }
+
+    private static void CreateSpawn(Transform marker, string spawnId, List<string> routeNames, Vector2 waveIconPx) {
+        SpawnPoint spawn = marker.gameObject.AddComponent<SpawnPoint>();
+        spawn.SpawnId = spawnId;
+        spawn.SetRouteNames(routeNames);
+        var icon = new GameObject("WaveIcon");
+        icon.transform.SetParent(marker, true);
+        icon.transform.position = ConvertPxToWorld(waveIconPx.x, waveIconPx.y);
+        spawn.WaveIcon = icon.transform;
     }
 
     private static void CreateViewScene(GameObject mapPrefab) {
@@ -154,22 +193,6 @@ public static class Map01Builder {
         PrefabUtility.InstantiatePrefab(mapPrefab);
         EditorSceneManager.SaveScene(scene, VIEW_SCENE_PATH);
         AssetDatabase.SaveAssets();
-    }
-
-    /// <summary>시작/끝 노드를 화면 밖으로 연장: 적이 화면 밖에서 걸어 들어와 화면 밖으로 나간다.</summary>
-    private static Vector2[] ExtendEnds(Vector2[] pixels) {
-        var extended = new List<Vector2>(pixels);
-        Vector2 first = pixels[0];
-        Vector2 last = pixels[pixels.Length - 1];
-        if (first.x >= IMAGE_WIDTH - EDGE_TOLERANCE_PX) {
-            extended.Insert(0, new Vector2(IMAGE_WIDTH + ROAD_PAD_PX - SIDE_OFFSCREEN_INSET_PX, first.y)); // 오른쪽 진영
-        } else if (first.y <= TOP_ENTRY_MAX_Y_PX) {
-            extended.Insert(0, new Vector2(first.x, TOP_OFFSCREEN_Y_PX)); // 위 입구
-        }
-        if (last.x <= EDGE_TOLERANCE_PX) {
-            extended.Add(new Vector2(-ROAD_PAD_PX + SIDE_OFFSCREEN_INSET_PX, last.y)); // 왼쪽 출구
-        }
-        return extended.ToArray();
     }
 
     private static Transform CreateMarker(string markerName, Sprite sprite, Color color, Vector2 pixel, float size,

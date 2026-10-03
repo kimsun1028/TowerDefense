@@ -28,6 +28,7 @@ public static class MapValidator {
     private const float MIN_SLOT_SPACING = 0.75f;
     private const float MAX_GOAL_DISTANCE = 3f;   // 마지막 노드가 골에서 이보다 멀면 경고
     private const int MIN_NODE_COUNT = 2;
+    private const float SPAWN_ROUTE_TOLERANCE = 0.6f; // 입구가 자기 경로에서 이보다 멀면 경고
 
     // 4. 메서드 (public)
     /// <summary>슬롯 집결지에 문제가 있으면 설명, 없으면 null.</summary>
@@ -60,6 +61,7 @@ public static class MapValidator {
         }
 
         ValidatePaths(map, issues);
+        ValidateSpawns(map, issues);
         ValidateSlots(map, issues);
         return issues;
     }
@@ -73,10 +75,59 @@ public static class MapValidator {
             }
             if (path.Nodes.Exists(node => node == null)) {
                 issues.Add(new Issue(path, $"{path.name}: 비어 있는 노드 참조가 있습니다.", true));
-            } else if (map.Goal && Vector2.Distance(path[path.Count - 1], map.Goal.position) > MAX_GOAL_DISTANCE) {
+            } else if (map.Goal && Vector2.Distance(path[path.Count - 1], map.Goal.Position) > MAX_GOAL_DISTANCE) {
                 issues.Add(new Issue(path, $"{path.name}: 마지막 노드가 골에서 멉니다. 방향이 반대일 수 있습니다.", false));
             }
         }
+    }
+
+    private static void ValidateSpawns(TDMap map, List<Issue> issues) {
+        if (map.Spawns.Count == 0) {
+            issues.Add(new Issue(map, "입구(SpawnPoint)가 없습니다.", false));
+            return;
+        }
+        var ids = new HashSet<string>();
+        var usedPaths = new HashSet<string>();
+        foreach (SpawnPoint spawn in map.Spawns) {
+            string label = $"입구 {spawn.SpawnId}";
+            if (string.IsNullOrEmpty(spawn.SpawnId) || !ids.Add(spawn.SpawnId)) {
+                issues.Add(new Issue(spawn, $"{label}: ID가 비어 있거나 중복됩니다.", true));
+            }
+            if (spawn.RouteNames.Count == 0) {
+                issues.Add(new Issue(spawn, $"{label}: 출발하는 경로가 없습니다.", true));
+            }
+            foreach (string routeName in spawn.RouteNames) {
+                EnemyPath path = map.GetPath(routeName);
+                if (path == null) {
+                    issues.Add(new Issue(spawn, $"{label}: 경로 '{routeName}'이(가) 없습니다.", true));
+                    continue;
+                }
+                usedPaths.Add(routeName);
+                if (CalculateDistanceToPath(spawn.Position, path) > SPAWN_ROUTE_TOLERANCE) {
+                    issues.Add(new Issue(spawn, $"{label}: 경로 '{routeName}' 위에 있지 않습니다.", false));
+                }
+            }
+            if (!map.ViewRect.Contains(spawn.WaveIconPosition)) {
+                issues.Add(new Issue(spawn, $"{label}: 다음 웨이브 아이콘이 화면(ViewRect) 밖에 있습니다.", false));
+            }
+        }
+        foreach (EnemyPath path in map.Paths) {
+            if (!usedPaths.Contains(path.name)) {
+                issues.Add(new Issue(path, $"{path.name}: 어느 입구에도 속하지 않은 경로입니다.", false));
+            }
+        }
+    }
+
+    private static float CalculateDistanceToPath(Vector2 point, EnemyPath path) {
+        float best = float.MaxValue;
+        for (int i = 1; i < path.Count; i++) {
+            Vector2 start = path[i - 1];
+            Vector2 segment = (Vector2)path[i] - start;
+            float sqrLength = segment.sqrMagnitude;
+            float t = sqrLength > 0f ? Mathf.Clamp01(Vector2.Dot(point - start, segment) / sqrLength) : 0f;
+            best = Mathf.Min(best, Vector2.Distance(point, start + segment * t));
+        }
+        return best;
     }
 
     private static void ValidateSlots(TDMap map, List<Issue> issues) {

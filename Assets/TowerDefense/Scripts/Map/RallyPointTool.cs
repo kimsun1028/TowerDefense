@@ -10,6 +10,8 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class RallyPointTool : MonoBehaviour {
     // 1. 상수
+    private static readonly Color DEFAULT_VALID_COLOR = new(0.3f, 1f, 0.3f, 0.9f);     // 길 위 그대로
+    private static readonly Color DEFAULT_CLAMPED_COLOR = new(1f, 0.75f, 0.2f, 0.9f);  // 가까운 길로 옮겨짐
     private const int RANGE_CIRCLE_SEGMENTS = 64;
     private const int MARKER_SEGMENTS = 16;
     private const float RANGE_LINE_WIDTH = 0.05f;
@@ -23,8 +25,8 @@ public class RallyPointTool : MonoBehaviour {
 
     // 2. 필드
     [SerializeField] private Material lineMaterial;
-    [SerializeField] private Color validColor = new(0.3f, 1f, 0.3f, 0.9f);
-    [SerializeField] private Color clampedColor = new(1f, 0.75f, 0.2f, 0.9f);
+    [SerializeField] private Color validColor = DEFAULT_VALID_COLOR;
+    [SerializeField] private Color clampedColor = DEFAULT_CLAMPED_COLOR;
 
     private IRallyPointUser user;
     private Vector2 origin;

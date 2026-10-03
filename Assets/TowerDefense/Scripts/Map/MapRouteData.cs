@@ -15,6 +15,10 @@ using UnityEngine;
 ///   route.GetDirection(d)            그 지점의 진행 방향
 ///   route.GetRemainingDistance(d)    출구까지 남은 거리 (경로 길이가 달라도 비교 가능)
 ///
+///   routeData.GetSpawn("Top")        입구 (위치, 경로 이름들, 다음 웨이브 아이콘 위치)
+///   routeData.PickRandomRoute("Top") 그 입구의 경로 중 하나를 랜덤으로
+///   routeData.GoalPosition           지키는 곳 위치
+///
 /// 좌표는 월드 좌표다 (맵 프리팹이 원점에 놓인다는 전제).
 /// 직접 고치지 말고 맵을 수정한 뒤 다시 구울 것.
 /// </summary>
@@ -178,6 +182,33 @@ public class MapRouteData : ScriptableObject {
         }
     }
 
+    /// <summary>입구 하나 (구운 결과).</summary>
+    [Serializable]
+    public class Spawn {
+        // 2. 필드
+        [SerializeField] private string spawnId;
+        [SerializeField] private Vector3 position;
+        [SerializeField] private List<string> routeNames = new();
+        [SerializeField] private Vector3 waveIconPosition;
+
+        public string SpawnId => spawnId;
+        public Vector3 Position => position;
+        public IReadOnlyList<string> RouteNames => routeNames;
+        public Vector3 WaveIconPosition => waveIconPosition;
+
+        // 3. 생성자
+        /// <summary>직렬화용 기본 생성자.</summary>
+        public Spawn() {
+        }
+
+        public Spawn(string id, Vector3 spawnPosition, List<string> names, Vector3 iconPosition) {
+            spawnId = id;
+            position = spawnPosition;
+            routeNames = names;
+            waveIconPosition = iconPosition;
+        }
+    }
+
     // 1. 상수
     private const float DEFAULT_SAMPLE_SPACING = 0.25f;
     private const float MIN_SAMPLE_SPACING = 0.05f;
@@ -192,10 +223,16 @@ public class MapRouteData : ScriptableObject {
     [Tooltip("등간격 포인트 사이 거리 (월드 단위)")]
     [Min(MIN_SAMPLE_SPACING)] [SerializeField] private float sampleSpacing = DEFAULT_SAMPLE_SPACING;
     [SerializeField] private List<Route> routes = new();
+    [SerializeField] private List<Spawn> spawns = new();
+    [SerializeField] private bool hasGoal;
+    [SerializeField] private Vector3 goalPosition;
 
     public string MapName { get => mapName; set => mapName = value; }
     public float SampleSpacing { get => sampleSpacing; set => sampleSpacing = Mathf.Max(MIN_SAMPLE_SPACING, value); }
     public IReadOnlyList<Route> Routes => routes;
+    public IReadOnlyList<Spawn> Spawns => spawns;
+    public bool HasGoal => hasGoal;
+    public Vector3 GoalPosition => goalPosition;
 
     // 4. 메서드 (public)
     /// <summary>이름으로 경로를 찾는다. 없으면 null.</summary>
@@ -206,6 +243,36 @@ public class MapRouteData : ScriptableObject {
             }
         }
         return null;
+    }
+
+    /// <summary>입구 ID로 입구를 찾는다. 없으면 null.</summary>
+    public Spawn GetSpawn(string spawnId) {
+        foreach (Spawn spawn in spawns) {
+            if (spawn.SpawnId == spawnId) {
+                return spawn;
+            }
+        }
+        return null;
+    }
+
+    /// <summary>입구의 경로 중 하나를 랜덤으로 고른다. 입구나 경로가 없으면 null.</summary>
+    public Route PickRandomRoute(string spawnId) {
+        Spawn spawn = GetSpawn(spawnId);
+        if (spawn == null || spawn.RouteNames.Count == 0) {
+            return null;
+        }
+        return GetRoute(spawn.RouteNames[UnityEngine.Random.Range(0, spawn.RouteNames.Count)]);
+    }
+
+    /// <summary>구운 입구 목록을 통째로 바꾼다 (굽기 도구 전용).</summary>
+    public void SetSpawns(List<Spawn> bakedSpawns) {
+        spawns = bakedSpawns;
+    }
+
+    /// <summary>지키는 곳 위치를 저장한다 (굽기 도구 전용). goal이 없으면 hasGoal = false.</summary>
+    public void SetGoal(bool exists, Vector3 position) {
+        hasGoal = exists;
+        goalPosition = position;
     }
 
     /// <summary>구운 경로 목록을 통째로 바꾼다 (굽기 도구 전용).</summary>
