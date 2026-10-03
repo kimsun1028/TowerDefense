@@ -388,5 +388,6 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: 6fda753d5846845c39bd1ec1a16e45a3, type: 2}
   fightSpacing: {x: 0.8, y: 0.5}
   separationSpeed: 2
+  rangedProjectile: {fileID: 0}
   healthBarFill: {fileID: 6627168242631874823}
   body: {fileID: 6444297270104331636}

@@ -7,10 +7,12 @@ using UnityEngine;
 /// <summary>
 /// 웨이브 단위로 적을 스폰한다. 경로는 맵의 MapRouteData에서 이름으로 고른다.
 ///
-/// 그룹마다 Routes에 경로 이름을 여러 개 넣으면 적마다 그중 하나를 랜덤으로 고른다
-/// (예: 위 입구 = Path_TopMiddle, Path_TopLoop). 웨이브마다 다른 경로 목록을 줄 수 있다.
+/// 그룹마다 SpawnId(입구)를 정하면 SpawnPoints 표에서 그 입구의 경로 중 하나를 적마다 랜덤으로 고른다
+/// (예: "Top" = Path_TopMiddle, Path_TopLoop). Routes에 경로 이름을 직접 넣으면 그 목록을 우선 쓴다.
+/// 웨이브마다 다른 입구/경로를 줄 수 있다.
 /// PackSize / LaneSpread로 한 줄이 아니라 무리로 퍼져 나오게 한다.
-/// 게임 연동: WaveStarted, AllWavesCleared 이벤트.
+/// 보스: BossPrefab이 있으면 마지막 웨이브의 적이 모두 사라진 뒤 BossDelay초 후 등장한다.
+/// 게임 연동: WaveStarted, BossSpawned, AllWavesCleared 이벤트.
 /// </summary>
 public class WaveSpawner : MonoBehaviour {
     /// <summary>한 종류의 적을 같은 경로 후보로 내보내는 묶음.</summary>
@@ -23,7 +25,9 @@ public class WaveSpawner : MonoBehaviour {
 
         // 2. 필드
         [SerializeField] private Enemy enemyPrefab;
-        [Tooltip("이 그룹이 쓸 경로 이름들. 적마다 랜덤으로 하나")]
+        [Tooltip("입구 ID (예: Top, Right). Routes가 비어 있으면 이 입구의 경로 중 랜덤")]
+        [SerializeField] private string spawnId;
+        [Tooltip("직접 지정할 경로 이름들 (비우면 입구의 경로 사용). 적마다 랜덤으로 하나")]
         [SerializeField] private List<string> routes = new();
         [SerializeField] private int count = 5;
         [Tooltip("무리(pack) 사이 간격 (초)")]
@@ -39,6 +43,7 @@ public class WaveSpawner : MonoBehaviour {
         [SerializeField] private float packDepth = DEFAULT_PACK_DEPTH;
 
         public Enemy EnemyPrefab => enemyPrefab;
+        public string SpawnId => spawnId;
         public IReadOnlyList<string> Routes => routes;
         public int Count => count;
         public float Interval => interval;
@@ -52,6 +57,14 @@ public class WaveSpawner : MonoBehaviour {
         public SpawnGroup() {
         }
 
+        /// <summary>입구 ID로 스폰하는 그룹.</summary>
+        public SpawnGroup(Enemy prefab, string spawnPointId, int spawnCount, float spawnInterval,
+                          float delay = 0f, int pack = 1, float spread = DEFAULT_LANE_SPREAD, float depth = DEFAULT_PACK_DEPTH)
+            : this(prefab, new List<string>(), spawnCount, spawnInterval, delay, pack, spread, depth) {
+            spawnId = spawnPointId;
+        }
+
+        /// <summary>경로 이름을 직접 지정하는 그룹.</summary>
         public SpawnGroup(Enemy prefab, List<string> routeNames, int spawnCount, float spawnInterval,
                           float delay = 0f, int pack = 1, float spread = DEFAULT_LANE_SPREAD, float depth = DEFAULT_PACK_DEPTH) {
             enemyPrefab = prefab;
@@ -62,6 +75,27 @@ public class WaveSpawner : MonoBehaviour {
             packSize = Mathf.Max(1, pack);
             laneSpread = Mathf.Clamp01(spread);
             packDepth = depth;
+        }
+    }
+
+    /// <summary>입구 ID → 그 입구에서 출발하는 경로 이름들.</summary>
+    [Serializable]
+    public class SpawnPointEntry {
+        // 2. 필드
+        [SerializeField] private string spawnId;
+        [SerializeField] private List<string> routeNames = new();
+
+        public string SpawnId => spawnId;
+        public IReadOnlyList<string> RouteNames => routeNames;
+
+        // 3. 생성자
+        /// <summary>직렬화용 기본 생성자.</summary>
+        public SpawnPointEntry() {
+        }
+
+        public SpawnPointEntry(string id, List<string> names) {
+            spawnId = id;
+            routeNames = names;
         }
     }
 
@@ -85,31 +119,71 @@ public class WaveSpawner : MonoBehaviour {
 
     // 1. 상수
     private const float DEFAULT_TIME_BETWEEN_WAVES = 5f;
+    private const float DEFAULT_BOSS_DELAY = 3f;
     private const float LANE_JITTER = 0.1f;
     private const float PACK_SLOT_CENTER = 0.5f;
 
     // 2. 필드
     /// <summary>웨이브 시작 (웨이브 번호, 1부터)</summary>
     public static event Action<int> WaveStarted;
-    /// <summary>마지막 웨이브의 적이 모두 사라짐</summary>
+    /// <summary>보스 등장 (마지막 웨이브가 끝난 뒤)</summary>
+    public static event Action<Enemy> BossSpawned;
+    /// <summary>마지막 웨이브와 보스까지 모든 적이 사라짐</summary>
     public static event Action AllWavesCleared;
 
     [SerializeField] private MapRouteData routeData;
+    [Tooltip("입구 ID별 경로 목록 (Map01: Top = Path_TopMiddle, Path_TopLoop / Right = Path_Right)")]
+    [SerializeField] private List<SpawnPointEntry> spawnPoints = new();
     [SerializeField] private List<Wave> waves = new();
     [SerializeField] private float timeBetweenWaves = DEFAULT_TIME_BETWEEN_WAVES;
+
+    [Header("Boss (마지막 웨이브 뒤 등장)")]
+    [Tooltip("비우면 보스 없음")]
+    [SerializeField] private Enemy bossPrefab;
+    [Tooltip("보스가 나올 입구 ID")]
+    [SerializeField] private string bossSpawnId;
+    [Tooltip("마지막 웨이브 적이 다 사라진 뒤 보스가 나오기까지 (초)")]
+    [SerializeField] private float bossDelay = DEFAULT_BOSS_DELAY;
 
     private int aliveGroups;
 
     public MapRouteData RouteData { get => routeData; set => routeData = value; }
     public IReadOnlyList<Wave> Waves => waves;
+    public IReadOnlyList<SpawnPointEntry> SpawnPoints => spawnPoints;
     public int CurrentWave { get; private set; }
     public int TotalWaves => waves.Count;
     public bool WaitingForNextWave { get; private set; } = true;
+    public Enemy Boss { get; private set; }
 
     // 4. 메서드 (public)
+    /// <summary>입구 표를 통째로 바꾼다.</summary>
+    public void SetSpawnPoints(List<SpawnPointEntry> entries) {
+        spawnPoints = entries;
+    }
+
+    /// <summary>입구의 경로 중 하나를 랜덤으로 고른다. 입구나 경로가 없으면 null.</summary>
+    public MapRouteData.Route PickRandomRoute(string spawnId) {
+        if (routeData == null) {
+            return null;
+        }
+        foreach (SpawnPointEntry entry in spawnPoints) {
+            if (entry.SpawnId == spawnId && entry.RouteNames.Count > 0) {
+                return routeData.GetRoute(entry.RouteNames[UnityEngine.Random.Range(0, entry.RouteNames.Count)]);
+            }
+        }
+        return null;
+    }
+
     /// <summary>웨이브 목록을 통째로 바꾼다.</summary>
     public void SetWaves(List<Wave> newWaves) {
         waves = newWaves;
+    }
+
+    /// <summary>보스를 정한다. prefab이 null이면 보스 없음.</summary>
+    public void SetBoss(Enemy prefab, string spawnId, float delay = DEFAULT_BOSS_DELAY) {
+        bossPrefab = prefab;
+        bossSpawnId = spawnId;
+        bossDelay = delay;
     }
 
     /// <summary>다음 웨이브를 바로 시작 (UI 버튼에서 호출).</summary>
@@ -145,8 +219,13 @@ public class WaveSpawner : MonoBehaviour {
         yield return new WaitUntil(() => aliveGroups == 0);
 
         if (CurrentWave >= waves.Count) {
-            // 마지막 웨이브: 남은 적이 다 사라지면 끝
+            // 마지막 웨이브: 남은 적이 다 사라지면 보스 등장 → 보스까지 사라지면 끝
             yield return new WaitUntil(() => Enemy.Active.Count == 0);
+            if (bossPrefab != null) {
+                yield return new WaitForSeconds(bossDelay);
+                SpawnBoss();
+                yield return new WaitUntil(() => Enemy.Active.Count == 0);
+            }
             AllWavesCleared?.Invoke();
             yield break;
         }
@@ -177,6 +256,16 @@ public class WaveSpawner : MonoBehaviour {
         aliveGroups--;
     }
 
+    private void SpawnBoss() {
+        MapRouteData.Route route = PickRandomRoute(bossSpawnId);
+        if (route == null) {
+            Debug.LogWarning($"[WaveSpawner] 보스 입구 '{bossSpawnId}'의 경로를 찾을 수 없습니다.");
+            return;
+        }
+        Boss = Spawn(bossPrefab, route);
+        BossSpawned?.Invoke(Boss);
+    }
+
     /// <summary>무리 안에서 차선을 고르게 나눠 갖고 약간 흔든다.</summary>
     private static float PickLane(SpawnGroup group, int indexInPack, int packCount) {
         if (packCount == 1) {
@@ -187,9 +276,16 @@ public class WaveSpawner : MonoBehaviour {
     }
 
     private MapRouteData.Route PickRoute(SpawnGroup group) {
-        if (routeData == null || group.Routes.Count == 0) {
-            Debug.LogWarning("[WaveSpawner] routeData 또는 경로 이름이 비어 있습니다.");
+        if (routeData == null) {
+            Debug.LogWarning("[WaveSpawner] routeData가 비어 있습니다.");
             return null;
+        }
+        if (group.Routes.Count == 0) {
+            MapRouteData.Route fromSpawn = PickRandomRoute(group.SpawnId);
+            if (fromSpawn == null) {
+                Debug.LogWarning($"[WaveSpawner] 입구 '{group.SpawnId}'의 경로를 찾을 수 없습니다.");
+            }
+            return fromSpawn;
         }
         string routeName = group.Routes[UnityEngine.Random.Range(0, group.Routes.Count)];
         MapRouteData.Route route = routeData.GetRoute(routeName);

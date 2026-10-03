@@ -19,6 +19,8 @@ MonoBehaviour:
   magicResist: 0
   goldReward: 6
   lifeDamage: 1
-  meleeDamage: 4
+  meleeDamageMax: 4
+  meleeDamageMin: 4
   meleeInterval: 1
+  isFlying: 0
   radius: 0.144
