@@ -14,6 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BarracksTowerData
   towerName: Barracks
   costs: 460000006e000000a0000000
+  animators:
+  - {fileID: 9100000, guid: f8a7037154beea946b054884089d5d86, type: 2}
+  - {fileID: 9100000, guid: 3843f11d0052cc745ad7b982b77a5170, type: 2}
+  - {fileID: 9100000, guid: 7c0f2d00e67ae364ea89ef2c53350fdc, type: 2}
+  - {fileID: 9100000, guid: 3f643a35e74ea6e41a7b60adee5d1b4c, type: 2}
   levels:
   - soldier: {fileID: 11400000, guid: 7c05019d9ee2376418911873d474f145, type: 2}
     soldierCount: 3

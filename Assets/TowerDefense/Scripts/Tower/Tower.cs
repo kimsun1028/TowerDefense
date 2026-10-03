@@ -22,10 +22,40 @@ public abstract class Tower : MonoBehaviour
 
     public virtual bool HasRallyPoint => false;
 
+    protected Animator animator;   // Visual 자식의 Animator (없으면 null)
+
+    protected virtual void Awake()
+    {
+        animator = GetComponentInChildren<Animator>();
+        ApplyLevelAnimator();
+    }
+
     public void Init(TowerSlot slot)
     {
         this.slot = slot;
         totalSpent = Data.costs[0];
+    }
+
+    // 현재 레벨의 외형으로 교체
+    private void ApplyLevelAnimator()
+    {
+        RuntimeAnimatorController[] list = Data.animators;
+        if (animator == null || list == null || level - 1 >= list.Length || list[level - 1] == null) return;
+        animator.runtimeAnimatorController = list[level - 1];
+    }
+
+    // 파라미터가 있을 때만 트리거 (레벨마다 컨트롤러 구성이 달라도 경고 없이)
+    protected void PlayTrigger(string paramName)
+    {
+        if (animator == null || animator.runtimeAnimatorController == null) return;
+        foreach (AnimatorControllerParameter p in animator.parameters)
+        {
+            if (p.name == paramName)
+            {
+                animator.SetTrigger(paramName);
+                return;
+            }
+        }
     }
 
     public void Upgrade()
@@ -36,6 +66,7 @@ public abstract class Tower : MonoBehaviour
         {
             totalSpent += UpgradeCost;
             level++;
+            ApplyLevelAnimator();
             OnLevelChanged();
         }
     }

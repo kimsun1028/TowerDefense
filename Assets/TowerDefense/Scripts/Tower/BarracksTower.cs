@@ -83,6 +83,7 @@ public class BarracksTower : Tower, IRallyPointUser
         );
         // 2. soldier.Init(this, GetHomePos(soldiers.Count), CurrentStats.soldier, CurrentStats.engageRange)
         soldier.Init(this, GetHomePos(index), CurrentStats.soldier, CurrentStats.engageRange);
+        PlayTrigger("DoorOpen");
         // 3. soldiers에 추가
         soldiers[index] = soldier;
 

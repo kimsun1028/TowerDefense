@@ -14,6 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AttackTowerData
   towerName: Archer
   costs: 460000006e000000a0000000
+  animators:
+  - {fileID: 9100000, guid: dfb5e653a6e81694988ae9ac843d490b, type: 2}
+  - {fileID: 9100000, guid: 53a20314ce2a12546b9b9eb611ba3ce8, type: 2}
+  - {fileID: 9100000, guid: 3c8fd3a61f06ab84382731720a273f6b, type: 2}
+  - {fileID: 9100000, guid: 17463a02c6119334dbdcfc2204de6d85, type: 2}
   levels:
   - damage: 3
     range: 4
@@ -21,3 +26,8 @@ MonoBehaviour:
   - damage: 4
     range: 5
     attackSpeed: 1.5
+  projectileAnimators:
+  - {fileID: 9100000, guid: f5d8b8eb0ab54134e9697c4cefe0d396, type: 2}
+  - {fileID: 9100000, guid: 5b24879a8ceb1d54091dcf793da4d40e, type: 2}
+  - {fileID: 9100000, guid: 53e64ac5a84dcf54bad25bb3b8c89a3c, type: 2}
+  - {fileID: 9100000, guid: e379e8383f65f51438ecb80c1b6e5172, type: 2}

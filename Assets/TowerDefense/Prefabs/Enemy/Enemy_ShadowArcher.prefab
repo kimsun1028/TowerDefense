@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7737659823594481620}
   - component: {fileID: 3907045118035508933}
+  - component: {fileID: 8196702674056352543}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -26,8 +27,8 @@ Transform:
   m_GameObject: {fileID: 1501683576363661726}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.2, z: 0}
-  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3073819916936272551}
@@ -81,8 +82,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: 62be04279538a4fe9bfe2836e10e4b29, type: 3}
-  m_Color: {r: 0.22, g: 0.2, b: 0.3, a: 1}
+  m_Sprite: {fileID: 3222101769311019, guid: ee01d8478cf6547d9de94430907bbdfa, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -91,6 +92,28 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!95 &8196702674056352543
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1501683576363661726}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 286247264ac2fb044ac06bcb0242f369, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &3767387817977577082
 GameObject:
   m_ObjectHideFlags: 0
@@ -294,8 +317,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: TD.Enemy::Enemy
   data: {fileID: 11400000, guid: dbc10ed5d9517413bb8f88ee4e92948c, type: 2}
-  fightSpacing: {x: 0.8, y: 0.5}
-  separationSpeed: 2
   rangedProjectile: {fileID: 5234257366385800173, guid: 4cfd108a9e95e4e63910c23c28e9a201, type: 3}
   healthBarFill: {fileID: 6622795844567506553}
   body: {fileID: 3907045118035508933}
