@@ -21,16 +21,16 @@ MonoBehaviour:
   - {fileID: 9100000, guid: c735bde52caad1741b5d0f1775585f37, type: 2}
   levels:
   - damage: 12
-    range: 4
+    range: 2
     attackSpeed: 0.35
   - damage: 18
-    range: 4.5
+    range: 2.25
     attackSpeed: 0.35
   - damage: 24
-    range: 5
+    range: 2.5
     attackSpeed: 0.42000002
   - damage: 36
-    range: 5.5
+    range: 2.75
     attackSpeed: 0.5
   projectileAnimators:
   - {fileID: 9100000, guid: 2da04d95fb811b146b58f4f4accbe31b, type: 2}
