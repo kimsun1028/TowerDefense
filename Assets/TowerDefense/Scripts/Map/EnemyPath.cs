@@ -1,4 +1,3 @@
-// AI-assisted code start
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -38,4 +37,3 @@ public class EnemyPath : MonoBehaviour {
         }
     }
 }
-// AI-assisted code end

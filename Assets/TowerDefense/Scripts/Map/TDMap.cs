@@ -10,6 +10,7 @@ using UnityEngine;
 ///   TDMap.Instance.TryGetRallyPoint(o, want, r, out) 원점 o에서 r 이내, want에 가장 가까운 길 위 지점
 ///   TDMap.Instance.GetPath("Path_Right")             이름으로 경로 찾기 (편집용 EnemyPath)
 ///   TDMap.Instance.RouteData                         구운 경로 데이터 (게임용)
+///   TDMap.Instance.GetSpawn("Top") / Goal            입구 / 지키는 곳
 ///
 /// 길 = 길 그림 마스크(roadMask). 마스크가 없으면 EnemyPath 선분 + 폭(roadWidth).
 /// </summary>
@@ -43,7 +44,7 @@ public class TDMap : MonoBehaviour {
     [SerializeField] private Rect roadMaskRect;
 
     [Header("Refs")]
-    [SerializeField] private Transform goal;
+    [SerializeField] private GoalPoint goal;
     [Tooltip("경로를 구운 SO. TDMap 인스펙터나 Map Editor의 '경로 SO로 굽기'로 만든다.")]
     [SerializeField] private MapRouteData routeData;
     [Tooltip("카메라가 꽉 채워 보여줄 월드 영역 (CameraFit의 Fit To Map이 사용)")]
@@ -51,6 +52,7 @@ public class TDMap : MonoBehaviour {
 
     private readonly List<EnemyPath> paths = new();
     private readonly List<TowerSlot> slots = new();
+    private readonly List<SpawnPoint> spawns = new();
 
     public static TDMap Instance {
         get {
@@ -67,20 +69,36 @@ public class TDMap : MonoBehaviour {
     public bool DrawRoadLines { get => drawRoadLines; set => drawRoadLines = value; }
     public Texture2D RoadMask { get => roadMask; set => roadMask = value; }
     public Rect RoadMaskRect { get => roadMaskRect; set => roadMaskRect = value; }
-    public Transform Goal { get => goal; set => goal = value; }
+    public GoalPoint Goal { get => goal; set => goal = value; }
     public MapRouteData RouteData { get => routeData; set => routeData = value; }
     public Rect ViewRect { get => viewRect; set => viewRect = value; }
 
     public IReadOnlyList<EnemyPath> Paths => paths;
     public IReadOnlyList<TowerSlot> Slots => slots;
+    public IReadOnlyList<SpawnPoint> Spawns => spawns;
 
     // 4. 메서드 (public)
     /// <summary>하위의 경로/슬롯 목록을 다시 수집한다. 에디터에서 구조를 바꾼 뒤 호출.</summary>
     public void Refresh() {
         paths.Clear();
         slots.Clear();
+        spawns.Clear();
         GetComponentsInChildren(true, paths);
         GetComponentsInChildren(true, slots);
+        GetComponentsInChildren(true, spawns);
+    }
+
+    /// <summary>입구 ID로 입구를 찾는다. 없으면 null.</summary>
+    public SpawnPoint GetSpawn(string spawnId) {
+        if (spawns.Count == 0) {
+            Refresh();
+        }
+        foreach (SpawnPoint spawn in spawns) {
+            if (spawn != null && spawn.SpawnId == spawnId) {
+                return spawn;
+            }
+        }
+        return null;
     }
 
     /// <summary>이름으로 편집용 경로(EnemyPath)를 찾는다. 없으면 null.</summary>

@@ -6,7 +6,7 @@
 
 | 위치 | 내용 |
 |---|---|
-| `Scripts/Map/` (TD.Map) | `TDMap`, `MapRouteData`, `EnemyPath`, `Waypoint`, `TowerSlot`, `IRallyPointUser`, `RallyPointTool`, `CameraFit` |
+| `Scripts/Map/` (TD.Map) | `TDMap`, `MapRouteData`, `EnemyPath`, `Waypoint`, `SpawnPoint`, `GoalPoint`, `TowerSlot`, `IRallyPointUser`, `RallyPointTool`, `CameraFit` |
 | `Scripts/Map/Editor/` (TD.Map.Editor) | Map Editor 창, 경로/슬롯/TDMap 인스펙터, 맵 검증, Map01 빌더 |
 | `Art/Map/` | 길 그림(= 길 판정 마스크), 타워 자리 패드, 임시 스프라이트, 선 머티리얼 |
 | `Data/Map/Map01_Routes.asset` | 경로 데이터 SO |
@@ -33,21 +33,43 @@ route.GetDirection(d)              // 진행 방향
 route.GetRemainingDistance(d)      // 출구까지 남은 거리 → 경로 길이가 달라도 "누가 더 앞섰나" 비교 가능
 ```
 
-| 경로 | 입구 | 노드 | 길이 |
-|---|---|---|---|
-| `Path_TopMiddle` | 위 | 34 | 15.95 |
-| `Path_TopLoop` | 위 | 41 | 19.11 |
-| `Path_Right` | 오른쪽 | 50 | 25.20 |
+| 경로 | 입구 | 길이 |
+|---|---|---|
+| `Path_TopMiddle` | `Top` | 11.21 |
+| `Path_TopLoop` | `Top` | 14.36 |
+| `Path_Right` | `Right` | 16.88 |
+
+## 입구 · 지키는 곳 — `SpawnPoint` / `GoalPoint`
+
+```csharp
+MapRouteData.Spawn top = routes.GetSpawn("Top");   // 씬 없이 SO만으로
+top.RouteNames            // Path_TopMiddle, Path_TopLoop (갈림길)
+top.WaveIconPosition      // "다음 웨이브" 아이콘 위치 (화면 안쪽)
+routes.PickRandomRoute("Top")  // 입구의 경로 중 하나 랜덤
+routes.GoalPosition       // 지키는 곳 위치
+
+TDMap.Instance.GetSpawn("Right")  // 씬의 SpawnPoint (아이콘 위치는 자식 WaveIcon 드래그로 조정)
+TDMap.Instance.Goal               // 씬의 GoalPoint (도착 판정은 Enemy.ReachedGoal 이벤트)
+```
+
+| 입구 | 경로 |
+|---|---|
+| `Top` | `Path_TopMiddle`, `Path_TopLoop` |
+| `Right` | `Path_Right` |
+
+- 지키는 곳 · 오른쪽 입구 바깥의 길은 잘라서 둥글게 마무리 (화면에 긴 길이 보이지 않게)
+- 화면 범위(`ViewRect`)는 지키는 곳 ~ 오른쪽 입구, 위 고리 ~ 아래 패드. 와이드 화면에선 양옆이 잔디 여백
 
 - 길 폭은 굽기 때 길 그림에서 측정 (최대 0.6, 앞뒤 2칸 최솟값). 전 구간 14,735곳 검사 → 차선이 길 밖으로 나가는 곳 0
-- 경로를 고치면 **TDMap 인스펙터 / Map Editor → "경로 SO로 굽기"** (같은 에셋을 덮어써서 참조 유지)
+- 경로·입구·지키는 곳을 고치면 **TDMap 인스펙터 / Map Editor → "경로 SO로 굽기"** (같은 에셋을 덮어써서 참조 유지)
+- 맵 검증: 입구가 자기 경로 위에 있는지, 어느 입구에도 안 속한 경로, 아이콘이 화면 밖인지도 검사
 
 ## 맵 API — `TDMap.Instance`
 
 | 멤버 | 용도 |
 |---|---|
 | `RouteData`, `GetPath(name)` | 구운 경로 SO / 편집용 경로 |
-| `Slots`, `Goal`, `ViewRect` | 타워 자리 목록 / 지키는 곳 / 카메라 영역 |
+| `Slots`, `Spawns`, `GetSpawn(id)`, `Goal`, `ViewRect` | 타워 자리 / 입구 / 지키는 곳 / 카메라 영역 |
 | `IsOnRoad(p)`, `OverlapsRoad(c, r)` | 길 판정 |
 | `FindClosestPointOnRoad(p)` | 가장 가까운 길 중앙선 지점 |
 | `TryGetRallyPoint(origin, desired, range, out p)` | 범위 안 길 위에서 desired에 가장 가까운 점 |

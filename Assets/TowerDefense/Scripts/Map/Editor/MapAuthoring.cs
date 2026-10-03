@@ -22,7 +22,7 @@ public static class MapAuthoring {
     private const string ROAD_SHADER = "Universal Render Pipeline/2D/Sprite-Unlit-Default";
     private const string FALLBACK_SHADER = "Sprites/Default";
     private const string LABEL_FONT = "LegacyRuntime.ttf";
-    private const float PAD_PIXELS_PER_UNIT = 160f;
+    private const float PAD_PIXELS_PER_UNIT = 60f;   // 픽셀아트 1px = 1텍셀 (맵과 같은 밀도)
     private const int PAD_SORTING_ORDER = -6;
     private const int LABEL_SORTING_ORDER = -4;
     private const float SLOT_LABEL_CHAR_SIZE = 0.045f;
@@ -36,8 +36,8 @@ public static class MapAuthoring {
     public static Sprite Circle => CreateOrLoadSprite("Circle", true);
     public static Sprite Square => CreateOrLoadSprite("Square", false);
 
-    /// <summary>타워 자리 흙 패드 (테두리가 진한 타원). 없으면 원으로 대체.</summary>
-    public static Sprite Pad => LoadSprite(PAD_SPRITE_PATH, PAD_PIXELS_PER_UNIT) ?? Circle;
+    /// <summary>타워 자리 패드 (픽셀아트). 없으면 원으로 대체.</summary>
+    public static Sprite Pad => LoadSprite(PAD_SPRITE_PATH, PAD_PIXELS_PER_UNIT, filter: FilterMode.Point) ?? Circle;
 
     /// <summary>길/선 그리기용 머티리얼. 없으면 만든다.</summary>
     public static Material RoadMaterial {
@@ -55,8 +55,8 @@ public static class MapAuthoring {
     }
 
     // 4. 메서드 (public)
-    /// <summary>PNG를 스프라이트로 임포트해서 불러온다. readable = 픽셀 읽기 허용 (길 마스크용).</summary>
-    public static Sprite LoadSprite(string path, float pixelsPerUnit, bool readable = false) {
+    /// <summary>PNG를 스프라이트로 임포트해서 불러온다. readable = 픽셀 읽기 허용 (길 마스크용), filter = 픽셀아트는 Point.</summary>
+    public static Sprite LoadSprite(string path, float pixelsPerUnit, bool readable = false, FilterMode filter = FilterMode.Bilinear) {
         var importer = AssetImporter.GetAtPath(path) as TextureImporter;
         if (importer == null) {
             return null;
@@ -64,7 +64,8 @@ public static class MapAuthoring {
         bool needsReimport = importer.textureType != TextureImporterType.Sprite
             || !Mathf.Approximately(importer.spritePixelsPerUnit, pixelsPerUnit)
             || importer.isReadable != readable
-            || importer.textureCompression != TextureImporterCompression.Uncompressed;
+            || importer.textureCompression != TextureImporterCompression.Uncompressed
+            || importer.filterMode != filter;
         if (needsReimport) {
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Single;
@@ -73,6 +74,7 @@ public static class MapAuthoring {
             importer.mipmapEnabled = false;
             importer.alphaIsTransparency = true;
             importer.textureCompression = TextureImporterCompression.Uncompressed;
+            importer.filterMode = filter;
             importer.SaveAndReimport();
         }
         return AssetDatabase.LoadAssetAtPath<Sprite>(path);
@@ -182,6 +184,8 @@ public static class MapAuthoring {
             baked.Add(MapRouteData.BakeRoute(path.name, points, data.SampleSpacing, map.IsOnRoad, map.RoadWidth * HALF));
         }
         data.SetRoutes(baked);
+        data.SetSpawns(CreateSpawnData(map));
+        data.SetGoal(map.Goal != null, map.Goal != null ? map.Goal.transform.position : Vector3.zero);
         EditorUtility.SetDirty(data);
         AssetDatabase.SaveAssetIfDirty(data);
         return data;
@@ -202,6 +206,10 @@ public static class MapAuthoring {
             if (issue != null) {
                 return issue;
             }
+        }
+        string spawnIssue = FindSpawnMismatch(map, data);
+        if (spawnIssue != null) {
+            return spawnIssue;
         }
         if (map.transform.position != Vector3.zero) {
             return "맵이 원점에 있지 않습니다. 경로 SO는 월드 좌표라 맵을 (0,0,0)에 두어야 합니다.";
@@ -285,6 +293,40 @@ public static class MapAuthoring {
             AssetDatabase.CreateAsset(data, assetPath);
         }
         return data;
+    }
+
+    private static List<MapRouteData.Spawn> CreateSpawnData(TDMap map) {
+        var result = new List<MapRouteData.Spawn>();
+        foreach (SpawnPoint spawn in map.Spawns) {
+            if (spawn == null) {
+                continue;
+            }
+            result.Add(new MapRouteData.Spawn(spawn.SpawnId, spawn.transform.position,
+                new List<string>(spawn.RouteNames), spawn.WaveIconPosition));
+        }
+        return result;
+    }
+
+    private static string FindSpawnMismatch(TDMap map, MapRouteData data) {
+        if (data.Spawns.Count != map.Spawns.Count) {
+            return "경로 SO의 입구 개수가 맵과 다릅니다. 다시 구우세요.";
+        }
+        foreach (SpawnPoint spawn in map.Spawns) {
+            MapRouteData.Spawn baked = data.GetSpawn(spawn.SpawnId);
+            bool same = baked != null
+                && (baked.Position - spawn.transform.position).sqrMagnitude <= POSITION_SQR_TOLERANCE
+                && ((Vector2)baked.WaveIconPosition - spawn.WaveIconPosition).sqrMagnitude <= POSITION_SQR_TOLERANCE
+                && baked.RouteNames.Count == spawn.RouteNames.Count;
+            for (int i = 0; same && i < spawn.RouteNames.Count; i++) {
+                same = baked.RouteNames[i] == spawn.RouteNames[i];
+            }
+            if (!same) {
+                return $"입구 {spawn.SpawnId}: 경로 SO와 다릅니다. 다시 구우세요.";
+            }
+        }
+        bool goalSame = data.HasGoal == (map.Goal != null)
+            && (map.Goal == null || (data.GoalPosition - map.Goal.transform.position).sqrMagnitude <= POSITION_SQR_TOLERANCE);
+        return goalSame ? null : "지키는 곳 위치가 경로 SO와 다릅니다. 다시 구우세요.";
     }
 
     private static string FindPathMismatch(EnemyPath path, MapRouteData.Route route) {

@@ -39,6 +39,10 @@ public class TDMapEditor : Editor {
         foreach (MapRouteData.Route route in data.Routes) {
             summary.Append($"\n  {route.Name}: 노드 {route.Waypoints.Count} / 등간격 {route.Points.Count} / 길이 {route.Length:F2}");
         }
+        foreach (MapRouteData.Spawn spawn in data.Spawns) {
+            summary.Append($"\n  입구 {spawn.SpawnId}: {string.Join(", ", spawn.RouteNames)}");
+        }
+        summary.Append(data.HasGoal ? "\n  지키는 곳: 있음" : "\n  지키는 곳: 없음");
         return summary.ToString();
     }
 }
