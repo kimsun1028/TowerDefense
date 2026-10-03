@@ -13,13 +13,14 @@ using UnityEngine.UI;
 public class MainMenu : MonoBehaviour {
     // 1. 상수
     public const string SCENE_NAME = "MainMenu";
+    public const string DEFAULT_GAME_SCENE = "Game";   // Scenes/Game.unity (Tools > TD > Build Game Scene)
     private const float TITLE_FLOAT_HEIGHT = 8f;
     private const float TITLE_FLOAT_SPEED = 1.6f;
 
     // 2. 필드
     public event Action SettingsRequested;
 
-    [SerializeField] private string gameSceneName = "Map01_Playtest";
+    [SerializeField] private string gameSceneName = DEFAULT_GAME_SCENE;
     [SerializeField] private RectTransform title;
     [SerializeField] private Button startButton;
     [SerializeField] private Button settingsButton;
