@@ -54,6 +54,14 @@ public class Soldier : MonoBehaviour , IDamageable
         if (HasParam(paramName)) animator.SetTrigger(paramName);
     }
 
+    // 공격(또는 Lv3 Block) 애니메이션 재생 중인지
+    private bool IsAttacking()
+    {
+        if (animator == null || animator.runtimeAnimatorController == null) return false;
+        AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+        return state.IsName("Attack") || state.IsName("Block");
+    }
+
     // 이동/공격 방향으로 바라보기: 0 오른쪽(왼쪽이면 flipX), 1 위, 2 아래
     private void Face(Vector2 delta)
     {
@@ -185,9 +193,9 @@ public class Soldier : MonoBehaviour , IDamageable
         {
             Die();
         }
-        else
+        else if (!IsAttacking())
         {
-            PlayTrigger("Hurt");
+            PlayTrigger("Hurt");   // 공격 모션 중에는 피격 모션으로 끊지 않음
         }
     }
 
