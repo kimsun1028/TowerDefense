@@ -10,12 +10,13 @@ public class CameraFit : MonoBehaviour {
     public enum Mode { Fit, Fill }
 
     // 1. 상수
+    private static readonly Rect DEFAULT_WORLD_RECT = new(-6.8f, -4.2f, 13.6f, 9.1f);
     private const float HALF = 0.5f;
 
     // 2. 필드
     [Tooltip("켜면 씬의 TDMap.ViewRect를 사용한다")]
     [SerializeField] private bool fitToMap = true;
-    [SerializeField] private Rect worldRect = new(-6.8f, -4.2f, 13.6f, 9.1f);
+    [SerializeField] private Rect worldRect = DEFAULT_WORLD_RECT;
     [SerializeField] private Mode mode = Mode.Fit;
 
     private Camera cam;

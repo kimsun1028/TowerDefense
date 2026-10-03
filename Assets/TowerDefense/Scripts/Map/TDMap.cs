@@ -17,6 +17,8 @@ using UnityEngine;
 [ExecuteAlways]
 public class TDMap : MonoBehaviour {
     // 1. 상수
+    private static readonly Color DEFAULT_ROAD_COLOR = new(0.82f, 0.72f, 0.5f);
+    private static readonly Rect DEFAULT_VIEW_RECT = new(-6.8f, -4.2f, 13.6f, 9.1f);
     private const float MASK_ALPHA_THRESHOLD = 0.5f;
     private const float HALF = 0.5f;
     private const int OVERLAP_SAMPLE_COUNT = 16;
@@ -32,7 +34,7 @@ public class TDMap : MonoBehaviour {
     [Header("Road")]
     [Tooltip("길 마스크가 없을 때 쓰는 길 폭 (경로 중앙선 기준)")]
     [Min(0.1f)] [SerializeField] private float roadWidth = 0.75f;
-    [SerializeField] private Color roadColor = new(0.82f, 0.72f, 0.5f);
+    [SerializeField] private Color roadColor = DEFAULT_ROAD_COLOR;
     [SerializeField] private Material roadMaterial;
     [Tooltip("경로를 LineRenderer로 그린다. 길 그림(roadMask)을 쓰면 끈다.")]
     [SerializeField] private bool drawRoadLines = true;
@@ -48,7 +50,7 @@ public class TDMap : MonoBehaviour {
     [Tooltip("경로를 구운 SO. TDMap 인스펙터나 Map Editor의 '경로 SO로 굽기'로 만든다.")]
     [SerializeField] private MapRouteData routeData;
     [Tooltip("카메라가 꽉 채워 보여줄 월드 영역 (CameraFit의 Fit To Map이 사용)")]
-    [SerializeField] private Rect viewRect = new(-6.8f, -4.2f, 13.6f, 9.1f);
+    [SerializeField] private Rect viewRect = DEFAULT_VIEW_RECT;
 
     private readonly List<EnemyPath> paths = new();
     private readonly List<TowerSlot> slots = new();
