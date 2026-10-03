@@ -64,17 +64,21 @@ public class AttackTower : Tower, IInfoSource {
 
 ## 게임 UI (HUD · 웨이브 · 링 메뉴 · 메인 화면)
 
-- HUD (`GameHud`): 목숨·골드, `WAVE n/15`, 배속 한 버튼(1배속 → 2배속 → 정지), 톱니/Esc 일시 정지 메뉴(계속하기 · 설정 · 메인 메뉴), 승리/패배 창(다시 하기 · 메인 메뉴)
+- HUD (`GameHud`): 목숨·골드, `WAVE n/10`, 배속 한 버튼(1배속 → 2배속 → 정지), 톱니/Esc 일시 정지 메뉴(계속하기 · 설정 · 메인 메뉴), 승리/패배 창(다시 하기 · 메인 메뉴)
 - 웨이브: 쉬는 시간(15초)에만 입구 옆 다음 웨이브 버튼(누르면 바로 시작, 고리 = 남은 시간) + 길 위 예상 경로 화살표 (`WaveCallButtons`, `WavePathPreview`)
 - 웨이브 끝 = 필드의 마지막 적이 죽거나 지키는 곳에 들어갔을 때 (`WaveSpawner`)
 - 타워 링 메뉴 (`RingMenu`): `RingMenu.Instance.Open(위치, List<RingMenuOption>)` — 가격표, 골드 부족 시 흐리게, 잠금, 판매, 단축키 표시, 화면 끝에서 안쪽으로
 - 정보 바: 한 줄(초상화 · 이름 탭 · 아이콘 + 값)
-- 메인 화면 (`MainMenu`, `Scenes/MainMenu.unity`): 게임 시작 · 설정(준비 중) · 종료
+- 메인 화면 (`MainMenu`, `Scenes/MainMenu.unity`): 게임 시작 · 설정 · 종료, 오른쪽 위 `?` = 게임 설명
+- 설정 창 (`SettingsPanel`): 전체 · 배경음 · 효과음 음량, 음소거. 메인 화면과 일시 정지 메뉴에서 같은 창. 값은 PlayerPrefs에 저장 (`GameAudioSettings`)
+  - 소리를 내는 `AudioSource`에 `AudioVolume`을 붙이고 종류(Music / Effects)를 고르면 그 음량을 따른다. 전체 음량·음소거는 `AudioListener`라 모든 소리에 적용
+- 게임 설명 (`GuidePanel`): 목표 · 타워 건설 · 기본 타워 유형(영웅 포함 5종) · 적 유형 4장 (건너뛰기 / 다음 / 알겠습니다). 게임 화면 그림은 `Art/UI/Guide/`, 타워·적 그림은 `Assets/Sprites` 첫 프레임
+- 사거리 미리보기 (`RangePreview`): 링 메뉴 버튼에 마우스를 올리면 지었을 때(강화는 다음 레벨) 사거리를 희미하게. 병영·영웅은 집결지 거리
 - 폰트: 나눔고딕(SIL OFL 1.1) + 어두운 외곽선, TMP 기본 리소스 포함
 
 ### 게임 쪽 연결 (`Scripts/Integration`, asmdef 없음)
 - `GameHudBinding`: `GameManager`의 `GoldChanged` / `LivesChanged` → HUD, `GameWon` / `GameLost` → 결과 창
-- `TowerBuildMenuAdapter`: `TowerBuilder`가 고른 자리에 링 메뉴(숫자키 1~4 표시). 일시 정지·결과 창 중에는 `TowerBuilder`를 멈춘다. 타워 쪽 `SlotSelected` 등 이벤트가 생기면 구독으로 바꾼다
+- `TowerBuildMenuAdapter`: `TowerBuilder`의 `SlotSelected` / `TowerSelected` / `SelectionCleared` → 링 메뉴 (건설 5종 숫자키 1~5, 강화 · 판매 · 집결지). 링 중심은 타워 그림 가운데, 타워 몸통을 눌러도 그 타워 메뉴. 일시 정지·결과 창 중에는 `TowerBuilder`를 멈춘다
 
 ### 씬에 붙이는 법
 - `Prefabs/UI/GameHud`, `Prefabs/UI/InfoPanel` + EventSystem(`InputSystemUIInputModule`)

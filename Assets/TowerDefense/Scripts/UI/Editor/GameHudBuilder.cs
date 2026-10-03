@@ -9,7 +9,7 @@ using UnityEngine.UI;
 /// Tools > TD > UI > Build Game HUD
 /// 게임 화면 UI 프리팹(Prefabs/UI/GameHud.prefab):
 ///   왼쪽 위 목숨·골드 / WAVE 3/15, 오른쪽 위 배속(정지·1·2배속 한 버튼)·메뉴(계속/설정/메인 메뉴),
-///   입구 옆 "다음 웨이브" 블랙홀 버튼, 타워 링 메뉴, 다음 웨이브 예상 경로 화살표.
+///   설정 창(소리), 입구 옆 "다음 웨이브" 블랙홀 버튼, 타워 링 메뉴, 다음 웨이브 예상 경로 화살표.
 /// 목숨·골드·배속은 게임 매니저가 GameHud에 연결한다 (SetLives / SetGold / SpeedRequested).
 /// </summary>
 public static class GameHudBuilder {
@@ -110,6 +110,7 @@ public static class GameHudBuilder {
         CreateRingMenu(root.transform, boldFont);
         (GameObject menuPanel, Button resume, Button settings, Button mainMenu) = CreateMenu(root.transform, boldFont, frame, buttonSprite);
         (GameObject resultPanel, TMP_Text resultTitle, Button retry, Button resultMainMenu) = CreateResult(root.transform, boldFont, frame, buttonSprite);
+        SettingsPanel settingsPanel = SettingsPanelBuilder.Create(root.transform, boldFont);
 
         GameHud hud = root.AddComponent<GameHud>();
         UiArt.SetField(hud, "livesText", livesText);
@@ -125,6 +126,7 @@ public static class GameHudBuilder {
         UiArt.SetField(hud, "resumeButton", resume);
         UiArt.SetField(hud, "settingsButton", settings);
         UiArt.SetField(hud, "mainMenuButton", mainMenu);
+        UiArt.SetField(hud, "settingsPanel", settingsPanel);
         UiArt.SetField(hud, "resultPanel", resultPanel);
         UiArt.SetField(hud, "resultTitle", resultTitle);
         UiArt.SetField(hud, "retryButton", retry);

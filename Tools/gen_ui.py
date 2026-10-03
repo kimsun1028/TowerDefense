@@ -12,6 +12,8 @@
   Icon_*.png       12x12 아이콘 (목숨·골드·웨이브·능력치·버튼)
   PathArrow.png    다음 웨이브 예상 경로 화살표 (길 위에 그려짐, 60px = 1칸)
   RingFrame.png    타워 링 메뉴 고리 / RingButton.png 링 버튼 틀 / CostTag.png 가격표 (9-slice, 테두리 3px)
+  SliderTrack.png / SliderFill.png (9-slice, 테두리 3px) / SliderHandle.png  설정 화면 음량 막대
+  Toggle.png / ToggleOn.png  켜기·끄기 칸
 """
 import math
 from pathlib import Path
@@ -537,6 +539,47 @@ def cost_tag():
     return image
 
 
+def slider_track():
+    image = Image.new("RGBA", (10, 8), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(image)
+    draw.rounded_rectangle([0, 0, 9, 7], radius=2, fill=OUTLINE)
+    draw.rectangle([1, 2, 8, 5], fill=PANEL_DARK)
+    draw.line([2, 6, 7, 6], fill=METAL_DARK)
+    return image
+
+
+def slider_fill():
+    image = Image.new("RGBA", (10, 8), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(image)
+    draw.rectangle([1, 2, 8, 5], fill=NEON)
+    draw.line([1, 2, 8, 2], fill=(200, 250, 255))
+    return image
+
+
+def slider_handle(size=12):
+    image = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(image)
+    s = size - 1
+    draw.rounded_rectangle([0, 0, s, s], radius=3, fill=OUTLINE)
+    draw.rounded_rectangle([1, 1, s - 1, s - 1], radius=2, fill=METAL_LIGHT)
+    draw.rectangle([3, 3, s - 3, s - 3], fill=PINK)
+    draw.point((3, 3), fill=PINK_LIGHT)
+    return image
+
+
+def toggle(on, size=12):
+    image = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(image)
+    s = size - 1
+    draw.rounded_rectangle([0, 0, s, s], radius=2, fill=OUTLINE)
+    draw.rectangle([1, 1, s - 1, s - 1], fill=METAL)
+    draw.rectangle([2, 2, s - 2, s - 2], fill=PANEL_DARK)
+    if on:
+        draw.rectangle([3, 3, s - 3, s - 3], fill=NEON)
+        draw.line([3, 3, s - 3, 3], fill=(200, 250, 255))
+    return image
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     frame(24, 7).save(OUT / "Frame.png")
@@ -548,6 +591,11 @@ def main():
     ring_frame().save(OUT / "RingFrame.png")
     ring_button().save(OUT / "RingButton.png")
     cost_tag().save(OUT / "CostTag.png")
+    slider_track().save(OUT / "SliderTrack.png")
+    slider_fill().save(OUT / "SliderFill.png")
+    slider_handle().save(OUT / "SliderHandle.png")
+    toggle(False).save(OUT / "Toggle.png")
+    toggle(True).save(OUT / "ToggleOn.png")
     for name, rows in ICONS.items():
         draw_ascii(rows).save(OUT / f"Icon_{name}.png")
     for kind in ("Wave", "Clock", "Target"):

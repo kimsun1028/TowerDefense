@@ -309,6 +309,12 @@ MonoBehaviour:
   upgradeIcon: {fileID: 21300000, guid: b2c8790cca90b442ab77069579f17f38, type: 3}
   sellIcon: {fileID: 21300000, guid: 2c83e5340132147efbf0f870b1d3f44e, type: 3}
   rallyIcon: {fileID: 21300000, guid: a8c36b2400e1a43878b6b982cfc8f09f, type: 3}
+  towerPrefabs:
+  - {fileID: 945504094232387702, guid: 795bd7c0e95debf49a7b1fb51989dc1c, type: 3}
+  - {fileID: 1532617501346184008, guid: 4e71bb442a6c4984d8e4438409152e6e, type: 3}
+  - {fileID: 4784655366331751881, guid: d1c45f8d7c6a1b849ba4069f01a6be17, type: 3}
+  - {fileID: 4219463417359989972, guid: 53dbbf8cbb84d5e408d530db1d7d47c4, type: 3}
+  - {fileID: 5541600492135607113, guid: 2d42292739c38954fa031c0a070f9e9e, type: 3}
 --- !u!114 &982901897
 MonoBehaviour:
   m_ObjectHideFlags: 0
