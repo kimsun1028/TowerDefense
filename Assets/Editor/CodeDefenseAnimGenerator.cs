@@ -48,6 +48,9 @@ public static class CodeDefenseAnimGenerator
             case "Hit":           return new Rule(12, false);
             case "Ground":        return new Rule(6, true);
             case "Build":         return new Rule(12, false);
+            case "Respawn":       return new Rule(10, false);
+            case "Apply":         return new Rule(12, false);
+            case "Break":         return new Rule(12, false);
             case "Upgrade":       return new Rule(12, false);
             default:              return new Rule(8, true);
         }
@@ -59,12 +62,14 @@ public static class CodeDefenseAnimGenerator
     // Enemy_<ID>_<Action...>        -> owner "Enemy_<ID>"
     // Soldier_Lv<n>_<Action...>     -> owner "Soldier_Lv<n>"
     // <Xxx>Tower_Lv<n>_<Action...>  -> owner "<Xxx>Tower_Lv<n>"
+    // Hero_Lv<n>_<Action...>        -> owner "Hero_Lv<n>"
+    // Effect_<Name>_<Action>        -> owner "Effect_<Name>" (clips only, no controller)
     static bool TryParse(string name, out string owner, out string action)
     {
         owner = action = null;
         string[] p = name.Split('_');
         if (p.Length < 3) return false;
-        if (p[0] == "Enemy" || p[0] == "Soldier" || p[0].EndsWith("Tower"))
+        if (p[0] == "Enemy" || p[0] == "Soldier" || p[0] == "Hero" || p[0] == "Effect" || p[0].EndsWith("Tower"))
         {
             owner = p[0] + "_" + p[1];
             action = string.Join("_", p.Skip(2));
@@ -218,7 +223,7 @@ public static class CodeDefenseAnimGenerator
     static int GenerateControllers(List<ClipInfo> clips)
     {
         int count = 0;
-        foreach (var group in clips.Where(c => !EffectKinds.Contains(c.action.Split('_')[0]))
+        foreach (var group in clips.Where(c => !EffectKinds.Contains(c.action.Split('_')[0]) && !c.owner.StartsWith("Effect_"))
                                    .GroupBy(c => c.folder + "|" + c.owner))
         {
             var list = group.ToList();
