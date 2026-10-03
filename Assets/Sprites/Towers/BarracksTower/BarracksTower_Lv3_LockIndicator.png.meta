@@ -47,8 +47,8 @@ TextureImporter:
   spriteExtrude: 1
   spriteMeshType: 0
   alignment: 0
-  spritePivot: {x: 0.50000, y: 0.06250}
-  spritePixelsToUnits: 60
+  spritePivot: {x: 0.5, y: 0.0625}
+  spritePixelsToUnits: 80
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -80,6 +80,58 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -92,9 +144,9 @@ TextureImporter:
         width: 96
         height: 144
       alignment: 9
-      pivot: {x: 0.50000, y: 0.06250}
+      pivot: {x: 0.5, y: 0.0625}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData:
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -102,7 +154,7 @@ TextureImporter:
       spriteID: ed8995260b3b5625b2e875ad2a9e43b7
       internalID: 4919873705203353
       vertices: []
-      indices:
+      indices: 
       edges: []
       weights: []
     - serializedVersion: 2
@@ -114,9 +166,9 @@ TextureImporter:
         width: 96
         height: 144
       alignment: 9
-      pivot: {x: 0.50000, y: 0.06250}
+      pivot: {x: 0.5, y: 0.0625}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData:
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -124,17 +176,17 @@ TextureImporter:
       spriteID: deb2dc30a9fc597f8281a01683ce34b2
       internalID: 8828518814503981
       vertices: []
-      indices:
+      indices: 
       edges: []
       weights: []
     outline: []
-    customData:
+    customData: 
     physicsShape: []
     bones: []
     spriteID: 
     internalID: 0
     vertices: []
-    indices:
+    indices: 
     edges: []
     weights: []
     secondaryTextures: []
@@ -143,8 +195,8 @@ TextureImporter:
     nameFileIdTable:
       BarracksTower_Lv3_LockIndicator_0: 4919873705203353
       BarracksTower_Lv3_LockIndicator_1: 8828518814503981
-  mipmapLimitGroupName:
+  mipmapLimitGroupName: 
   pSDRemoveMatte: 0
-  userData:
-  assetBundleName:
-  assetBundleVariant:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

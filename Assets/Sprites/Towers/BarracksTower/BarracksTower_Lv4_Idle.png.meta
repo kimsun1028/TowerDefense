@@ -47,8 +47,8 @@ TextureImporter:
   spriteExtrude: 1
   spriteMeshType: 0
   alignment: 0
-  spritePivot: {x: 0.50000, y: 0.05625}
-  spritePixelsToUnits: 60
+  spritePivot: {x: 0.5, y: 0.05625}
+  spritePixelsToUnits: 80
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -80,6 +80,58 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -92,9 +144,9 @@ TextureImporter:
         width: 96
         height: 160
       alignment: 9
-      pivot: {x: 0.50000, y: 0.05625}
+      pivot: {x: 0.5, y: 0.05625}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData:
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -102,7 +154,7 @@ TextureImporter:
       spriteID: 4a9b5e82fadf5788b241dd3dcf92c4ed
       internalID: 5472625969797898
       vertices: []
-      indices:
+      indices: 
       edges: []
       weights: []
     - serializedVersion: 2
@@ -114,9 +166,9 @@ TextureImporter:
         width: 96
         height: 160
       alignment: 9
-      pivot: {x: 0.50000, y: 0.05625}
+      pivot: {x: 0.5, y: 0.05625}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData:
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -124,7 +176,7 @@ TextureImporter:
       spriteID: c34ce55789e15f9b8bf831c61ce3246e
       internalID: 5535693975322785
       vertices: []
-      indices:
+      indices: 
       edges: []
       weights: []
     - serializedVersion: 2
@@ -136,9 +188,9 @@ TextureImporter:
         width: 96
         height: 160
       alignment: 9
-      pivot: {x: 0.50000, y: 0.05625}
+      pivot: {x: 0.5, y: 0.05625}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData:
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -146,7 +198,7 @@ TextureImporter:
       spriteID: e26ac72637e15ef9b3223b0077514cfe
       internalID: 8761277674482679
       vertices: []
-      indices:
+      indices: 
       edges: []
       weights: []
     - serializedVersion: 2
@@ -158,9 +210,9 @@ TextureImporter:
         width: 96
         height: 160
       alignment: 9
-      pivot: {x: 0.50000, y: 0.05625}
+      pivot: {x: 0.5, y: 0.05625}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData:
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -168,17 +220,17 @@ TextureImporter:
       spriteID: 2cfca2bdcb925a0093ea76b89440ffe4
       internalID: 4395707313826087
       vertices: []
-      indices:
+      indices: 
       edges: []
       weights: []
     outline: []
-    customData:
+    customData: 
     physicsShape: []
     bones: []
     spriteID: 
     internalID: 0
     vertices: []
-    indices:
+    indices: 
     edges: []
     weights: []
     secondaryTextures: []
@@ -189,8 +241,8 @@ TextureImporter:
       BarracksTower_Lv4_Idle_1: 5535693975322785
       BarracksTower_Lv4_Idle_2: 8761277674482679
       BarracksTower_Lv4_Idle_3: 4395707313826087
-  mipmapLimitGroupName:
+  mipmapLimitGroupName: 
   pSDRemoveMatte: 0
-  userData:
-  assetBundleName:
-  assetBundleVariant:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
