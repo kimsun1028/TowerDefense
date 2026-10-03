@@ -11,6 +11,13 @@ public class BarracksTower : Tower, IRallyPointUser
     private float[] respawnTimers; // 남은 리스폰 시간 리스트
 
     private BarracksLevelStats CurrentStats => data.levels[level - 1];
+    public override TowerData Data => data;
+    public override bool HasRallyPoint => true;
+
+    public override void BeginRallyPoint()
+    {
+        // TODO: RallyPointTool.Instance.Begin(this, transform.position)
+    }
 
     // IRallyPointUser
     public float RallyRange => slot.RallyRange;

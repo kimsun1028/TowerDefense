@@ -1,10 +1,26 @@
+using System;
 using UnityEngine;
 
 public class TowerBuilder : MonoBehaviour
 {
-    [SerializeField] private Tower[] towerPrefabs;   // 0 Archer, 1 Magic, 2 Artillery
+    [SerializeField] private Tower[] towerPrefabs;   // 0 Archer, 1 Magic, 2 Artillery, 3 Barracks
 
     private TowerSlot selectedSlot;
+
+    // UI 연동 API (약속문 기준)
+    public event Action<TowerSlot> SlotSelected;   // TODO: 빈 슬롯 클릭 시 호출
+    public event Action<Tower> TowerSelected;      // TODO: 지어진 타워 클릭 시 호출
+    public event Action SelectionCleared;          // TODO: 빈 땅 클릭 / 건설 완료 시 호출
+
+    public int GetBuildCost(int index)
+    {
+        return 0;   // TODO: towerPrefabs[index].Data.costs[0]
+    }
+
+    public bool CanBuild(int index)
+    {
+        return true;   // TODO: GameManager.Instance.Gold >= GetBuildCost(index)
+    }
 
     private void Update()
     {

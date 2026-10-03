@@ -13,6 +13,7 @@ public abstract class AttackTower : Tower
 
     protected Enemy target;
     protected AttackLevelStats CurrentStats => data.levels[level - 1];
+    public override TowerData Data => data;
     
     private CircleCollider2D rangeCollider;
     private float cooldown;

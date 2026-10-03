@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: ArcherTowerData
   m_EditorClassIdentifier: Assembly-CSharp::AttackTowerData
   towerName: Archer
+  costs: 460000006e000000a0000000
   levels:
   - damage: 3
     range: 4
