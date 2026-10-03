@@ -8,9 +8,14 @@ public abstract class AttackTower : Tower
     protected List<Enemy> targetList = new List<Enemy>();
 
     protected Enemy target;
-
+    protected AttackLevelStats CurrentStats => data.levels[level - 1];
     private float cooldown;
 
+
+    void Start()
+    {
+        
+    }
     void Update()
     {   
         FindTarget();
@@ -18,7 +23,7 @@ public abstract class AttackTower : Tower
         if(cooldown <= 0 && target != null)
         {   
             Attack();
-            cooldown = 1f / data.levels[level - 1].attackSpeed;
+            cooldown = 1f / CurrentStats.attackSpeed;
         }
         // 타겟 찾기 -> 쿨감소 -> 0초 이하면 Attack()호출 후 cooldown = 1f / attackSpeed;
     }
@@ -49,6 +54,22 @@ public abstract class AttackTower : Tower
             target = targetList[0];
         }
         
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {     
+        if(other.TryGetComponent(out Enemy enemy))
+        {
+            AddTargetList(enemy);
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if(other.TryGetComponent(out Enemy enemy))
+        {
+            DeleteTargetList(enemy);
+        }   
     }
 
     protected abstract void Attack();
