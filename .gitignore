@@ -112,3 +112,43 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# ==============================================================
+# Team project additions
+# ==============================================================
+
+# OS-generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# IDE personal settings (shared .vscode/ settings stay tracked)
+.idea/
+*.swp
+*.swo
+*~
+.vscode/*.code-workspace
+
+# Unity personal / crash / profiler files
+/[Aa]ssets/Plugins/Editor/JetBrains*.meta
+*.dmp
+*.stackdump
+/[Pp]rofiler[Cc]aptures/
+
+# Build outputs (any folder starting with Build)
+/[Bb]uild*/
+
+# Local secrets / environment
+.env
+.env.*
+*.keystore
+*.jks
+
+# AI assistant local settings
+.claude/settings.local.json
