@@ -44,7 +44,7 @@ public class BarracksTower : Tower, IRallyPointUser
     }
 
     // IRallyPointUser
-    public float RallyRange => slot.RallyRange;
+    public virtual float RallyRange => slot.RallyRange;
     public Vector2 RallyPoint {get; private set; }
 
     private void Start()
