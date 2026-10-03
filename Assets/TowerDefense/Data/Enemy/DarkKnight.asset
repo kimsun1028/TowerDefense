@@ -17,7 +17,7 @@ MonoBehaviour:
     40% \uB35C \uBC1B\uB294\uB2E4. \uB9C8\uBC95\uC0AC\uB85C \uC7A1\uC790."
   portrait: {fileID: 0}
   maxHp: 300
-  speed: 0.9607143
+  speed: 0.48035714
   armor: 0.8
   magicResist: 0
   meleeEvasion: 0

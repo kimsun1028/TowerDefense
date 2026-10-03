@@ -17,7 +17,7 @@ MonoBehaviour:
     \uC5C6\uACE0, \uD3EC\uBCD1 \uD3ED\uD0C4\uB3C4 \uB2FF\uC9C0 \uC54A\uB294\uB2E4."
   portrait: {fileID: 0}
   maxHp: 90
-  speed: 1.6464285
+  speed: 0.82321423
   armor: 0
   magicResist: 0
   meleeEvasion: 0
