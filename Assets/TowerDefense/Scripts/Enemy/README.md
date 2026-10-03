@@ -6,7 +6,7 @@
 
 | 위치 | 내용 |
 |---|---|
-| `Scripts/Enemy/Enemy.cs` | 경로 거리 + 차선 이동, 붙잡힘/반격, 교전 겹침 방지, 이벤트 |
+| `Scripts/Enemy/Enemy.cs` | 경로 거리 + 차선 이동, 붙잡힘/반격 (교전은 서로 겹쳐서 진행), 이벤트 |
 | `Scripts/Enemy/EnemyData.cs` | 적 종류별 스탯 SO |
 | `Scripts/Enemy/WaveSpawner.cs` | 웨이브/그룹 스폰, 경로 랜덤 선택, 무리(pack) 퍼짐 |
 | `Scripts/Enemy/EnemyTargets.cs`, `EnemyProjectile.cs` | 원거리 적의 공격 대상 목록 / 적이 쏘는 화살 |
