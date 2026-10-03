@@ -38,5 +38,6 @@ MonoBehaviour:
   killAllOnDeath: 1
   formTint: {r: 0.75, g: 0.12, b: 0.12, a: 1}
   isFlying: 0
+  heavyHit: 1
   immunities: 0
   radius: 0.27

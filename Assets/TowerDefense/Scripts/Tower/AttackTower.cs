@@ -92,6 +92,7 @@ public abstract class AttackTower : Tower
     protected virtual void Attack()
     {
         PlayTrigger("Shoot");
+        GameSounds.Instance?.PlayTowerShoot(GetType().Name, level);
         Projectile projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
         projectile.Init(target, CurrentStats.damage);
 

@@ -73,7 +73,10 @@ public class AttackTower : Tower, IInfoSource {
 - 설정 창 (`SettingsPanel`): 전체 · 배경음 · 효과음 음량, 음소거. 메인 화면과 일시 정지 메뉴에서 같은 창. 값은 PlayerPrefs에 저장 (`GameAudioSettings`)
   - 소리를 내는 `AudioSource`에 `AudioVolume`을 붙이고 종류(Music / Effects)를 고르면 그 음량을 따른다. 전체 음량·음소거는 `AudioListener`라 모든 소리에 적용
 - 게임 설명 (`GuidePanel`): 목표 · 타워 건설 · 기본 타워 유형(영웅 포함 5종) · 적 유형 4장 (건너뛰기 / 다음 / 알겠습니다). 게임 화면 그림은 `Art/UI/Guide/`, 타워·적 그림은 `Assets/Sprites` 첫 프레임
-- 사거리 미리보기 (`RangePreview`): 링 메뉴 버튼에 마우스를 올리면 지었을 때(강화는 다음 레벨) 사거리를 희미하게. 병영·영웅은 집결지 거리
+- 게임 소리 (`GameSounds`, GameHud 프리팹): 배경 음악 반복, 웨이브 시작, 목숨 감소(한 프레임 한 번), 적 사망(보스는 낮게), 타워 건설·강화. 소리 파일은 `Assets/Audio` (사운드_사용표.md)
+  - 타워 공격(`AttackTower.Attack` → `PlayTowerShoot`), 병사·영웅 타격·사망(`Soldier` → `PlayAllyHit` / `PlayAllyDeath`), 적 근접 타격(`Enemy.MeleeHit` 이벤트, `EnemyData.heavyHit`)
+  - 다른 소리를 더 넣을 때는 `GameSounds.Instance?.PlayVaried(clip)` 한 줄 (pitch 0.95~1.05 랜덤, 효과음 음량 적용). 레드락 소리는 봉인 기능이 생기면 연결
+- 사거리 미리보기 (`RangePreview`): 링 메뉴 버튼에 마우스를 올리면 지었을 때(강화는 다음 레벨) 사거리를 희미하게. 병영은 집결지 거리, 영웅은 무제한이라 표시 안 함
 - 폰트: 나눔고딕(SIL OFL 1.1) + 어두운 외곽선, TMP 기본 리소스 포함
 
 ### 게임 쪽 연결 (`Scripts/Integration`, asmdef 없음)

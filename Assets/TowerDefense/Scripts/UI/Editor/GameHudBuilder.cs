@@ -8,8 +8,8 @@ using UnityEngine.UI;
 /// <summary>
 /// Tools > TD > UI > Build Game HUD
 /// 게임 화면 UI 프리팹(Prefabs/UI/GameHud.prefab):
-///   왼쪽 위 목숨·골드 / WAVE 3/15, 오른쪽 위 배속(정지·1·2배속 한 버튼)·메뉴(계속/설정/메인 메뉴),
-///   설정 창(소리), 입구 옆 "다음 웨이브" 블랙홀 버튼, 타워 링 메뉴, 다음 웨이브 예상 경로 화살표.
+///   왼쪽 위 목숨·골드 / WAVE 3/10, 오른쪽 위 배속(정지·1·2배속 한 버튼)·메뉴(계속/설정/메인 메뉴),
+///   설정 창(소리), 입구 옆 "다음 웨이브" 블랙홀 버튼, 타워 링 메뉴, 다음 웨이브 예상 경로 화살표, 게임 소리(GameSounds).
 /// 목숨·골드·배속은 게임 매니저가 GameHud에 연결한다 (SetLives / SetGold / SpeedRequested).
 /// </summary>
 public static class GameHudBuilder {
@@ -19,6 +19,7 @@ public static class GameHudBuilder {
     private const int CANVAS_SORTING_ORDER = 5;
     private const int RING_BUTTON_COUNT = 6;
     private const float PATH_ARROW_PIXELS_PER_UNIT = 60f;
+    private const string AUDIO_DIR = "Assets/Audio";   // 에셋 쪽 소리 (사운드_사용표.md)
 
     private const float MARGIN = 16f;
     private const float PANEL_HEIGHT = 70f;
@@ -132,6 +133,21 @@ public static class GameHudBuilder {
         UiArt.SetField(hud, "retryButton", retry);
         UiArt.SetField(hud, "resultMainMenuButton", resultMainMenu);
 
+        GameSounds sounds = root.AddComponent<GameSounds>();
+        UiArt.SetField(sounds, "stageMusic", LoadClip("BGM/BGM_Stage_Loop"));
+        UiArt.SetField(sounds, "waveStart", LoadClip("SFX/SFX_Wave_Start"));
+        UiArt.SetField(sounds, "playerDamage", LoadClip("SFX/SFX_Player_Damage"));
+        UiArt.SetField(sounds, "unitDeath", LoadClip("SFX/SFX_Unit_Death"));
+        UiArt.SetField(sounds, "towerBuild", LoadClip("SFX/SFX_Tower_Build"));
+        UiArt.SetField(sounds, "archerShoot", LoadClip("SFX/SFX_ArcherTower_Shoot_Lv12"));
+        UiArt.SetField(sounds, "archerShootStrong", LoadClip("SFX/SFX_ArcherTower_Shoot_Lv34"));
+        UiArt.SetField(sounds, "artilleryShoot", LoadClip("SFX/SFX_ArtilleryTower_Shoot_Lv12"));
+        UiArt.SetField(sounds, "artilleryShootStrong", LoadClip("SFX/SFX_ArtilleryTower_Shoot_Lv34"));
+        UiArt.SetField(sounds, "magicShoot", LoadClip("SFX/SFX_MagicTower_Shoot_Lv12"));
+        UiArt.SetField(sounds, "magicShootStrong", LoadClip("SFX/SFX_MagicTower_Shoot_Lv34"));
+        UiArt.SetField(sounds, "hitLight", LoadClip("SFX/SFX_Hit_Light"));
+        UiArt.SetField(sounds, "hitHeavy", LoadClip("SFX/SFX_Hit_Heavy"));
+
         WavePathPreview preview = root.AddComponent<WavePathPreview>();
         UiArt.SetField(preview, "arrowSprite", UiArt.Load("PathArrow", 0, PATH_ARROW_PIXELS_PER_UNIT));
 
@@ -146,6 +162,15 @@ public static class GameHudBuilder {
         Image image = UiArt.CreateImage(objectName, parent, UiArt.LoadIcon(icon));
         UiArt.Place(image.rectTransform, new Vector2(0f, 0.5f), new Vector2(left, 0f), Vector2.one * ICON_SIZE);
         return image;
+    }
+
+    /// <summary>Assets/Audio/name.wav. 없으면 경고만 (소리 없이 동작).</summary>
+    private static AudioClip LoadClip(string clipName) {
+        var clip = AssetDatabase.LoadAssetAtPath<AudioClip>($"{AUDIO_DIR}/{clipName}.wav");
+        if (clip == null) {
+            Debug.LogWarning($"[GameHudBuilder] 소리가 없습니다: {AUDIO_DIR}/{clipName}.wav");
+        }
+        return clip;
     }
 
     private static TMP_Text CreateValue(string objectName, Transform parent, TMP_FontAsset font, float size, Color color,

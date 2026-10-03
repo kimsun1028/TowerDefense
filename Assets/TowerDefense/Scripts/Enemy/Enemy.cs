@@ -44,6 +44,8 @@ public partial class Enemy : MonoBehaviour {
     public static event Action<Enemy> Evaded;
     /// <summary>다음 형태로 변신함 (예: 베즈난 → 악마 형태)</summary>
     public static event Action<Enemy> FormChanged;
+    /// <summary>근접 공격이 들어감 (타격음 등). 범위 공격이어도 한 번</summary>
+    public static event Action<Enemy> MeleeHit;
 
     [SerializeField] private EnemyData data;
 
@@ -334,6 +336,7 @@ public partial class Enemy : MonoBehaviour {
     private void PerformMeleeAttack(IDamageable blockerTarget) {
         PlayTrigger("Attack");
         blockerTarget.TakeDamage(RollMeleeDamage(), DamageType.Physical);
+        MeleeHit?.Invoke(this);
         int maxTargets = data ? data.MeleeTargetCount : 1;
         if (maxTargets <= 1) {
             return;
