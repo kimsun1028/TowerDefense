@@ -19,4 +19,4 @@ MonoBehaviour:
   moveSpeed: 1.8
   attackDistance: 0.3
   deathDuration: 0.6
-  animator: {fileID: 9100000, guid: 960125c62d2579b419052a5e7c62d057, type: 2}
+  animator: {fileID: 9100000, guid: a2a794ac7c0fc8b47b29a32ee07f8277, type: 2}
