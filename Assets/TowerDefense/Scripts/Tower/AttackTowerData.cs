@@ -4,6 +4,7 @@ using UnityEngine;
 public class AttackTowerData : TowerData
 {
     public AttackLevelStats[] levels;   // 0번 = 레벨 1
+    public RuntimeAnimatorController[] projectileAnimators;   // 레벨별 발사체 외형 (0번 = Lv1)
     public override int MaxLevel => levels.Length;
 }
 

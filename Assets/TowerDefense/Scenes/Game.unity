@@ -303,6 +303,9 @@ MonoBehaviour:
   - label: "\uBCD1\uC601"
     icon: {fileID: 21300000, guid: a4dd6789ad5ca4665bbb271700c77c04, type: 3}
     shortcut: 4
+  - label: "\uC601\uC6C5"
+    icon: {fileID: 21300000, guid: a4dd6789ad5ca4665bbb271700c77c04, type: 3}
+    shortcut: 5
   upgradeIcon: {fileID: 21300000, guid: b2c8790cca90b442ab77069579f17f38, type: 3}
   sellIcon: {fileID: 21300000, guid: 2c83e5340132147efbf0f870b1d3f44e, type: 3}
   rallyIcon: {fileID: 21300000, guid: a8c36b2400e1a43878b6b982cfc8f09f, type: 3}
@@ -344,348 +347,262 @@ MonoBehaviour:
     - enemyPrefab: {fileID: 1466810934468117270, guid: c05ef32883eb54959aa8408a4d98b939, type: 3}
       spawnId: Top
       routes: []
-      count: 6
+      count: 8
       interval: 1.2
       startDelay: 0
-      packSize: 3
+      packSize: 1
       laneSpread: 0.7
       packDepth: 0.4
   - groups:
+    - enemyPrefab: {fileID: 1466810934468117270, guid: c05ef32883eb54959aa8408a4d98b939, type: 3}
+      spawnId: Top
+      routes: []
+      count: 10
+      interval: 1
+      startDelay: 0
+      packSize: 1
+      laneSpread: 0.7
+      packDepth: 0.4
     - enemyPrefab: {fileID: 1466810934468117270, guid: c05ef32883eb54959aa8408a4d98b939, type: 3}
       spawnId: Right
       routes: []
       count: 6
       interval: 1.2
+      startDelay: 3
+      packSize: 1
+      laneSpread: 0.7
+      packDepth: 0.4
+  - groups:
+    - enemyPrefab: {fileID: 1466810934468117270, guid: 704fef031cfdb4d8a93bd88c7510a868, type: 3}
+      spawnId: Right
+      routes: []
+      count: 8
+      interval: 0.8
       startDelay: 0
-      packSize: 3
+      packSize: 1
       laneSpread: 0.7
       packDepth: 0.4
     - enemyPrefab: {fileID: 1466810934468117270, guid: c05ef32883eb54959aa8408a4d98b939, type: 3}
       spawnId: Top
       routes: []
-      count: 4
+      count: 10
+      interval: 0.9
+      startDelay: 2
+      packSize: 2
+      laneSpread: 0.7
+      packDepth: 0.4
+  - groups:
+    - enemyPrefab: {fileID: 1466810934468117270, guid: f42167f10514049fea737e84e7b350c1, type: 3}
+      spawnId: Top
+      routes: []
+      count: 6
       interval: 1.2
+      startDelay: 0
+      packSize: 1
+      laneSpread: 0.7
+      packDepth: 0.4
+    - enemyPrefab: {fileID: 1466810934468117270, guid: c05ef32883eb54959aa8408a4d98b939, type: 3}
+      spawnId: Right
+      routes: []
+      count: 12
+      interval: 0.8
+      startDelay: 2
+      packSize: 2
+      laneSpread: 0.7
+      packDepth: 0.4
+  - groups:
+    - enemyPrefab: {fileID: 1466810934468117270, guid: c3363a98b832140aabd3a356ad55c86b, type: 3}
+      spawnId: Top
+      routes: []
+      count: 5
+      interval: 1.5
+      startDelay: 0
+      packSize: 1
+      laneSpread: 0.7
+      packDepth: 0.4
+    - enemyPrefab: {fileID: 1466810934468117270, guid: 704fef031cfdb4d8a93bd88c7510a868, type: 3}
+      spawnId: Right
+      routes: []
+      count: 8
+      interval: 0.7
+      startDelay: 2
+      packSize: 1
+      laneSpread: 0.7
+      packDepth: 0.4
+    - enemyPrefab: {fileID: 1466810934468117270, guid: c05ef32883eb54959aa8408a4d98b939, type: 3}
+      spawnId: Top
+      routes: []
+      count: 10
+      interval: 0.8
+      startDelay: 5
+      packSize: 2
+      laneSpread: 0.7
+      packDepth: 0.4
+  - groups:
+    - enemyPrefab: {fileID: 1466810934468117270, guid: a915d162d2f8a464b853be71524a8012, type: 3}
+      spawnId: Top
+      routes: []
+      count: 4
+      interval: 2
+      startDelay: 0
+      packSize: 1
+      laneSpread: 0.7
+      packDepth: 0.4
+    - enemyPrefab: {fileID: 1466810934468117270, guid: c05ef32883eb54959aa8408a4d98b939, type: 3}
+      spawnId: Top
+      routes: []
+      count: 14
+      interval: 0.6
       startDelay: 3
       packSize: 2
       laneSpread: 0.7
       packDepth: 0.4
-  - groups:
-    - enemyPrefab: {fileID: 1466810934468117270, guid: 704fef031cfdb4d8a93bd88c7510a868, type: 3}
-      spawnId: Right
-      routes: []
-      count: 4
-      interval: 1.4
-      startDelay: 0
-      packSize: 2
-      laneSpread: 0.7
-      packDepth: 0.4
-    - enemyPrefab: {fileID: 1466810934468117270, guid: c05ef32883eb54959aa8408a4d98b939, type: 3}
-      spawnId: Top
-      routes: []
-      count: 6
-      interval: 1
-      startDelay: 0
-      packSize: 3
-      laneSpread: 0.7
-      packDepth: 0.4
-  - groups:
-    - enemyPrefab: {fileID: 1466810934468117270, guid: 5a710cc583f3b440ab5625941bf4c3c3, type: 3}
-      spawnId: Top
-      routes: []
-      count: 6
-      interval: 1.4
-      startDelay: 0
-      packSize: 2
-      laneSpread: 0.7
-      packDepth: 0.4
-    - enemyPrefab: {fileID: 1466810934468117270, guid: 704fef031cfdb4d8a93bd88c7510a868, type: 3}
-      spawnId: Right
-      routes: []
-      count: 4
-      interval: 1.4
-      startDelay: 2
-      packSize: 2
-      laneSpread: 0.7
-      packDepth: 0.4
-  - groups:
-    - enemyPrefab: {fileID: 1466810934468117270, guid: f42167f10514049fea737e84e7b350c1, type: 3}
-      spawnId: Top
-      routes: []
-      count: 3
-      interval: 1.8
-      startDelay: 0
-      packSize: 1
-      laneSpread: 0.7
-      packDepth: 0.4
-    - enemyPrefab: {fileID: 1466810934468117270, guid: c05ef32883eb54959aa8408a4d98b939, type: 3}
-      spawnId: Right
-      routes: []
-      count: 8
-      interval: 1
-      startDelay: 0
-      packSize: 4
-      laneSpread: 0.7
-      packDepth: 0.4
-  - groups:
-    - enemyPrefab: {fileID: 1466810934468117270, guid: c3363a98b832140aabd3a356ad55c86b, type: 3}
-      spawnId: Right
-      routes: []
-      count: 3
-      interval: 1.6
-      startDelay: 0
-      packSize: 1
-      laneSpread: 0.7
-      packDepth: 0.4
-    - enemyPrefab: {fileID: 1466810934468117270, guid: 5a710cc583f3b440ab5625941bf4c3c3, type: 3}
-      spawnId: Top
-      routes: []
-      count: 8
-      interval: 1.2
-      startDelay: 0
-      packSize: 4
-      laneSpread: 0.7
-      packDepth: 0.4
-  - groups:
-    - enemyPrefab: {fileID: 1466810934468117270, guid: a915d162d2f8a464b853be71524a8012, type: 3}
-      spawnId: Right
-      routes: []
-      count: 2
-      interval: 2
-      startDelay: 0
-      packSize: 1
-      laneSpread: 0.7
-      packDepth: 0.4
-    - enemyPrefab: {fileID: 1466810934468117270, guid: 704fef031cfdb4d8a93bd88c7510a868, type: 3}
-      spawnId: Top
-      routes: []
-      count: 6
-      interval: 1.2
-      startDelay: 2
-      packSize: 3
-      laneSpread: 0.7
-      packDepth: 0.4
-  - groups:
-    - enemyPrefab: {fileID: 6096662163371487720, guid: 6b5f859fbe15d45859e0a5f21de68824, type: 3}
-      spawnId: Top
-      routes: []
-      count: 3
-      interval: 2
-      startDelay: 0
-      packSize: 1
-      laneSpread: 0.7
-      packDepth: 0.4
     - enemyPrefab: {fileID: 1466810934468117270, guid: f42167f10514049fea737e84e7b350c1, type: 3}
       spawnId: Right
       routes: []
-      count: 4
-      interval: 1.6
-      startDelay: 0
-      packSize: 1
-      laneSpread: 0.7
-      packDepth: 0.4
-    - enemyPrefab: {fileID: 1466810934468117270, guid: c05ef32883eb54959aa8408a4d98b939, type: 3}
-      spawnId: Top
-      routes: []
-      count: 10
-      interval: 0.8
+      count: 6
+      interval: 1
       startDelay: 4
-      packSize: 5
-      laneSpread: 0.7
-      packDepth: 0.4
-  - groups:
-    - enemyPrefab: {fileID: 1466810934468117270, guid: c3363a98b832140aabd3a356ad55c86b, type: 3}
-      spawnId: Top
-      routes: []
-      count: 4
-      interval: 1.4
-      startDelay: 0
       packSize: 1
       laneSpread: 0.7
       packDepth: 0.4
-    - enemyPrefab: {fileID: 6309109574915907516, guid: ca4310c2301b648a4829df88c7a730e9, type: 3}
-      spawnId: Right
-      routes: []
-      count: 10
-      interval: 0.8
-      startDelay: 0
-      packSize: 5
-      laneSpread: 0.7
-      packDepth: 0.4
   - groups:
-    - enemyPrefab: {fileID: 1466810934468117270, guid: a915d162d2f8a464b853be71524a8012, type: 3}
-      spawnId: Top
-      routes: []
-      count: 3
-      interval: 1.8
-      startDelay: 0
-      packSize: 1
-      laneSpread: 0.7
-      packDepth: 0.4
     - enemyPrefab: {fileID: 1466810934468117270, guid: 6bbb3e96909df4b6ebbcaf281add4976, type: 3}
       spawnId: Right
       routes: []
-      count: 2
+      count: 3
+      interval: 3
+      startDelay: 0
+      packSize: 1
+      laneSpread: 0.7
+      packDepth: 0.4
+    - enemyPrefab: {fileID: 1466810934468117270, guid: 704fef031cfdb4d8a93bd88c7510a868, type: 3}
+      spawnId: Top
+      routes: []
+      count: 10
+      interval: 0.6
+      startDelay: 2
+      packSize: 2
+      laneSpread: 0.7
+      packDepth: 0.4
+    - enemyPrefab: {fileID: 1466810934468117270, guid: c3363a98b832140aabd3a356ad55c86b, type: 3}
+      spawnId: Right
+      routes: []
+      count: 5
+      interval: 1.4
+      startDelay: 6
+      packSize: 1
+      laneSpread: 0.7
+      packDepth: 0.4
+  - groups:
+    - enemyPrefab: {fileID: 1466810934468117270, guid: 6bbb3e96909df4b6ebbcaf281add4976, type: 3}
+      spawnId: Top
+      routes: []
+      count: 4
       interval: 2.5
       startDelay: 0
       packSize: 1
       laneSpread: 0.7
       packDepth: 0.4
-    - enemyPrefab: {fileID: 1466810934468117270, guid: 704fef031cfdb4d8a93bd88c7510a868, type: 3}
-      spawnId: Right
-      routes: []
-      count: 6
-      interval: 1
-      startDelay: 3
-      packSize: 3
-      laneSpread: 0.7
-      packDepth: 0.4
-  - groups:
-    - enemyPrefab: {fileID: 1466810934468117270, guid: f42167f10514049fea737e84e7b350c1, type: 3}
-      spawnId: Top
-      routes: []
-      count: 6
-      interval: 1.4
-      startDelay: 0
-      packSize: 2
-      laneSpread: 0.7
-      packDepth: 0.4
-    - enemyPrefab: {fileID: 1466810934468117270, guid: c3363a98b832140aabd3a356ad55c86b, type: 3}
-      spawnId: Right
-      routes: []
-      count: 5
-      interval: 1.4
-      startDelay: 0
-      packSize: 1
-      laneSpread: 0.7
-      packDepth: 0.4
-  - groups:
     - enemyPrefab: {fileID: 1466810934468117270, guid: a915d162d2f8a464b853be71524a8012, type: 3}
       spawnId: Right
       routes: []
-      count: 4
-      interval: 1.6
-      startDelay: 0
+      count: 5
+      interval: 1.8
+      startDelay: 2
       packSize: 1
       laneSpread: 0.7
       packDepth: 0.4
-    - enemyPrefab: {fileID: 1466810934468117270, guid: 5a710cc583f3b440ab5625941bf4c3c3, type: 3}
+    - enemyPrefab: {fileID: 1466810934468117270, guid: f42167f10514049fea737e84e7b350c1, type: 3}
       spawnId: Top
       routes: []
-      count: 12
-      interval: 1
-      startDelay: 0
-      packSize: 4
+      count: 10
+      interval: 0.8
+      startDelay: 4
+      packSize: 2
       laneSpread: 0.7
       packDepth: 0.4
-    - enemyPrefab: {fileID: 6309109574915907516, guid: ca4310c2301b648a4829df88c7a730e9, type: 3}
+  - groups:
+    - enemyPrefab: {fileID: 1466810934468117270, guid: c05ef32883eb54959aa8408a4d98b939, type: 3}
+      spawnId: Top
+      routes: []
+      count: 20
+      interval: 0.4
+      startDelay: 0
+      packSize: 3
+      laneSpread: 0.7
+      packDepth: 0.4
+    - enemyPrefab: {fileID: 1466810934468117270, guid: 704fef031cfdb4d8a93bd88c7510a868, type: 3}
+      spawnId: Right
+      routes: []
+      count: 12
+      interval: 0.5
+      startDelay: 2
+      packSize: 3
+      laneSpread: 0.7
+      packDepth: 0.4
+    - enemyPrefab: {fileID: 1466810934468117270, guid: c3363a98b832140aabd3a356ad55c86b, type: 3}
       spawnId: Top
       routes: []
       count: 8
-      interval: 0.8
-      startDelay: 5
-      packSize: 4
+      interval: 1
+      startDelay: 6
+      packSize: 1
+      laneSpread: 0.7
+      packDepth: 0.4
+    - enemyPrefab: {fileID: 1466810934468117270, guid: 6bbb3e96909df4b6ebbcaf281add4976, type: 3}
+      spawnId: Right
+      routes: []
+      count: 3
+      interval: 3
+      startDelay: 9
+      packSize: 1
       laneSpread: 0.7
       packDepth: 0.4
   - groups:
     - enemyPrefab: {fileID: 1466810934468117270, guid: 6bbb3e96909df4b6ebbcaf281add4976, type: 3}
       spawnId: Top
       routes: []
-      count: 4
+      count: 6
       interval: 2
       startDelay: 0
       packSize: 1
       laneSpread: 0.7
       packDepth: 0.4
-    - enemyPrefab: {fileID: 1466810934468117270, guid: f42167f10514049fea737e84e7b350c1, type: 3}
+    - enemyPrefab: {fileID: 1466810934468117270, guid: a915d162d2f8a464b853be71524a8012, type: 3}
       spawnId: Right
       routes: []
       count: 6
-      interval: 1.4
-      startDelay: 0
+      interval: 1.5
+      startDelay: 2
+      packSize: 1
+      laneSpread: 0.7
+      packDepth: 0.4
+    - enemyPrefab: {fileID: 1466810934468117270, guid: f42167f10514049fea737e84e7b350c1, type: 3}
+      spawnId: Top
+      routes: []
+      count: 12
+      interval: 0.6
+      startDelay: 5
       packSize: 2
       laneSpread: 0.7
       packDepth: 0.4
     - enemyPrefab: {fileID: 1466810934468117270, guid: c3363a98b832140aabd3a356ad55c86b, type: 3}
-      spawnId: Top
-      routes: []
-      count: 5
-      interval: 1.4
-      startDelay: 4
-      packSize: 1
-      laneSpread: 0.7
-      packDepth: 0.4
-  - groups:
-    - enemyPrefab: {fileID: 1466810934468117270, guid: a915d162d2f8a464b853be71524a8012, type: 3}
-      spawnId: Top
-      routes: []
-      count: 4
-      interval: 1.6
-      startDelay: 0
-      packSize: 1
-      laneSpread: 0.7
-      packDepth: 0.4
-    - enemyPrefab: {fileID: 1466810934468117270, guid: a915d162d2f8a464b853be71524a8012, type: 3}
       spawnId: Right
       routes: []
-      count: 4
-      interval: 1.6
-      startDelay: 0
+      count: 10
+      interval: 0.9
+      startDelay: 8
       packSize: 1
       laneSpread: 0.7
       packDepth: 0.4
     - enemyPrefab: {fileID: 1466810934468117270, guid: 704fef031cfdb4d8a93bd88c7510a868, type: 3}
       spawnId: Top
       routes: []
-      count: 10
-      interval: 0.8
-      startDelay: 0
-      packSize: 5
-      laneSpread: 0.7
-      packDepth: 0.4
-  - groups:
-    - enemyPrefab: {fileID: 1466810934468117270, guid: 6bbb3e96909df4b6ebbcaf281add4976, type: 3}
-      spawnId: Right
-      routes: []
-      count: 4
-      interval: 1.8
-      startDelay: 0
-      packSize: 2
-      laneSpread: 0.7
-      packDepth: 0.4
-    - enemyPrefab: {fileID: 1466810934468117270, guid: f42167f10514049fea737e84e7b350c1, type: 3}
-      spawnId: Top
-      routes: []
-      count: 8
-      interval: 1.2
-      startDelay: 0
-      packSize: 2
-      laneSpread: 0.7
-      packDepth: 0.4
-    - enemyPrefab: {fileID: 1466810934468117270, guid: c3363a98b832140aabd3a356ad55c86b, type: 3}
-      spawnId: Right
-      routes: []
-      count: 6
-      interval: 1.2
-      startDelay: 3
-      packSize: 1
-      laneSpread: 0.7
-      packDepth: 0.4
-    - enemyPrefab: {fileID: 1466810934468117270, guid: a915d162d2f8a464b853be71524a8012, type: 3}
-      spawnId: Top
-      routes: []
-      count: 5
-      interval: 1.4
-      startDelay: 5
-      packSize: 1
-      laneSpread: 0.7
-      packDepth: 0.4
-    - enemyPrefab: {fileID: 1466810934468117270, guid: c05ef32883eb54959aa8408a4d98b939, type: 3}
-      spawnId: Right
-      routes: []
-      count: 16
-      interval: 0.6
-      startDelay: 2
-      packSize: 4
+      count: 15
+      interval: 0.4
+      startDelay: 12
+      packSize: 3
       laneSpread: 0.7
       packDepth: 0.4
   timeBetweenWaves: 15
@@ -709,6 +626,7 @@ MonoBehaviour:
   - {fileID: 1532617501346184008, guid: 4e71bb442a6c4984d8e4438409152e6e, type: 3}
   - {fileID: 4784655366331751881, guid: d1c45f8d7c6a1b849ba4069f01a6be17, type: 3}
   - {fileID: 4219463417359989972, guid: 53dbbf8cbb84d5e408d530db1d7d47c4, type: 3}
+  - {fileID: 5541600492135607113, guid: 2d42292739c38954fa031c0a070f9e9e, type: 3}
 --- !u!114 &982901900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -984,10 +902,10 @@ MonoBehaviour:
   fitToMap: 1
   worldRect:
     serializedVersion: 2
-    x: -6.8
-    y: -4.2
-    width: 13.6
-    height: 9.1
+    x: -8
+    y: -4.5
+    width: 16
+    height: 9
   mode: 0
 --- !u!20 &2108284346
 Camera:
@@ -1024,7 +942,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 4.55
+  orthographic size: 4.5
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -1049,7 +967,7 @@ Transform:
   m_GameObject: {fileID: 2108284344}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.35000038, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -14,6 +14,7 @@ public abstract class AttackTower : Tower
     protected Enemy target;
     protected AttackLevelStats CurrentStats => data.levels[level - 1];
     public override TowerData Data => data;
+    protected override float RangeRadius => CurrentStats.range;
     
     private CircleCollider2D rangeCollider;
     private float cooldown;
@@ -90,8 +91,16 @@ public abstract class AttackTower : Tower
 
     protected virtual void Attack()
     {
+        PlayTrigger("Shoot");
         Projectile projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
         projectile.Init(target, CurrentStats.damage);
+
+        // 레벨별 발사체 외형
+        RuntimeAnimatorController[] list = data.projectileAnimators;
+        if (list != null && level - 1 < list.Length && list[level - 1] != null)
+        {
+            projectile.SetAnimator(list[level - 1]);
+        }
     }
 
     protected virtual bool CanTarget(Enemy enemy)

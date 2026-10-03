@@ -31,6 +31,7 @@ public partial class Enemy : MonoBehaviour {
     private const float DEFAULT_MELEE_INTERVAL = 1f;
     private const float FIRST_RANGED_DELAY_RATIO = 0.5f; // 대상을 처음 발견하고 첫 발까지 = 간격의 절반
     private const float EXPLOSIVE_ARMOR_RATIO = 0.5f;    // 폭발 피해는 방어력의 절반만 적용
+    private const float DEFAULT_DEATH_ANIM_TIME = 0.6f;
 
     // 2. 필드
     private static readonly List<Enemy> active = new();
@@ -54,6 +55,7 @@ public partial class Enemy : MonoBehaviour {
     [SerializeField] private Transform healthBarFill;
     [Tooltip("이동 방향에 따라 좌우 반전할 스프라이트")]
     [SerializeField] private SpriteRenderer body;
+    private Animator anim;
 
     private Component blocker;
     private float meleeCooldown;
@@ -146,6 +148,7 @@ public partial class Enemy : MonoBehaviour {
             return false;
         }
         if (kind == AttackKind.Melee && TryEvade()) {
+            PlayTrigger("Dodge");
             Evaded?.Invoke(this);
             return false;
         }
@@ -182,6 +185,53 @@ public partial class Enemy : MonoBehaviour {
     // 4. 메서드 (private)
     private void OnEnable() {
         active.Add(this);
+        if (anim == null && body) {
+            anim = body.GetComponent<Animator>();
+        }
+    }
+
+    // 애니메이션 (body에 Animator가 있을 때만. 파라미터: Dir, Attack, Shoot, Dodge, Death)
+    private bool HasAnimParam(string paramName) {
+        if (anim == null || anim.runtimeAnimatorController == null) {
+            return false;
+        }
+        foreach (AnimatorControllerParameter p in anim.parameters) {
+            if (p.name == paramName) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void PlayTrigger(string paramName) {
+        if (HasAnimParam(paramName)) {
+            anim.SetTrigger(paramName);
+        }
+    }
+
+    private void SetMoveDirection(Vector3 delta) {
+        if (!HasAnimParam("Dir")) {
+            return;
+        }
+        int dir = Mathf.Abs(delta.y) > Mathf.Abs(delta.x) ? (delta.y > 0f ? 1 : 2) : 0; // 0 옆, 1 위, 2 아래
+        anim.SetInteger("Dir", dir);
+    }
+
+    /// <summary>사망: body만 떼어내 사망 애니메이션을 재생하고, 클립 길이 뒤에 지운다.</summary>
+    private void PlayDeathDetached() {
+        if (!HasAnimParam("Death")) {
+            return;
+        }
+        float length = DEFAULT_DEATH_ANIM_TIME;
+        foreach (AnimationClip clip in anim.runtimeAnimatorController.animationClips) {
+            if (clip.name.EndsWith("_Death")) {
+                length = clip.length;
+            }
+        }
+        Transform bodyTransform = anim.transform;
+        bodyTransform.SetParent(null, true);
+        anim.SetTrigger("Death");
+        Destroy(bodyTransform.gameObject, length);
     }
 
     private void OnDisable() {
@@ -230,6 +280,7 @@ public partial class Enemy : MonoBehaviour {
     }
 
     private void FireAt(IDamageable target) {
+        PlayTrigger(HasAnimParam("Shoot") ? "Shoot" : "Attack");
         int damage = UnityEngine.Random.Range(data.RangedDamageMin, data.RangedDamageMax + 1); // 최댓값 포함
         if (rangedProjectile == null) {
             target.TakeDamage(damage, DamageType.Physical);
@@ -259,6 +310,7 @@ public partial class Enemy : MonoBehaviour {
         if (body && Mathf.Abs(next.x - current.x) > FLIP_THRESHOLD) {
             body.flipX = next.x < current.x;
         }
+        SetMoveDirection(next - current);
         transform.position = next;
     }
 
@@ -280,6 +332,7 @@ public partial class Enemy : MonoBehaviour {
     /// 반경 안의 다른 대상(가까운 순)까지 최대 그 수만큼 맞는다. 피해는 대상마다 따로 뽑는다.
     /// </summary>
     private void PerformMeleeAttack(IDamageable blockerTarget) {
+        PlayTrigger("Attack");
         blockerTarget.TakeDamage(RollMeleeDamage(), DamageType.Physical);
         int maxTargets = data ? data.MeleeTargetCount : 1;
         if (maxTargets <= 1) {
@@ -357,6 +410,7 @@ public partial class Enemy : MonoBehaviour {
     private void Die() {
         IsDead = true;
         Killed?.Invoke(this);
+        PlayDeathDetached();
         Destroy(gameObject);
         if (data && data.KillAllOnDeath) {
             KillAllOthers();

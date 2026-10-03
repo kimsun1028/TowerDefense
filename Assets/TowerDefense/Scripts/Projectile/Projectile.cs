@@ -37,9 +37,40 @@ public abstract class Projectile : MonoBehaviour
 
         if(t >= 1f)
         {
-            if(target != null || !homing) OnHit();
+            if(target != null || !homing)
+            {
+                OnHit();
+                PlayHitDetached();
+            }
             Destroy(gameObject);
         }
+    }
+
+    // 레벨별 외형 교체 (Visual 자식의 Animator)
+    public void SetAnimator(RuntimeAnimatorController controller)
+    {
+        Animator animator = GetComponentInChildren<Animator>();
+        if (animator != null) animator.runtimeAnimatorController = controller;
+    }
+
+    // 명중: Visual만 떼어내 Hit 애니메이션을 재생한 뒤 지움
+    private void PlayHitDetached()
+    {
+        Animator animator = GetComponentInChildren<Animator>();
+        if (animator == null || animator.runtimeAnimatorController == null) return;
+
+        AnimationClip hitClip = null;
+        foreach (AnimationClip clip in animator.runtimeAnimatorController.animationClips)
+        {
+            if (clip.name.EndsWith("_Hit")) hitClip = clip;
+        }
+        if (hitClip == null) return;
+
+        Transform visual = animator.transform;
+        visual.SetParent(null, true);
+        visual.rotation = Quaternion.identity;
+        animator.SetTrigger("Hit");
+        Destroy(visual.gameObject, hitClip.length);
     }
 
     protected virtual void OnHit()

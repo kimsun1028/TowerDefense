@@ -12,6 +12,7 @@ public class BarracksTower : Tower, IRallyPointUser
 
     private BarracksLevelStats CurrentStats => data.levels[level - 1];
     public override TowerData Data => data;
+    protected override float RangeRadius => slot != null ? slot.RallyRange : 0f;
     public override bool HasRallyPoint => true;
 
     public override void BeginRallyPoint()
@@ -83,6 +84,7 @@ public class BarracksTower : Tower, IRallyPointUser
         );
         // 2. soldier.Init(this, GetHomePos(soldiers.Count), CurrentStats.soldier, CurrentStats.engageRange)
         soldier.Init(this, GetHomePos(index), CurrentStats.soldier, CurrentStats.engageRange);
+        PlayTrigger("DoorOpen");
         // 3. soldiers에 추가
         soldiers[index] = soldier;
 

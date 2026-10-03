@@ -11,6 +11,10 @@ public class Soldier : MonoBehaviour , IDamageable
     private float attackCoolDown;
     private Enemy target;
 
+    private Animator animator;         // Visual 자식 (파라미터: Moving, Dir, Attack, Hurt, Death)
+    private SpriteRenderer body;
+    private bool movedThisFrame;
+
     // IDamageable
     public bool IsAlive => hp > 0f;
     public Vector2 Position => transform.position;
@@ -24,6 +28,39 @@ public class Soldier : MonoBehaviour , IDamageable
         this.engageRange = engageRange;
 
         this.hp = data.maxHp;
+
+        animator = GetComponentInChildren<Animator>();
+        body = GetComponentInChildren<SpriteRenderer>();
+        ApplyAnimator();
+    }
+
+    private void ApplyAnimator()
+    {
+        if (animator != null && data.animator != null) animator.runtimeAnimatorController = data.animator;
+    }
+
+    private bool HasParam(string paramName)
+    {
+        if (animator == null || animator.runtimeAnimatorController == null) return false;
+        foreach (AnimatorControllerParameter p in animator.parameters)
+        {
+            if (p.name == paramName) return true;
+        }
+        return false;
+    }
+
+    private void PlayTrigger(string paramName)
+    {
+        if (HasParam(paramName)) animator.SetTrigger(paramName);
+    }
+
+    // 이동/공격 방향으로 바라보기: 0 오른쪽(왼쪽이면 flipX), 1 위, 2 아래
+    private void Face(Vector2 delta)
+    {
+        if (delta.sqrMagnitude < 0.000001f) return;
+        int dir = Mathf.Abs(delta.y) > Mathf.Abs(delta.x) ? (delta.y > 0f ? 1 : 2) : 0;
+        if (HasParam("Dir")) animator.SetInteger("Dir", dir);
+        if (body != null && Mathf.Abs(delta.x) > 0.0001f) body.flipX = delta.x < 0f;
     }
 
     public void SetHome(Vector2 pos)
@@ -38,6 +75,7 @@ public class Soldier : MonoBehaviour , IDamageable
         data = newData;
         engageRange = newEngageRange;
         hp = data.maxHp;
+        ApplyAnimator();
     }
 
     private void OnEnable()
@@ -58,6 +96,7 @@ public class Soldier : MonoBehaviour , IDamageable
         {
             return;
         }
+        movedThisFrame = false;
 
         if(target == null || !Util.IsInEllipse(homePos, target.transform.position, engageRange))
         {
@@ -80,6 +119,8 @@ public class Soldier : MonoBehaviour , IDamageable
                 attackCoolDown -= Time.deltaTime;
                 if(attackCoolDown <= 0)
                 {
+                    Face(target.transform.position - transform.position);
+                    PlayTrigger("Attack");
                     target.TakeDamage(data.damage, DamageType.Physical, AttackKind.Melee);
                     attackCoolDown = data.attackInterval;
                 }
@@ -89,6 +130,8 @@ public class Soldier : MonoBehaviour , IDamageable
         {
             MoveTo(homePos);
         }
+
+        if (HasParam("Moving")) animator.SetBool("Moving", movedThisFrame);
 
         // 3-a. target이 있으면
         //      - 거리 > data.attackDistance → MoveTo(target 위치)
@@ -120,7 +163,14 @@ public class Soldier : MonoBehaviour , IDamageable
 
     private void MoveTo(Vector2 pos)
     {
-        transform.position = Vector2.MoveTowards(transform.position,pos,data.moveSpeed * Time.deltaTime);
+        Vector2 current = transform.position;
+        Vector2 next = Vector2.MoveTowards(current, pos, data.moveSpeed * Time.deltaTime);
+        if ((next - current).sqrMagnitude > 0.0000001f)
+        {
+            movedThisFrame = true;
+            Face(next - current);
+        }
+        transform.position = next;
     }
 
     //IDamageable
@@ -135,12 +185,18 @@ public class Soldier : MonoBehaviour , IDamageable
         {
             Die();
         }
+        else
+        {
+            PlayTrigger("Hurt");
+        }
     }
 
     private void Die()
     {
         ReleaseTarget();
         owner.OnSoldierDied(this);
+        if (HasParam("Moving")) animator.SetBool("Moving", false);
+        PlayTrigger("Death");
         Destroy(gameObject, data.deathDuration);
     }
 }

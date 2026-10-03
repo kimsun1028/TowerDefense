@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8e8592191156ad4385c38a35298bf9e, type: 3}
+  m_Name: Hero_Lv2
+  m_EditorClassIdentifier: Assembly-CSharp::SoldierData
+  soldierName: Hero Lv2
+  maxHp: 450
+  damage: 22
+  attackInterval: 0.85
+  moveSpeed: 1.8
+  attackDistance: 0.3
+  deathDuration: 0.6
+  animator: {fileID: 9100000, guid: 960125c62d2579b419052a5e7c62d057, type: 2}
