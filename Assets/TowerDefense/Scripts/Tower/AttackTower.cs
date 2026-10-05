@@ -65,7 +65,8 @@ public abstract class AttackTower : Tower
         target = null;
         foreach(Enemy enemy in targetList)
         {
-            if(CanTarget(enemy) && Util.IsInEllipse(transform.position,enemy.transform.position,CurrentStats.range))
+            // 적의 몸통이 사거리 타원에 조금이라도 걸치면 공격 가능
+            if(CanTarget(enemy) && Util.IsBodyTouchingEllipse(transform.position, CurrentStats.range, enemy))
             {
                 target = enemy;
                 break;

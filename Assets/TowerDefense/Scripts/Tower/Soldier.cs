@@ -12,6 +12,13 @@ public partial class Soldier : MonoBehaviour , IDamageable
     private float hp;
     private float attackCoolDown;
     private Enemy target;
+    private bool isBlocking;    // target을 직접 붙잡았는지 (false면 다른 병사가 잡은 적을 같이 공격 중)
+    private bool wantsToBlock;  // target을 붙잡으러 가는 중 (도착하면 붙잡음)
+    private readonly List<Enemy> nearbyEnemies = new List<Enemy>();
+    private static readonly List<Soldier> activeSoldiers = new List<Soldier>();   // 같은 적을 여럿이 막으러 가지 않게 확인용
+
+    // 적 탐지 중심 = 집결지 깃발 (병사 각자 자리가 아니라 병영 전체가 같은 범위를 봄)
+    private Vector2 EngageCenter => owner != null ? owner.RallyPoint : homePos;
 
     private Animator animator;         // Visual 자식 (파라미터: Moving, Dir, Attack, Hurt, Death)
     private SpriteRenderer body;
@@ -103,12 +110,14 @@ public partial class Soldier : MonoBehaviour , IDamageable
     {
         EnemyTargets.Register(this);
         WaveSpawner.WaveCleared += OnWaveCleared;
+        activeSoldiers.Add(this);
     }
 
     private void OnDisable()
     {
         EnemyTargets.Unregister(this);
         WaveSpawner.WaveCleared -= OnWaveCleared;
+        activeSoldiers.Remove(this);
     }
 
     // 웨이브가 끝나면 체력 가득 (다음 웨이브를 언제 불러도 손해 없게)
@@ -129,16 +138,36 @@ public partial class Soldier : MonoBehaviour , IDamageable
         }
         movedThisFrame = false;
 
-        if(target == null || !Util.IsInEllipse(homePos, target.transform.position, engageRange))
+        if(target == null || target.IsDead || !Util.IsInEllipse(EngageCenter, target.transform.position, engageRange))
         {
             ReleaseTarget();
+        }
+
+        if(target != null && !isBlocking)
+        {
+            // 막으러 가는 중에 다른 병사가 먼저 붙잡았으면 돕기로 바꿈
+            if(wantsToBlock && target.IsBlocked) wantsToBlock = false;
+            if(!wantsToBlock)
+            {
+                // 돕는 중: 아무도 맡지 않은 적이 오면 그쪽을 막으러 가고, 막던 병사가 쓰러졌으면 이어받음
+                Enemy free = FindUnclaimedFreeEnemy();
+                if(free != null)
+                {
+                    target = free;
+                    wantsToBlock = true;
+                }
+                else if(!target.IsBlocked && !IsClaimedByOther(target))
+                {
+                    wantsToBlock = true;
+                }
+            }
         }
 
         if(target == null)
         {
             FindTarget();
         }
-        
+
         if(target != null)
         {
            if(Vector2.Distance(transform.position,target.transform.position) > data.attackDistance)
@@ -147,6 +176,12 @@ public partial class Soldier : MonoBehaviour , IDamageable
             }
             else
             {
+                // 도착해서야 적을 붙잡음 → 걸어가는 동안 적은 멈추지 않고, 병사를 때리지도 않음
+                if(!isBlocking && !target.IsBlocked && target.TryEngage(this))
+                {
+                    isBlocking = true;
+                    wantsToBlock = false;
+                }
                 attackCoolDown -= Time.deltaTime;
                 if(attackCoolDown <= 0)
                 {
@@ -181,25 +216,71 @@ public partial class Soldier : MonoBehaviour , IDamageable
         UpdateHealthBar();
     }
 
+    // 1순위: 아무도 맡지 않은 적을 막으러 감. 2순위: 다른 병사가 맡은 적 중 가장 가까운 적을 같이 공격
+    // (붙잡기는 도착했을 때 Update에서)
     private void FindTarget()
     {
-        List<Enemy> enemies = Enemy.FindInRadius(homePos, engageRange);
-        foreach(Enemy enemy in enemies)
+        Enemy free = FindUnclaimedFreeEnemy();
+        if (free != null)
         {
-            if (enemy.TryEngage(this))
+            target = free;
+            wantsToBlock = true;
+            return;
+        }
+
+        float best = float.MaxValue;
+        foreach(Enemy enemy in nearbyEnemies)
+        {
+            if (enemy.IsFlying) continue;
+            float d = ((Vector2)enemy.transform.position - (Vector2)transform.position).sqrMagnitude;
+            if (d < best)
             {
+                best = d;
                 target = enemy;
-                break;
             }
         }
+        isBlocking = false;
+        wantsToBlock = false;
     }
+
+    // 집결지 범위 안에서 아무도 붙잡지 않았고 다른 병사도 막으러 가지 않는, 가장 가까운 지상 적 (nearbyEnemies도 갱신)
+    private Enemy FindUnclaimedFreeEnemy()
+    {
+        Enemy.FindInRadius(EngageCenter, engageRange, nearbyEnemies);
+        Enemy found = null;
+        float best = float.MaxValue;
+        foreach(Enemy enemy in nearbyEnemies)
+        {
+            if (enemy.IsBlocked || enemy.IsFlying || enemy == target || IsClaimedByOther(enemy)) continue;
+            float d = ((Vector2)enemy.transform.position - (Vector2)transform.position).sqrMagnitude;
+            if (d < best)
+            {
+                best = d;
+                found = enemy;
+            }
+        }
+        return found;
+    }
+
+    // 다른 병사가 이 적을 이미 붙잡았거나 막으러 가는 중인지
+    private bool IsClaimedByOther(Enemy enemy)
+    {
+        foreach (Soldier other in activeSoldiers)
+        {
+            if (other != this && other.target == enemy && (other.isBlocking || other.wantsToBlock)) return true;
+        }
+        return false;
+    }
+
     private void ReleaseTarget()
     {
-        if(target != null)
+        if(target != null && isBlocking)
         {
             target.Release(this);
         }
         target = null;
+        isBlocking = false;
+        wantsToBlock = false;
     }
 
     private void MoveTo(Vector2 pos)

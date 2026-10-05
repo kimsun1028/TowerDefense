@@ -21,7 +21,7 @@ MonoBehaviour:
   armor: 0.6
   magicResist: 0
   meleeEvasion: 0
-  goldReward: 25
+  goldReward: 38
   lifeDamage: 1
   meleeDamageMax: 25
   meleeDamageMin: 15

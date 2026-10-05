@@ -9,6 +9,9 @@ public abstract class Projectile : MonoBehaviour
     protected Enemy target;
     protected int damage;
 
+    // 목표가 사라져도 끝점에서 명중 처리할지 (범위 공격인 포탄 등)
+    protected virtual bool HitsWithoutTarget => false;
+
     private Vector2 startPos;
     private Vector2 endPos;
     private float flightTime;
@@ -37,7 +40,7 @@ public abstract class Projectile : MonoBehaviour
 
         if(t >= 1f)
         {
-            if(target != null || !homing)
+            if(target != null || !homing || HitsWithoutTarget)
             {
                 OnHit();
                 PlayHitDetached();
