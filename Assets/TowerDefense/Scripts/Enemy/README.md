@@ -12,9 +12,8 @@
 | `Scripts/Enemy/EnemyTargets.cs`, `EnemyProjectile.cs` | 원거리 적의 공격 대상 목록 / 적이 쏘는 화살 |
 | `Scripts/Enemy/EllipseRange.cs` | 2.5D 타원 사거리 판정 (타워 쪽 `Util.IsInEllipse`와 같은 공식, 카메라 45°) |
 | `Scripts/Enemy/DamageType.cs`, `AttackKind.cs`, `StatusEffect.cs`, `IDamageable.cs` | 전투 공용 타입 (타워 담당도 사용). DamageType = 물리/마법, AttackKind = 근접/원거리, StatusEffect = 독/둔화/기절/화상 |
-| `Scripts/Enemy/Editor/EnemyBuilder.cs` | Tools > TD > Enemy > Build Placeholder Enemies |
-| `Data/Enemy/*.asset` | 스탯 SO: Grunt, Runner, Armored, Goblin, Wolf, Spider, Gargoyle, ShadowArcher, DarkKnight, Veznan, VeznanDemon |
-| `Prefabs/Enemy/Enemy_*.prefab` | 임시 그래픽 프리팹 (트리거 Collider2D + Kinematic Rigidbody2D 포함) |
+| `Data/Enemy/*.asset` | 스탯 SO: Goblin, Wolf, Spider, Gargoyle, ShadowArcher, DarkKnight, Veznan, VeznanDemon |
+| `Prefabs/Enemy/Enemy_*.prefab` | 적 프리팹 (트리거 Collider2D + Kinematic Rigidbody2D 포함) |
 
 ## 게임 쪽 연동 (이벤트)
 

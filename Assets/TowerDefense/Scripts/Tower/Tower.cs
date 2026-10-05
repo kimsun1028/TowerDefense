@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class Tower : MonoBehaviour
+public abstract partial class Tower : MonoBehaviour
 {
     protected int level = 1;
 

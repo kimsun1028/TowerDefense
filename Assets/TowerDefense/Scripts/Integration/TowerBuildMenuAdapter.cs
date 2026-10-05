@@ -20,6 +20,7 @@ public class TowerBuildMenuAdapter : MonoBehaviour {
     private const string MAX_LEVEL_LABEL = "최대 강화";
     private const string SELL_LABEL = "판매";
     private const string RALLY_LABEL = "집결지 설정";
+    private const string LIMIT_LABEL_FORMAT = "{0} (이미 배치됨)";
     private const int LEFT_MOUSE_BUTTON = 0;
     private const float HALF = 0.5f;
     // 타워에 그림(SpriteRenderer)이 없을 때 쓰는 클릭 영역 (자리 바닥 기준, 유닛)
@@ -75,6 +76,7 @@ public class TowerBuildMenuAdapter : MonoBehaviour {
         builder.SlotSelected += OnSlotSelected;
         builder.TowerSelected += OnBuilderTowerSelected;
         builder.SelectionCleared += OnSelectionCleared;
+        InfoSelector.FallbackFinder = FindTowerAt; // 몸통 클릭도 정보 바에 타워 정보
     }
 
     private void OnDisable() {
@@ -84,6 +86,9 @@ public class TowerBuildMenuAdapter : MonoBehaviour {
         builder.SlotSelected -= OnSlotSelected;
         builder.TowerSelected -= OnBuilderTowerSelected;
         builder.SelectionCleared -= OnSelectionCleared;
+        if (InfoSelector.FallbackFinder == (System.Func<Vector2, IInfoSource>)FindTowerAt) {
+            InfoSelector.FallbackFinder = null;
+        }
     }
 
     private void Update() {
@@ -107,8 +112,10 @@ public class TowerBuildMenuAdapter : MonoBehaviour {
         for (int i = 0; i < towerButtons.Count; i++) {
             int index = i;
             TowerButton button = towerButtons[i];
-            options.Add(new RingMenuOption(button.Icon, button.Label, () => builder.Build(index),
-                builder.GetBuildCost(index), () => builder.CanBuild(index), shortcut: button.Shortcut,
+            bool limitReached = builder.IsBuildLimitReached(index); // 영웅은 이미 있으면 자물쇠
+            options.Add(new RingMenuOption(button.Icon, limitReached ? string.Format(LIMIT_LABEL_FORMAT, button.Label) : button.Label,
+                () => builder.Build(index), builder.GetBuildCost(index), () => builder.CanBuild(index),
+                isLocked: limitReached, shortcut: button.Shortcut,
                 hovered: isHovered => PreviewBuildRange(slot, index, isHovered)));
         }
         Open(slot.transform.position);
@@ -168,7 +175,13 @@ public class TowerBuildMenuAdapter : MonoBehaviour {
         if (!Input.GetMouseButtonDown(LEFT_MOUSE_BUTTON) || cam == null) {
             return false;
         }
-        Vector2 point = cam.ScreenToWorldPoint(Input.mousePosition);
+        clicked = FindTowerAt(cam.ScreenToWorldPoint(Input.mousePosition));
+        return clicked != null;
+    }
+
+    /// <summary>point가 그림 위에 있는 지은 타워 (겹치면 앞 = 화면 아래쪽). 없으면 null.</summary>
+    private static Tower FindTowerAt(Vector2 point) {
+        Tower clicked = null;
         float bestY = float.MaxValue;
         foreach (Tower tower in FindObjectsByType<Tower>(FindObjectsSortMode.None)) {
             Bounds bounds = GetTowerBounds(tower);
@@ -178,7 +191,7 @@ public class TowerBuildMenuAdapter : MonoBehaviour {
                 clicked = tower;
             }
         }
-        return clicked != null;
+        return clicked;
     }
 
     /// <summary>타워 그림 영역 (병사·사거리 원 제외). 그림이 없으면 자리 위 기본 크기.</summary>

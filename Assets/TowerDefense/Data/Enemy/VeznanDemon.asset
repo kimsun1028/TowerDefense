@@ -17,15 +17,15 @@ MonoBehaviour:
     \uC4F0\uB7EC\uB728\uB9AC\uBA74 \uC804\uC7A5\uC758 \uB2E4\uB978 \uC801\uC774 \uBAA8\uB450
     \uD568\uAED8 \uC4F0\uB7EC\uC9C4\uB2E4."
   portrait: {fileID: 941820160429326, guid: 9ffd92d9bb8955b19043a9213b5b44ed, type: 3}
-  maxHp: 6666
-  speed: 0.32142857
+  maxHp: 3333
+  speed: 0.16071428
   armor: 0
   magicResist: 0
   meleeEvasion: 0
   goldReward: 0
   lifeDamage: 20
-  meleeDamageMax: 999
-  meleeDamageMin: 666
+  meleeDamageMax: 240
+  meleeDamageMin: 160
   meleeInterval: 2.5
   meleeTargetCount: 8
   meleeAreaRadius: 0.9

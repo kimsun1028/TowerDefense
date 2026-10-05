@@ -13,7 +13,13 @@ MonoBehaviour:
   m_Name: Hero_Lv4
   m_EditorClassIdentifier: Assembly-CSharp::SoldierData
   soldierName: Hero_Lv4
+  displayName: "\uB7EC\uBC84\uB355 \uD788\uC5B4\uB85C"
+  description: "\uC6A9\uC0AC\uC758 \uC218\uC870\uC5D0\uC11C \uB098\uC640 \uC2F8\uC6B4\uB2E4.
+    \uC4F0\uB7EC\uC838\uB3C4 \uC7A0\uC2DC \uB4A4 \uB2E4\uC2DC \uB098\uC628\uB2E4."
+  portrait: {fileID: 1988295227531042, guid: a5cf6d267a8e5dde996c4fc7013d2b7c, type: 3}
+  healthBarHeight: 0.8
   maxHp: 900
+  regenPerSecond: 45
   damage: 40
   attackInterval: 0.75
   moveSpeed: 1.9

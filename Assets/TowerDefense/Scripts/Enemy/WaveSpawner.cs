@@ -11,8 +11,8 @@ using UnityEngine;
 /// (예: "Top" = Path_TopMiddle, Path_TopLoop). Routes에 경로 이름을 직접 넣으면 그 목록을 우선 쓴다.
 /// 웨이브마다 다른 입구/경로를 줄 수 있다.
 /// PackSize / LaneSpread로 한 줄이 아니라 무리로 퍼져 나오게 한다.
-/// 보스: BossPrefab이 있으면 마지막 웨이브의 적이 모두 사라진 뒤 BossDelay초 후 등장한다.
-/// 게임 연동: WaveStarted, BossSpawned, AllWavesCleared 이벤트.
+/// 보스: BossPrefab이 있으면 마지막 웨이브의 적이 모두 사라진 뒤 BossDelay초 후 등장한다 (BossRoute가 있으면 그 경로로).
+/// 게임 연동: WaveStarted, WaveCleared, BossSpawned, AllWavesCleared 이벤트.
 /// </summary>
 public class WaveSpawner : MonoBehaviour {
     /// <summary>한 종류의 적을 같은 경로 후보로 내보내는 묶음.</summary>
@@ -127,6 +127,8 @@ public class WaveSpawner : MonoBehaviour {
     // 2. 필드
     /// <summary>웨이브 시작 (웨이브 번호, 1부터)</summary>
     public static event Action<int> WaveStarted;
+    /// <summary>웨이브의 적이 모두 사라짐 (웨이브 번호, 1부터). 마지막 웨이브는 보스로 이어지므로 부르지 않는다.</summary>
+    public static event Action<int> WaveCleared;
     /// <summary>보스 등장 (마지막 웨이브가 끝난 뒤)</summary>
     public static event Action<Enemy> BossSpawned;
     /// <summary>마지막 웨이브와 보스까지 모든 적이 사라짐</summary>
@@ -143,6 +145,8 @@ public class WaveSpawner : MonoBehaviour {
     [SerializeField] private Enemy bossPrefab;
     [Tooltip("보스가 나올 입구 ID")]
     [SerializeField] private string bossSpawnId;
+    [Tooltip("보스가 걸을 경로 이름 (비우면 입구의 경로 중 랜덤)")]
+    [SerializeField] private string bossRoute;
     [Tooltip("마지막 웨이브 적이 다 사라진 뒤 보스가 나오기까지 (초)")]
     [SerializeField] private float bossDelay = DEFAULT_BOSS_DELAY;
 
@@ -300,6 +304,7 @@ public class WaveSpawner : MonoBehaviour {
 
         WaitingForNextWave = true;
         NextWaveTime = Time.time + timeBetweenWaves;
+        WaveCleared?.Invoke(CurrentWave);
         yield return new WaitForSeconds(timeBetweenWaves);
         if (WaitingForNextWave && run == waveRun) {
             StartNextWave();
@@ -326,9 +331,11 @@ public class WaveSpawner : MonoBehaviour {
     }
 
     private void SpawnBoss() {
-        MapRouteData.Route route = PickRandomRoute(bossSpawnId);
+        MapRouteData.Route route = string.IsNullOrEmpty(bossRoute)
+            ? PickRandomRoute(bossSpawnId)
+            : routeData != null ? routeData.GetRoute(bossRoute) : null;
         if (route == null) {
-            Debug.LogWarning($"[WaveSpawner] 보스 입구 '{bossSpawnId}'의 경로를 찾을 수 없습니다.");
+            Debug.LogWarning($"[WaveSpawner] 보스 입구 '{bossSpawnId}' / 경로 '{bossRoute}'를 찾을 수 없습니다.");
             return;
         }
         Boss = Spawn(bossPrefab, route);

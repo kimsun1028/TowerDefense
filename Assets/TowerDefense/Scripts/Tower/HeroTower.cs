@@ -14,7 +14,22 @@ public class HeroTower : BarracksTower
     private const string RESPAWN_STATE = "Respawn";
     private const float RESPAWN_ANIM_LENGTH = 0.8f;
 
+    // 게임 안에 영웅 타워는 하나만 (판매하면 다시 지을 수 있음)
+    private static HeroTower instance;
+    public static bool Exists => instance != null;
+
     public override float RallyRange => UNLIMITED_RALLY_RANGE;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        instance = this;
+    }
+
+    private void OnDestroy()
+    {
+        if (instance == this) instance = null;
+    }
 
     protected override float SpawnDelay => 0.5f;
     protected override Vector2 SpawnOffset => new Vector2(0.16f, 0.19f);

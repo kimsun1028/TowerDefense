@@ -7,7 +7,6 @@ using UnityEngine;
 /// Tools > TD > Enemy > Set Portraits From Sprites
 /// 정보 바의 둥근 초상화(EnemyData.portrait)를 적 스프라이트 시트의 첫 프레임(걷기·날기)으로 채운다.
 /// 이미 초상화가 들어 있는 적은 건드리지 않는다 (따로 그린 초상화를 넣었으면 그대로).
-/// 스프라이트가 없는 적(Grunt, Runner, Armored)은 회색 원 그대로.
 /// </summary>
 public static class EnemyPortraitSetup {
     // 1. 상수

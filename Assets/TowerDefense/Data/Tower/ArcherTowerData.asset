@@ -13,6 +13,14 @@ MonoBehaviour:
   m_Name: ArcherTowerData
   m_EditorClassIdentifier: Assembly-CSharp::AttackTowerData
   towerName: Archer
+  displayName: "\uBC29\uC804 \uCF54\uC77C"
+  description: "\uC804\uAE30\uB97C \uBE60\uB974\uAC8C \uC3D8\uC544 \uD558\uB098\uC529
+    \uB9DE\uD78C\uB2E4. \uB545\xB7\uD558\uB298 \uC801 \uBAA8\uB450 \uACF5\uACA9."
+  portraits:
+  - {fileID: 937874477363376, guid: a883ed956cf85027beb254744357207e, type: 3}
+  - {fileID: 7717905588732034, guid: 81d2dbcb5b625eaaa6eb7673a1e9fb85, type: 3}
+  - {fileID: 3558883196529806, guid: 37eb46164c2d53db9266c7f05e5f3f81, type: 3}
+  - {fileID: 178657704891439, guid: a6dff9e6c416525b8411cf070883aa5c, type: 3}
   costs: 460000006e000000a0000000e6000000
   animators:
   - {fileID: 9100000, guid: dfb5e653a6e81694988ae9ac843d490b, type: 2}
@@ -20,18 +28,18 @@ MonoBehaviour:
   - {fileID: 9100000, guid: 3c8fd3a61f06ab84382731720a273f6b, type: 2}
   - {fileID: 9100000, guid: 17463a02c6119334dbdcfc2204de6d85, type: 2}
   levels:
-  - damage: 3
+  - damage: 5
     range: 2
-    attackSpeed: 1.5
-  - damage: 4
-    range: 2.5
-    attackSpeed: 1.5
-  - damage: 6
-    range: 2.75
-    attackSpeed: 1.7
+    attackSpeed: 1.25
   - damage: 9
-    range: 3
+    range: 2.5
+    attackSpeed: 1.67
+  - damage: 13
+    range: 2.75
     attackSpeed: 2
+  - damage: 16
+    range: 3
+    attackSpeed: 2.5
   projectileAnimators:
   - {fileID: 9100000, guid: f5d8b8eb0ab54134e9697c4cefe0d396, type: 2}
   - {fileID: 9100000, guid: 5b24879a8ceb1d54091dcf793da4d40e, type: 2}

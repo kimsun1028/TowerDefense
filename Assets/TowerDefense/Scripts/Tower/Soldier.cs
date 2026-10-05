@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Soldier : MonoBehaviour , IDamageable
+public partial class Soldier : MonoBehaviour , IDamageable
 {
+    [SerializeField] private Transform healthBarFill;   // HealthBarBG/Fill (적과 같은 구조)
+
     private BarracksTower owner;
     private SoldierData data;
     private Vector2 homePos;    // 집결지 기준 내자리
@@ -37,6 +39,17 @@ public class Soldier : MonoBehaviour , IDamageable
     private void ApplyAnimator()
     {
         if (animator != null && data.animator != null) animator.runtimeAnimatorController = data.animator;
+        UpdateHealthBar();
+    }
+
+    // 체력 비율만큼 Fill을 줄임 (왼쪽 끝 고정), 높이는 병사/영웅 그림에 맞춤
+    private void UpdateHealthBar()
+    {
+        if (healthBarFill == null) return;
+        healthBarFill.parent.localPosition = new Vector3(0f, data.healthBarHeight, 0f);
+        float ratio = Mathf.Clamp01(hp / data.maxHp);
+        healthBarFill.localScale = new Vector3(ratio, 1f, 1f);
+        healthBarFill.localPosition = new Vector3((ratio - 1f) * 0.5f, 0f, 0f);
     }
 
     private bool HasParam(string paramName)
@@ -89,11 +102,21 @@ public class Soldier : MonoBehaviour , IDamageable
     private void OnEnable()
     {
         EnemyTargets.Register(this);
+        WaveSpawner.WaveCleared += OnWaveCleared;
     }
 
     private void OnDisable()
     {
         EnemyTargets.Unregister(this);
+        WaveSpawner.WaveCleared -= OnWaveCleared;
+    }
+
+    // 웨이브가 끝나면 체력 가득 (다음 웨이브를 언제 불러도 손해 없게)
+    private void OnWaveCleared(int wave)
+    {
+        if (!IsAlive) return;
+        hp = data.maxHp;
+        UpdateHealthBar();
     }
 
 
@@ -138,6 +161,7 @@ public class Soldier : MonoBehaviour , IDamageable
         else
         {
             MoveTo(homePos);
+            Regenerate();
         }
 
         if (HasParam("Moving")) animator.SetBool("Moving", movedThisFrame);
@@ -147,6 +171,14 @@ public class Soldier : MonoBehaviour , IDamageable
         //      - 거리 <= data.attackDistance → 쿨다운 감소, 0 이하면 공격 후 쿨다운 = data.attackInterval
         //        target.TakeDamage(data.damage, DamageType.Physical, AttackKind.Melee);
         // 3-b. target이 없으면 → MoveTo(homePos)
+    }
+
+    // 싸우는 적이 없으면 체력 회복 (KR처럼)
+    private void Regenerate()
+    {
+        if (hp >= data.maxHp) return;
+        hp = Mathf.Min(data.maxHp, hp + data.regenPerSecond * Time.deltaTime);
+        UpdateHealthBar();
     }
 
     private void FindTarget()
@@ -190,6 +222,7 @@ public class Soldier : MonoBehaviour , IDamageable
             return;
         }
         hp-= amount;
+        UpdateHealthBar();
         if(hp <= 0)
         {
             Die();
@@ -206,6 +239,7 @@ public class Soldier : MonoBehaviour , IDamageable
         owner.OnSoldierDied(this);
         if (HasParam("Moving")) animator.SetBool("Moving", false);
         PlayTrigger("Death");
+        if (healthBarFill != null) healthBarFill.parent.gameObject.SetActive(false);
         GameSounds.Instance?.PlayAllyDeath();
         Destroy(gameObject, data.deathDuration);
     }

@@ -13,6 +13,14 @@ MonoBehaviour:
   m_Name: MageTowerData
   m_EditorClassIdentifier: Assembly-CSharp::AttackTowerData
   towerName: Mage
+  displayName: "\uC608\uC678 \uCC98\uB9AC\uAE30"
+  description: "\uB9C8\uBC95 \uD53C\uD574\uB85C \uBC29\uC5B4\uB825\uC744 \uBB34\uC2DC\uD55C\uB2E4.
+    \uB2E8\uB2E8\uD55C \uC801\uC5D0\uAC8C \uAC15\uD558\uB2E4."
+  portraits:
+  - {fileID: 5435213816963414, guid: a84b1cbee43f5d93b5c40afec5a32ad2, type: 3}
+  - {fileID: 7344561137638097, guid: 4e4b54b6d3a659ec949aac5f6e6e98c8, type: 3}
+  - {fileID: 8960812122260094, guid: 7c147719e6d65aae994ebcd3b1d2a4e8, type: 3}
+  - {fileID: 2039202974216193, guid: 76c82ed356ce514a9ade094447394cec, type: 3}
   costs: 64000000a0000000f000000040010000
   animators:
   - {fileID: 9100000, guid: 43f63c6d406efeb4d9d6884ce107f806, type: 2}
@@ -20,18 +28,18 @@ MonoBehaviour:
   - {fileID: 9100000, guid: 900167b34eb335f408e9633ad067be24, type: 2}
   - {fileID: 9100000, guid: 2ea4312b4b673a044b5e24d79d98f5ca, type: 2}
   levels:
-  - damage: 8
+  - damage: 13
     range: 1.75
-    attackSpeed: 0.7
-  - damage: 12
+    attackSpeed: 0.67
+  - damage: 33
     range: 2
-    attackSpeed: 0.7
-  - damage: 16
+    attackSpeed: 0.67
+  - damage: 57
     range: 2.25
-    attackSpeed: 0.84000003
-  - damage: 24
+    attackSpeed: 0.67
+  - damage: 80
     range: 2.5
-    attackSpeed: 1
+    attackSpeed: 0.67
   projectileAnimators:
   - {fileID: 9100000, guid: 6bbb052c1450dd74393ea5a73b5955f7, type: 2}
   - {fileID: 9100000, guid: 33fb084d70063c04b8cafe623a1ea3fa, type: 2}

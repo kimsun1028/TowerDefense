@@ -13,6 +13,14 @@ MonoBehaviour:
   m_Name: HeroTowerData
   m_EditorClassIdentifier: Assembly-CSharp::BarracksTowerData
   towerName: Hero
+  displayName: "\uC6A9\uC0AC\uC758 \uC218\uC870"
+  description: "\uB7EC\uBC84\uB355 \uD788\uC5B4\uB85C\uAC00 \uB098\uAC00\uC11C \uC2F8\uC6B4\uB2E4.
+    \uAC8C\uC784\uC5D0 \uD558\uB098\uB9CC \uC9C0\uC744 \uC218 \uC788\uB2E4."
+  portraits:
+  - {fileID: 6468780631363166, guid: 25cf5eace3df5e1ca384e1f288122810, type: 3}
+  - {fileID: 4006456384459918, guid: 3684f56b1f0558b58e838d2da33971ae, type: 3}
+  - {fileID: 6029200845132959, guid: 0cf21735a51c5a108822cda9c297f6f4, type: 3}
+  - {fileID: 2667038670126195, guid: 130deb0ee8015d5c89ac5c9aa9ce93fb, type: 3}
   costs: 96000000c8000000fa00000040010000
   animators:
   - {fileID: 9100000, guid: fd0c9cab3a1d5fd418eee6e8b707f6b1, type: 2}

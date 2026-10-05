@@ -6,7 +6,9 @@ using UnityEngine.InputSystem;
 /// <summary>
 /// 클릭으로 적·타워를 골라 정보 바(InfoPanel)에 보여주고, 선택한 대상 발밑에 타원 표시를 그린다.
 ///   적: 적의 충돌체를 클릭 (적과 타워가 겹치면 적 우선)
+///   병사 등: InfoClickArea가 붙은 충돌체 (적 다음, 타워보다 우선)
 ///   타워: 타워가 지어진 타워 자리(TowerSlot)를 클릭 → slot.Occupant가 IInfoSource면 표시
+///   그 밖: FallbackFinder (타워 몸통 클릭 등, 타워 연동 쪽이 등록)
 ///   빈 곳 클릭: 정보 바 닫기
 /// UI 위 클릭, 집결지 설정 중(RallyPointTool) 클릭은 무시한다.
 /// </summary>
@@ -25,6 +27,9 @@ public class InfoSelector : MonoBehaviour {
 
     private Camera cam;
     private LineRenderer ring;
+
+    /// <summary>충돌체로 못 찾는 대상(자리 밖으로 솟은 타워 몸통 등)을 찾는 함수. UI가 모르는 쪽(타워 연동)이 등록한다.</summary>
+    public static System.Func<Vector2, IInfoSource> FallbackFinder { get; set; }
 
     // 4. 메서드 (private)
     private void Awake() {
@@ -55,22 +60,27 @@ public class InfoSelector : MonoBehaviour {
         InfoPanel.Instance.Show(FindSource(worldPosition));
     }
 
-    /// <summary>클릭 위치의 정보 대상. 적 우선, 다음은 타워가 지어진 자리.</summary>
+    /// <summary>클릭 위치의 정보 대상. 적 우선, 다음은 InfoClickArea 충돌체(병사 등), 다음은 타워가 지어진 자리, 마지막은 FallbackFinder.</summary>
     private IInfoSource FindSource(Vector2 worldPosition) {
-        // 트리거 충돌체(적)도 포함 (Physics2D.queriesHitTriggers 기본값 true)
+        // 트리거 충돌체(적·병사)도 포함 (Physics2D.queriesHitTriggers 기본값 true)
         Collider2D[] hits = Physics2D.OverlapPointAll(worldPosition);
+        IInfoSource otherSource = null;
         IInfoSource towerSource = null;
         foreach (Collider2D hit in hits) {
             Enemy enemy = hit.GetComponentInParent<Enemy>();
             if (enemy != null && !enemy.IsDead) {
                 return enemy;
             }
+            // 클릭 영역으로 표시된 충돌체만 (타워 사거리 트리거 등은 무시)
+            if (otherSource == null && hit.TryGetComponent(out InfoClickArea area) && area.Source != null && area.Source.IsInfoValid) {
+                otherSource = area.Source;
+            }
             TowerSlot slot = hit.GetComponent<TowerSlot>();
             if (slot != null && slot.Occupant is IInfoSource tower) {
                 towerSource = tower;
             }
         }
-        return towerSource;
+        return otherSource ?? towerSource ?? FallbackFinder?.Invoke(worldPosition);
     }
 
     private void UpdateRing() {

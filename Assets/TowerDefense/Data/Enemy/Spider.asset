@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Spider
   m_EditorClassIdentifier: TD.Enemy::EnemyData
   displayName: "\uC554\uD638\uD654\uB41C \uC555\uCD95\uD30C\uC77C"
-  description: "\uB9C8\uBC95 \uD53C\uD574\uB97C 65% \uB35C \uBC1B\uACE0 \uB3C5\uC5D0
+  description: "\uB9C8\uBC95 \uD53C\uD574\uB97C 60% \uB35C \uBC1B\uACE0 \uB3C5\uC5D0
     \uBA74\uC5ED\uC774\uB2E4. \uC544\uCC98\uB098 \uD3EC\uBCD1\uC73C\uB85C \uC7A1\uC790."
   portrait: {fileID: 2680937020586216, guid: ce1709f4fe335c8991d63b4761a8df1d, type: 3}
   maxHp: 60
-  speed: 1.0285714
+  speed: 0.5142857
   armor: 0
-  magicResist: 0.65
+  magicResist: 0.6
   meleeEvasion: 0
   goldReward: 6
   lifeDamage: 1
@@ -37,5 +37,6 @@ MonoBehaviour:
   killAllOnDeath: 0
   formTint: {r: 0, g: 0, b: 0, a: 0}
   isFlying: 0
+  heavyHit: 0
   immunities: 1
   radius: 0.17099999

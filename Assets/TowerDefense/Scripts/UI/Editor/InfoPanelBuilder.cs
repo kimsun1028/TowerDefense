@@ -47,6 +47,7 @@ public static class InfoPanelBuilder {
         ("속도", "Speed"), ("라이프", "HeartBreak"), ("특성", "Star"),
         ("레벨", "Up"), ("공격력", "Sword"), ("공격 간격", "Clock"), ("사거리", "Target"),
         ("피해 종류", "Bolt"), ("비행 적", "Wing"),
+        ("체력", "Heart"), ("병사 수", "Flag"), ("리스폰", "Clock"),
     };
 
     // 4. 메서드 (public)

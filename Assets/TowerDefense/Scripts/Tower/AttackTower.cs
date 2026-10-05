@@ -106,7 +106,23 @@ public abstract class AttackTower : Tower
 
     protected virtual bool CanTarget(Enemy enemy)
     {
-        return true;
+        return CanTargetFlying || !enemy.IsFlying;
+    }
+
+    // 정보 바 표시용 (실제 피해 종류는 발사체가 정함 → 발사체와 맞춰서 덮어씀)
+    protected virtual DamageType DamageKind => DamageType.Physical;
+    protected virtual bool CanTargetFlying => true;
+
+    // 정보 바: 피해 종류, 공격력(DPS), 공격 간격, 사거리, 비행 적
+    protected override void AddInfoRows(List<InfoRow> rows)
+    {
+        AttackLevelStats stats = CurrentStats;
+        float interval = 1f / stats.attackSpeed;
+        rows.Add(new InfoRow("피해 종류", FormatDamageType(DamageKind)));
+        rows.Add(new InfoRow("공격력", $"{stats.damage} (DPS {stats.damage * stats.attackSpeed:0.#})"));
+        rows.Add(new InfoRow("공격 간격", FormatInterval(interval)));
+        rows.Add(new InfoRow("사거리", FormatRange(stats.range)));
+        rows.Add(new InfoRow("비행 적", CanTargetFlying ? "공격 가능" : "공격 불가"));
     }
 
 }

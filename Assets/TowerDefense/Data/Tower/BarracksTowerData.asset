@@ -13,7 +13,15 @@ MonoBehaviour:
   m_Name: BarracksTowerData
   m_EditorClassIdentifier: Assembly-CSharp::BarracksTowerData
   towerName: Barracks
-  costs: 460000006e000000a0000000e6000000
+  displayName: "\uC2A4\uB808\uB4DC \uD480"
+  description: "\uC2A4\uB808\uB354\uB4E4\uC774 \uB098\uAC00\uC11C \uAE38\uC744 \uB9C9\uACE0
+    \uC2F8\uC6B4\uB2E4. \uC9D1\uACB0\uC9C0\uB97C \uC62E\uAE38 \uC218 \uC788\uB2E4."
+  portraits:
+  - {fileID: 4442534615387624, guid: a8179a217dae540cb152172225e3661b, type: 3}
+  - {fileID: 3202367872532746, guid: 7a9b5f21e98954a2bb123abc706e3b59, type: 3}
+  - {fileID: 3350893172496830, guid: fca43a62fe0f59b58361e1647b8cc8e1, type: 3}
+  - {fileID: 5472625969797898, guid: 742a0afc3e08572ca6d2613a592d5677, type: 3}
+  costs: 460000006e00000096000000e6000000
   animators:
   - {fileID: 9100000, guid: f8a7037154beea946b054884089d5d86, type: 2}
   - {fileID: 9100000, guid: 3843f11d0052cc745ad7b982b77a5170, type: 2}
@@ -26,13 +34,13 @@ MonoBehaviour:
     engageRange: 1.2
   - soldier: {fileID: 11400000, guid: 4acf819f351979745983faae1c847f65, type: 2}
     soldierCount: 3
-    respawnTime: 9
+    respawnTime: 10
     engageRange: 1.3
   - soldier: {fileID: 11400000, guid: 3745c5c78b0529e42b9af6239f8a6169, type: 2}
     soldierCount: 3
-    respawnTime: 8
+    respawnTime: 10
     engageRange: 1.4
   - soldier: {fileID: 11400000, guid: cb843fbf72e4fb6449faf70c4512f2b9, type: 2}
     soldierCount: 3
-    respawnTime: 7
+    respawnTime: 10
     engageRange: 1.5

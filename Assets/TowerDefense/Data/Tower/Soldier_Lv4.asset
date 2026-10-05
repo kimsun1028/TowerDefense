@@ -13,9 +13,16 @@ MonoBehaviour:
   m_Name: Soldier_Lv4
   m_EditorClassIdentifier: Assembly-CSharp::SoldierData
   soldierName: Soldier_Lv4
-  maxHp: 180
-  damage: 10
-  attackInterval: 0.85
+  displayName: "\uC2A4\uB808\uB354"
+  description: "\uC2A4\uB808\uB4DC \uD480\uC5D0\uC11C \uB098\uC640 \uAE38\uC744 \uB9C9\uACE0
+    \uC2F8\uC6B4\uB2E4. \uC4F0\uB7EC\uC9C0\uBA74 \uC7A0\uC2DC \uB4A4 \uB2E4\uC2DC
+    \uB098\uC628\uB2E4."
+  portrait: {fileID: 8564186549117701, guid: b6c04aabe4225df4af88687b39d00ff3, type: 3}
+  healthBarHeight: 0.55
+  maxHp: 200
+  regenPerSecond: 14
+  damage: 12
+  attackInterval: 1
   moveSpeed: 1.6
   attackDistance: 0.3
   deathDuration: 0.6

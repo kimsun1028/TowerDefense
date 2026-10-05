@@ -18,7 +18,7 @@ MonoBehaviour:
     \uC2F8\uC6B4\uB2E4."
   portrait: {fileID: 3222101769311019, guid: ee01d8478cf6547d9de94430907bbdfa, type: 3}
   maxHp: 40
-  speed: 0.82321423
+  speed: 0.41160712
   armor: 0
   magicResist: 0.3
   meleeEvasion: 0
@@ -38,5 +38,6 @@ MonoBehaviour:
   killAllOnDeath: 0
   formTint: {r: 0, g: 0, b: 0, a: 0}
   isFlying: 0
+  heavyHit: 0
   immunities: 0
   radius: 0.17999999

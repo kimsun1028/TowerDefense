@@ -13,6 +13,14 @@ MonoBehaviour:
   m_Name: ArtilleryTowerData
   m_EditorClassIdentifier: Assembly-CSharp::AttackTowerData
   towerName: Artillery
+  displayName: "\uBC29\uC5F4\uD3EC"
+  description: "\uB5A8\uC5B4\uC9C4 \uACF3 \uC8FC\uBCC0 \uC801\uC744 \uD55C\uAEBC\uBC88\uC5D0
+    \uACF5\uACA9\uD55C\uB2E4. \uD558\uB298 \uC801\uC740 \uBABB \uB9DE\uD78C\uB2E4."
+  portraits:
+  - {fileID: 5758347501686764, guid: 8fc5f18a5cf3586d862809f4c7bccc49, type: 3}
+  - {fileID: 2396913096847911, guid: f38615bc49985637abf346210b273bbd, type: 3}
+  - {fileID: 1297303573665557, guid: 7c45751d07b75e1ebd756caba4e81f7b, type: 3}
+  - {fileID: 6761286500869574, guid: 7a5f930e272d599ebd00162beb842e98, type: 3}
   costs: 7d000000dc00000040010000a4010000
   animators:
   - {fileID: 9100000, guid: 8dac2a2fc7da36640af71e037abb8968, type: 2}
@@ -22,16 +30,16 @@ MonoBehaviour:
   levels:
   - damage: 12
     range: 2
-    attackSpeed: 0.35
-  - damage: 18
+    attackSpeed: 0.33
+  - damage: 30
     range: 2.25
-    attackSpeed: 0.35
-  - damage: 24
+    attackSpeed: 0.33
+  - damage: 45
     range: 2.5
-    attackSpeed: 0.42000002
-  - damage: 36
+    attackSpeed: 0.33
+  - damage: 70
     range: 2.75
-    attackSpeed: 0.5
+    attackSpeed: 0.33
   projectileAnimators:
   - {fileID: 9100000, guid: 2da04d95fb811b146b58f4f4accbe31b, type: 2}
   - {fileID: 9100000, guid: ec8d39582b9265446a66e30a28722db0, type: 2}

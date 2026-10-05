@@ -20,7 +20,13 @@ public class TowerBuilder : MonoBehaviour
 
     public bool CanBuild(int index)
     {
-        return GameManager.Instance.Gold >= GetBuildCost(index);
+        return !IsBuildLimitReached(index) && GameManager.Instance.Gold >= GetBuildCost(index);
+    }
+
+    // 영웅 타워는 게임에 하나만
+    public bool IsBuildLimitReached(int index)
+    {
+        return towerPrefabs[index] is HeroTower && HeroTower.Exists;
     }
 
     private void Update()
@@ -114,7 +120,7 @@ public class TowerBuilder : MonoBehaviour
 
     public void Build(int index)
     {
-        if (selectedSlot == null || selectedSlot.IsOccupied)
+        if (selectedSlot == null || selectedSlot.IsOccupied || IsBuildLimitReached(index))
         {
             return;
         }

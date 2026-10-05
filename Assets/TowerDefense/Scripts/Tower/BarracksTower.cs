@@ -50,6 +50,20 @@ public class BarracksTower : Tower, IRallyPointUser
         }
     }
 
+    // 정보 바: 병사 수·체력(회복)·공격·리스폰 (영웅도 같은 줄, 이름만 영웅 데이터)
+    protected override void AddInfoRows(List<InfoRow> rows)
+    {
+        BarracksLevelStats stats = CurrentStats;
+        SoldierData soldier = stats.soldier;
+        if (stats.soldierCount > 1) rows.Add(new InfoRow("병사 수", $"{stats.soldierCount}명"));
+        if (soldier != null)
+        {
+            rows.Add(new InfoRow("체력", $"{soldier.maxHp:0} (초당 +{soldier.regenPerSecond:0.#})"));
+            rows.Add(new InfoRow("근접 공격", $"{soldier.damage:0.#} ({soldier.attackInterval:0.##}초마다)"));
+        }
+        rows.Add(new InfoRow("리스폰", $"{stats.respawnTime:0.#}초"));
+    }
+
     // IRallyPointUser
     public virtual float RallyRange => slot.RallyRange;
     public Vector2 RallyPoint {get; private set; }

@@ -4,6 +4,7 @@ using UnityEngine;
 public class Shell: Projectile
 {
     [SerializeField] private float splashRadius = 0.5f;
+    public float SplashRadius => splashRadius;
 
     protected override void OnHit()
     {
